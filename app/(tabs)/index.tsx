@@ -1,98 +1,183 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
+import { AppointmentCard } from '@/components/appointment-card';
+import { LoadingView } from '@/components/loading-view';
+import { MonthCalendar } from '@/components/month-calendar';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { AppButton } from '@/components/ui/app-button';
+import { Colors, Fonts } from '@/constants/theme';
+import { useCanilander } from '@/context/canilander-context';
+import { formatLongDate } from '@/lib/date';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const colorScheme = useColorScheme() ?? 'light';
+  const palette = Colors[colorScheme];
+  const { isLoaded, getOccurrencesForDate, getMarkedDatesForMonth } = useCanilander();
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [visibleMonth, setVisibleMonth] = useState(new Date());
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  if (!isLoaded) {
+    return <LoadingView />;
+  }
+
+  const occurrences = getOccurrencesForDate(selectedDate);
+  const markedDates = getMarkedDatesForMonth(visibleMonth);
+
+  return (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: palette.background }]}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ThemedView style={[styles.hero, { backgroundColor: palette.accent }]}>
+          <View style={styles.heroCopy}>
+            <ThemedText lightColor={palette.onAccent} darkColor={palette.onAccent} type="caption">
+              DAILY DOG-WALK PLANNER
+            </ThemedText>
+            <ThemedText lightColor={palette.onAccent} darkColor={palette.onAccent} type="title">
+              Canilander
+            </ThemedText>
+            <ThemedText lightColor={palette.onAccent} darkColor={palette.onAccent}>
+              Stay on top of pickups, repeat walks, and today&apos;s route without leaving your phone
+              calendar half-finished.
+            </ThemedText>
+          </View>
+          <AppButton
+            label="New appointment"
+            onPress={() =>
+              router.push({
+                pathname: '/appointment',
+                params: { date: selectedDate.toISOString() },
+              } as never)
+            }
+            style={styles.heroButton}
+          />
+        </ThemedView>
+
+        <MonthCalendar
+          selectedDate={selectedDate}
+          visibleMonth={visibleMonth}
+          markedDates={markedDates}
+          onChangeMonth={setVisibleMonth}
+          onSelectDate={(date) => {
+            setSelectedDate(date);
+            setVisibleMonth(date);
+          }}
+        />
+
+        <View style={styles.sectionHeader}>
+          <View>
+            <ThemedText style={styles.sectionTitle}>Agenda</ThemedText>
+            <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+              {formatLongDate(selectedDate)}
+            </ThemedText>
+          </View>
+          <ThemedView style={[styles.countBadge, { backgroundColor: palette.backgroundMuted }]}>
+            <ThemedText style={styles.countLabel}>{occurrences.length}</ThemedText>
+          </ThemedView>
+        </View>
+
+        <View style={styles.list}>
+          {occurrences.length === 0 ? (
+            <ThemedView
+              style={[
+                styles.emptyState,
+                {
+                  backgroundColor: palette.card,
+                  borderColor: palette.border,
+                },
+              ]}>
+              <ThemedText style={styles.emptyTitle}>No walks on this day yet</ThemedText>
+              <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+                Add a pickup, vet visit, or repeating walk and it will appear here with its reminder.
+              </ThemedText>
+              <AppButton
+                label="Plan this day"
+                onPress={() =>
+                  router.push({
+                    pathname: '/appointment',
+                    params: { date: selectedDate.toISOString() },
+                  } as never)
+                }
+              />
+            </ThemedView>
+          ) : (
+            occurrences.map((occurrence) => (
+              <AppointmentCard
+                key={occurrence.occurrenceId}
+                occurrence={occurrence}
+                onPress={() =>
+                  router.push({
+                    pathname: '/appointment',
+                    params: { appointmentId: occurrence.appointment.id },
+                  } as never)
+                }
+              />
+            ))
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  safeArea: {
+    flex: 1,
+  },
+  content: {
+    gap: 8,
+    padding: 20,
+    paddingBottom: 140,
+  },
+  hero: {
+    borderRadius: 32,
+    gap: 18,
+    padding: 22,
+  },
+  heroCopy: {
+    gap: 8,
+  },
+  heroButton: {
+    alignSelf: 'flex-start',
+  },
+  sectionHeader: {
     alignItems: 'center',
-    gap: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  sectionTitle: {
+    fontFamily: Fonts.rounded,
+    fontSize: 24,
+    fontWeight: '700',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  countBadge: {
+    borderRadius: 999,
+    minWidth: 42,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  countLabel: {
+    fontFamily: Fonts.rounded,
+    fontSize: 15,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  list: {
+    gap: 12,
+  },
+  emptyState: {
+    borderRadius: 28,
+    borderWidth: 1,
+    gap: 14,
+    padding: 20,
+  },
+  emptyTitle: {
+    fontFamily: Fonts.rounded,
+    fontSize: 20,
+    fontWeight: '700',
   },
 });

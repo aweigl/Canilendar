@@ -1,0 +1,472 @@
+import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { Stack, router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import {
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { LoadingView } from '@/components/loading-view';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { AppButton } from '@/components/ui/app-button';
+import { ChoiceChip } from '@/components/ui/choice-chip';
+import { InputField } from '@/components/ui/input-field';
+import { Colors, Fonts } from '@/constants/theme';
+import { useCanilander } from '@/context/canilander-context';
+import {
+  combineDateAndTimeParts,
+  formatTimeInputValue,
+} from '@/lib/date';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import {
+  REMINDER_OPTIONS,
+  SERVICE_KIND_OPTIONS,
+  WEEKDAY_OPTIONS,
+  type ServiceKind,
+} from '@/types/domain';
+
+const EMPTY_DOG_FORM = {
+  name: '',
+  address: '',
+  ownerPhone: '',
+  notes: '',
+};
+
+export default function AppointmentScreen() {
+  const params = useLocalSearchParams<{ appointmentId?: string; date?: string }>();
+  const colorScheme = useColorScheme() ?? 'light';
+  const palette = Colors[colorScheme];
+  const {
+    dogs,
+    settings,
+    isLoaded,
+    getAppointmentById,
+    getDogById,
+    saveAppointment,
+    deleteAppointment,
+  } = useCanilander();
+  const appointment = params.appointmentId ? getAppointmentById(params.appointmentId) : undefined;
+  const appointmentDog = appointment ? getDogById(appointment.dogId) : undefined;
+  const initialStartAt = appointment
+    ? new Date(appointment.startAt)
+    : params.date
+      ? new Date(params.date)
+      : new Date();
+  const [dogMode, setDogMode] = useState<'existing' | 'new'>(
+    appointmentDog || dogs.length > 0 ? 'existing' : 'new'
+  );
+  const [selectedDogId, setSelectedDogId] = useState<string | null>(
+    appointmentDog?.id ?? dogs[0]?.id ?? null
+  );
+  const [dogForm, setDogForm] = useState({
+    name: appointmentDog?.name ?? dogs[0]?.name ?? EMPTY_DOG_FORM.name,
+    address: appointmentDog?.address ?? dogs[0]?.address ?? EMPTY_DOG_FORM.address,
+    ownerPhone: appointmentDog?.ownerPhone ?? dogs[0]?.ownerPhone ?? EMPTY_DOG_FORM.ownerPhone,
+    notes: appointmentDog?.notes ?? dogs[0]?.notes ?? EMPTY_DOG_FORM.notes,
+  });
+  const [appointmentDate, setAppointmentDate] = useState(initialStartAt);
+  const [appointmentTime, setAppointmentTime] = useState(initialStartAt);
+  const [kind, setKind] = useState<ServiceKind>(appointment?.kind ?? 'walk');
+  const [notes, setNotes] = useState(appointment?.notes ?? '');
+  const [isRecurring, setIsRecurring] = useState(appointment?.isRecurring ?? false);
+  const [recurrenceWeekdays, setRecurrenceWeekdays] = useState<number[]>(
+    appointment?.recurrenceRule?.weekdays ?? [initialStartAt.getDay()]
+  );
+  const [reminderMinutesBefore, setReminderMinutesBefore] = useState(
+    appointment?.reminderMinutesBefore ?? settings.defaultReminderMinutes
+  );
+
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (appointment && appointmentDog) {
+      const startAt = new Date(appointment.startAt);
+
+      setDogMode('existing');
+      setSelectedDogId(appointmentDog.id);
+      setDogForm({
+        name: appointmentDog.name,
+        address: appointmentDog.address,
+        ownerPhone: appointmentDog.ownerPhone,
+        notes: appointmentDog.notes ?? '',
+      });
+      setAppointmentDate(startAt);
+      setAppointmentTime(startAt);
+      setKind(appointment.kind);
+      setNotes(appointment.notes ?? '');
+      setIsRecurring(appointment.isRecurring);
+      setRecurrenceWeekdays(appointment.recurrenceRule?.weekdays ?? [startAt.getDay()]);
+      setReminderMinutesBefore(appointment.reminderMinutesBefore);
+      return;
+    }
+
+    if (dogs.length > 0 && dogMode === 'existing' && !selectedDogId) {
+      setSelectedDogId(dogs[0].id);
+    }
+  }, [appointment, appointmentDog, dogMode, dogs, isLoaded, selectedDogId]);
+
+  useEffect(() => {
+    if (dogMode !== 'existing') {
+      return;
+    }
+
+    const selectedDog = dogs.find((dog) => dog.id === selectedDogId);
+
+    if (!selectedDog) {
+      return;
+    }
+
+    setDogForm({
+      name: selectedDog.name,
+      address: selectedDog.address,
+      ownerPhone: selectedDog.ownerPhone,
+      notes: selectedDog.notes ?? '',
+    });
+  }, [dogMode, dogs, selectedDogId]);
+
+  if (!isLoaded) {
+    return <LoadingView />;
+  }
+
+  function handleDateChange(_: DateTimePickerEvent, value?: Date) {
+    if (!value) {
+      return;
+    }
+
+    setAppointmentDate(value);
+  }
+
+  function handleTimeChange(_: DateTimePickerEvent, value?: Date) {
+    if (!value) {
+      return;
+    }
+
+    setAppointmentTime(value);
+  }
+
+  function toggleWeekday(weekday: number) {
+    setRecurrenceWeekdays((currentValue) => {
+      if (currentValue.includes(weekday)) {
+        return currentValue.filter((value) => value !== weekday);
+      }
+
+      return [...currentValue, weekday].sort((left, right) => left - right);
+    });
+  }
+
+  async function handleSave() {
+    if (!dogForm.name.trim() || !dogForm.address.trim() || !dogForm.ownerPhone.trim()) {
+      Alert.alert('Missing dog details', 'Add the dog name, address, and owner phone number first.');
+      return;
+    }
+
+    if (dogMode === 'existing' && !selectedDogId) {
+      Alert.alert('Choose a dog', 'Select an existing dog or switch to a new dog profile.');
+      return;
+    }
+
+    if (isRecurring && recurrenceWeekdays.length === 0) {
+      Alert.alert('Pick repeat days', 'Choose at least one weekday for the recurring walk.');
+      return;
+    }
+
+    const combinedStartAt = combineDateAndTimeParts(appointmentDate, appointmentTime);
+
+    if (!appointment && combinedStartAt.getTime() < Date.now()) {
+      Alert.alert('Past appointment', 'New appointments need to be scheduled in the future.');
+      return;
+    }
+
+    await saveAppointment({
+      id: appointment?.id,
+      dog: {
+        id: dogMode === 'existing' ? selectedDogId ?? undefined : undefined,
+        name: dogForm.name,
+        address: dogForm.address,
+        ownerPhone: dogForm.ownerPhone,
+        notes: dogForm.notes,
+      },
+      startAt: combinedStartAt.toISOString(),
+      kind,
+      notes,
+      isRecurring,
+      recurrenceWeekdays,
+      reminderMinutesBefore,
+    });
+
+    router.back();
+  }
+
+  function handleDelete() {
+    if (!appointment) {
+      return;
+    }
+
+    Alert.alert('Delete appointment?', 'This removes the appointment and its scheduled reminders.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          deleteAppointment(appointment.id);
+          router.back();
+        },
+      },
+    ]);
+  }
+
+  return (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: palette.background }]}>
+      <Stack.Screen options={{ title: appointment ? 'Edit Appointment' : 'New Appointment' }} />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ThemedView
+          style={[
+            styles.hero,
+            {
+              backgroundColor: palette.card,
+              borderColor: palette.border,
+            },
+          ]}>
+          <ThemedText style={styles.title}>{appointment ? 'Edit appointment' : 'New appointment'}</ThemedText>
+          <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+            Capture the dog, pickup details, time, repeat pattern, and reminder in one place.
+          </ThemedText>
+        </ThemedView>
+
+        <ThemedView
+          style={[
+            styles.section,
+            {
+              backgroundColor: palette.card,
+              borderColor: palette.border,
+            },
+          ]}>
+          <ThemedText style={styles.sectionTitle}>Dog details</ThemedText>
+          <View style={styles.toggleRow}>
+            <ChoiceChip label="Saved dog" onPress={() => setDogMode('existing')} selected={dogMode === 'existing'} />
+            <ChoiceChip label="New dog" onPress={() => setDogMode('new')} selected={dogMode === 'new'} />
+          </View>
+
+          {dogMode === 'existing' ? (
+            <View style={styles.chips}>
+              {dogs.length === 0 ? (
+                <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+                  No dogs saved yet. Switch to &quot;New dog&quot; to create the first profile.
+                </ThemedText>
+              ) : (
+                dogs.map((dog) => (
+                  <ChoiceChip
+                    key={dog.id}
+                    label={dog.name}
+                    onPress={() => setSelectedDogId(dog.id)}
+                    selected={selectedDogId === dog.id}
+                  />
+                ))
+              )}
+            </View>
+          ) : null}
+
+          <InputField
+            label="Dog name"
+            onChangeText={(value) => setDogForm((current) => ({ ...current, name: value }))}
+            placeholder="Milo"
+            value={dogForm.name}
+          />
+          <InputField
+            label="Pickup address"
+            onChangeText={(value) => setDogForm((current) => ({ ...current, address: value }))}
+            placeholder="12 Bark Street"
+            value={dogForm.address}
+          />
+          <InputField
+            keyboardType="phone-pad"
+            label="Owner phone"
+            onChangeText={(value) => setDogForm((current) => ({ ...current, ownerPhone: value }))}
+            placeholder="+49 123 456 789"
+            value={dogForm.ownerPhone}
+          />
+          <InputField
+            label="Dog notes"
+            multiline
+            onChangeText={(value) => setDogForm((current) => ({ ...current, notes: value }))}
+            placeholder="Gate code, collar note, feeding reminder..."
+            value={dogForm.notes}
+          />
+        </ThemedView>
+
+        <ThemedView
+          style={[
+            styles.section,
+            {
+              backgroundColor: palette.card,
+              borderColor: palette.border,
+            },
+          ]}>
+          <ThemedText style={styles.sectionTitle}>Appointment</ThemedText>
+          <View style={styles.chips}>
+            {SERVICE_KIND_OPTIONS.map((option) => (
+              <ChoiceChip
+                key={option.value}
+                label={option.label}
+                onPress={() => setKind(option.value)}
+                selected={kind === option.value}
+              />
+            ))}
+          </View>
+
+          <View style={styles.pickerGroup}>
+            <ThemedText style={styles.inputLabel}>Date</ThemedText>
+            <DateTimePicker
+              display={Platform.OS === 'ios' ? 'compact' : 'default'}
+              mode="date"
+              minimumDate={appointment ? undefined : new Date()}
+              onChange={handleDateChange}
+              value={appointmentDate}
+            />
+          </View>
+
+          <View style={styles.pickerGroup}>
+            <ThemedText style={styles.inputLabel}>Pickup time</ThemedText>
+            <DateTimePicker
+              display={Platform.OS === 'ios' ? 'compact' : 'default'}
+              mode="time"
+              onChange={handleTimeChange}
+              value={appointmentTime}
+            />
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.copy}>
+              <ThemedText style={styles.inputLabel}>Repeat weekly</ThemedText>
+              <ThemedText lightColor={palette.muted} darkColor={palette.muted} type="caption">
+                {isRecurring ? 'Shows on every selected weekday.' : 'Keeps this as a one-time appointment.'}
+              </ThemedText>
+            </View>
+            <Switch
+              onValueChange={setIsRecurring}
+              trackColor={{ false: palette.border, true: palette.accentSoft }}
+              thumbColor={isRecurring ? palette.accent : '#F9F4EE'}
+              value={isRecurring}
+            />
+          </View>
+
+          {isRecurring ? (
+            <View style={styles.chips}>
+              {WEEKDAY_OPTIONS.map((option) => (
+                <ChoiceChip
+                  key={option.value}
+                  label={option.label}
+                  onPress={() => toggleWeekday(option.value)}
+                  selected={recurrenceWeekdays.includes(option.value)}
+                />
+              ))}
+            </View>
+          ) : null}
+
+          <View style={styles.pickerGroup}>
+            <ThemedText style={styles.inputLabel}>Reminder lead time</ThemedText>
+            <View style={styles.chips}>
+              {REMINDER_OPTIONS.map((minutes) => (
+                <ChoiceChip
+                  key={minutes}
+                  label={`${minutes} min`}
+                  onPress={() => setReminderMinutesBefore(minutes)}
+                  selected={reminderMinutesBefore === minutes}
+                />
+              ))}
+            </View>
+          </View>
+
+          <InputField
+            label="Appointment notes"
+            multiline
+            onChangeText={setNotes}
+            placeholder="Meet owner at side entrance, bring extra towel..."
+            value={notes}
+          />
+
+          <ThemedText lightColor={palette.muted} darkColor={palette.muted} type="caption">
+            Reminder time: {formatTimeInputValue(appointmentTime)} with a {reminderMinutesBefore}-minute heads-up.
+          </ThemedText>
+        </ThemedView>
+
+        <View style={styles.footerActions}>
+          <AppButton label={appointment ? 'Save changes' : 'Create appointment'} onPress={handleSave} />
+          {appointment ? <AppButton label="Delete appointment" onPress={handleDelete} variant="danger" /> : null}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  content: {
+    gap: 16,
+    padding: 20,
+    paddingBottom: 48,
+  },
+  hero: {
+    borderRadius: 28,
+    borderWidth: 1,
+    gap: 8,
+    padding: 18,
+  },
+  title: {
+    fontFamily: Fonts.rounded,
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  section: {
+    borderRadius: 28,
+    borderWidth: 1,
+    gap: 14,
+    padding: 18,
+  },
+  sectionTitle: {
+    fontFamily: Fonts.rounded,
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  chips: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  pickerGroup: {
+    gap: 8,
+  },
+  inputLabel: {
+    fontFamily: Fonts.rounded,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  row: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 14,
+    justifyContent: 'space-between',
+  },
+  copy: {
+    flex: 1,
+    gap: 4,
+  },
+  footerActions: {
+    gap: 10,
+  },
+});
