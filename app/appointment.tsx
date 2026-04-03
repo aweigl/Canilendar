@@ -504,15 +504,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
     padding: 20,
-    paddingBottom: 48,
+    paddingBottom: 72,
   },
   hero: {
     borderRadius: Radius.card,
     borderWidth: 1.5,
-    gap: Spacing.xs,
-    padding: 18,
+    gap: Spacing.sm,
+    padding: 24,
   },
   title: {
     fontSize: 28,
@@ -520,8 +520,8 @@ const styles = StyleSheet.create({
   section: {
     borderRadius: Radius.card,
     borderWidth: 1.5,
-    gap: Spacing.sm,
-    padding: 18,
+    gap: Spacing.md,
+    padding: 24,
   },
   sectionTitle: {
     fontSize: 22,
@@ -529,18 +529,18 @@ const styles = StyleSheet.create({
   toggleRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   chips: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   savedDogs: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   pickerGroup: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   inputLabel: {
     fontSize: 15,
@@ -549,14 +549,15 @@ const styles = StyleSheet.create({
   row: {
     alignItems: "center",
     flexDirection: "row",
-    gap: Spacing.sm,
+    gap: Spacing.md,
     justifyContent: "space-between",
   },
   copy: {
     flex: 1,
-    gap: 4,
+    gap: 6,
   },
   footerActions: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
   },
 });

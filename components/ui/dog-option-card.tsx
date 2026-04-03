@@ -19,14 +19,17 @@ export function DogOptionCard({ dog, selected, onPress }: DogOptionCardProps) {
     <Button
       onPress={onPress}
       pressStyle={{ opacity: 0.96 }}
+      unstyled
       style={{
+        alignItems: 'stretch',
         backgroundColor: selected ? palette.supportSoft : palette.surface,
         borderColor: selected ? palette.support : palette.border,
         borderRadius: Radius.card,
         borderWidth: 1.5,
+        justifyContent: 'flex-start',
         minHeight: 0,
         paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.sm,
+        paddingVertical: Spacing.md,
       }}>
       <YStack gap={Spacing.xs} width="100%">
         <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>

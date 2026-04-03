@@ -49,20 +49,21 @@ export function InputField({
   const [isFocused, setIsFocused] = useState(false);
   const helperText = error ?? hint;
   const helperColor = error ? palette.danger : palette.textMuted;
+  const minHeight = multiline ? 80 : 56;
   const fieldStyle = [
     styles.input,
     {
       backgroundColor: palette.surface,
       borderColor: error ? palette.danger : isFocused ? palette.accent : palette.border,
       color: palette.text,
-      minHeight: multiline ? 108 : 54,
+      minHeight,
       textAlignVertical: multiline ? 'top' : 'center',
     },
     style as any,
   ] as const;
 
   return (
-    <YStack gap={Spacing.xs}>
+    <YStack gap={Spacing.sm}>
       <Label size="$3" style={[styles.label, { color: palette.textMuted }]}>
         {label}
       </Label>
@@ -83,7 +84,9 @@ export function InputField({
             setIsFocused(true);
             onFocus?.(event as never);
           }}
+          placeholderTextColor={palette.textSubtle as any}
           style={fieldStyle as any}
+          unstyled
           {...rest}
         />
       ) : (
@@ -98,7 +101,9 @@ export function InputField({
             setIsFocused(true);
             onFocus?.(event as never);
           }}
+          placeholderTextColor={palette.textSubtle as any}
           style={fieldStyle as any}
+          unstyled
           {...rest}
         />
       )}
@@ -118,7 +123,9 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.sans,
     fontSize: 16,
     lineHeight: 22,
+    paddingBottom: 16,
+    width: '100%',
     paddingHorizontal: Spacing.md,
-    paddingVertical: 14,
+    paddingTop: 16,
   },
 });

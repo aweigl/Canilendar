@@ -19,6 +19,7 @@ export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
     <Button
       onPress={onPress}
       pressStyle={{ background: palette.surfaceMuted, opacity: 0.92 }}
+      unstyled
       style={[
         styles.chip,
         {
@@ -40,8 +41,10 @@ export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
 
 const styles = StyleSheet.create({
   chip: {
-    minHeight: 40,
-    paddingHorizontal: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44,
+    paddingHorizontal: Spacing.md,
   },
   label: {
     fontFamily: Fonts.rounded,

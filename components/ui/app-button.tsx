@@ -63,6 +63,7 @@ export function AppButton({
       pressStyle={{
         background: disabled ? palette.surfaceMuted : currentVariant.backgroundPressed,
       }}
+      unstyled
       style={[
         styles.button,
         {
@@ -87,8 +88,11 @@ export function AppButton({
 
 const styles = StyleSheet.create({
   button: {
-    minHeight: 52,
-    paddingHorizontal: Spacing.md,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    minHeight: 56,
+    paddingHorizontal: Spacing.lg,
   },
   label: {
     fontFamily: Fonts.rounded,
