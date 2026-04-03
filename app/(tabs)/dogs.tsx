@@ -1,25 +1,25 @@
-import { useEffect, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { LoadingView } from '@/components/loading-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { AppButton } from '@/components/ui/app-button';
-import { InputField } from '@/components/ui/input-field';
-import { Colors, Radius, Spacing } from '@/constants/theme';
-import { useCanilander } from '@/context/canilander-context';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { LoadingView } from "@/components/loading-view";
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { AppButton } from "@/components/ui/app-button";
+import { InputField } from "@/components/ui/input-field";
+import { Colors, Radius, Spacing } from "@/constants/theme";
+import { useCanilander } from "@/context/canilander-context";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 const EMPTY_DOG = {
-  name: '',
-  address: '',
-  ownerPhone: '',
-  notes: '',
+  name: "",
+  address: "",
+  ownerPhone: "",
+  notes: "",
 };
 
 export default function DogsScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { dogs, appointments, isLoaded, saveDog, deleteDog } = useCanilander();
   const [isEditing, setIsEditing] = useState(false);
@@ -60,14 +60,17 @@ export default function DogsScreen() {
       name: dog.name,
       address: dog.address,
       ownerPhone: dog.ownerPhone,
-      notes: dog.notes ?? '',
+      notes: dog.notes ?? "",
     });
     setIsEditing(true);
   }
 
   function handleSave() {
     if (!form.name.trim() || !form.address.trim() || !form.ownerPhone.trim()) {
-      Alert.alert('Missing dog details', 'Please add a name, address, and owner phone number.');
+      Alert.alert(
+        "Missing dog details",
+        "Please add a name, address, and owner phone number.",
+      );
       return;
     }
 
@@ -91,47 +94,60 @@ export default function DogsScreen() {
 
     Alert.alert(
       `Delete ${dog.name}?`,
-      'This only works when the dog has no scheduled appointments.',
+      "This only works when the dog has no scheduled appointments.",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: () => {
             const didDelete = deleteDog(dogId);
 
             if (!didDelete) {
               Alert.alert(
-                'Dog still scheduled',
-                "Remove or reassign this dog's appointments before deleting the profile."
+                "Dog still scheduled",
+                "Remove or reassign this dog's appointments before deleting the profile.",
               );
             }
           },
         },
-      ]
+      ],
     );
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: palette.background }]}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: palette.background }]}
+    >
+      <ScrollView
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <View style={styles.headerCopy}>
-            <ThemedText type="eyebrow" lightColor={palette.accent} darkColor={palette.accent}>
+            <ThemedText
+              type="eyebrow"
+              lightColor={palette.support}
+              darkColor={palette.support}
+            >
               Saved dog profiles
             </ThemedText>
             <ThemedText type="title" style={styles.title}>
               Dogs
             </ThemedText>
-            <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-              Keep client details reusable so appointments can be added in seconds.
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+            >
+              Keep client details reusable so appointments can be added in
+              seconds.
             </ThemedText>
           </View>
           <AppButton
-            label={isEditing ? 'Cancel' : 'Add dog'}
+            label={isEditing ? "Cancel" : "Add dog"}
             onPress={isEditing ? resetForm : beginCreateDog}
-            variant={isEditing ? 'secondary' : 'primary'}
-            icon={isEditing ? 'square.and.pencil' : 'plus.circle.fill'}
+            variant={isEditing ? "secondary" : "primary"}
+            icon={isEditing ? "square.and.pencil" : "plus.circle.fill"}
           />
         </View>
 
@@ -143,40 +159,49 @@ export default function DogsScreen() {
                 backgroundColor: palette.surface,
                 borderColor: palette.border,
               },
-            ]}>
+            ]}
+          >
             <ThemedText type="sectionTitle" style={styles.editorTitle}>
-              {editingDogId ? 'Edit dog profile' : 'Add a dog profile'}
+              {editingDogId ? "Edit dog profile" : "Add a dog profile"}
             </ThemedText>
             <InputField
               label="Dog name"
-              onChangeText={(value) => setForm((current) => ({ ...current, name: value }))}
+              onChangeText={(value) =>
+                setForm((current) => ({ ...current, name: value }))
+              }
               placeholder="Milo"
               value={form.name}
             />
             <InputField
               label="Pickup address"
-              onChangeText={(value) => setForm((current) => ({ ...current, address: value }))}
+              onChangeText={(value) =>
+                setForm((current) => ({ ...current, address: value }))
+              }
               placeholder="12 Bark Street"
               value={form.address}
             />
             <InputField
               keyboardType="phone-pad"
               label="Owner phone"
-              onChangeText={(value) => setForm((current) => ({ ...current, ownerPhone: value }))}
+              onChangeText={(value) =>
+                setForm((current) => ({ ...current, ownerPhone: value }))
+              }
               placeholder="+49 123 456 789"
               value={form.ownerPhone}
             />
             <InputField
               label="Notes"
               multiline
-              onChangeText={(value) => setForm((current) => ({ ...current, notes: value }))}
+              onChangeText={(value) =>
+                setForm((current) => ({ ...current, notes: value }))
+              }
               placeholder="Gate code, feeding note, leash routine..."
               value={form.notes}
             />
             <AppButton
-              label={editingDogId ? 'Save changes' : 'Create dog'}
+              label={editingDogId ? "Save changes" : "Create dog"}
               onPress={handleSave}
-              icon={editingDogId ? 'square.and.pencil' : 'plus.circle.fill'}
+              icon={editingDogId ? "square.and.pencil" : "plus.circle.fill"}
             />
           </ThemedView>
         ) : null}
@@ -190,17 +215,24 @@ export default function DogsScreen() {
                   backgroundColor: palette.surface,
                   borderColor: palette.border,
                 },
-              ]}>
+              ]}
+            >
               <ThemedText type="sectionTitle" style={styles.emptyTitle}>
                 No dogs saved yet
               </ThemedText>
-              <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-                Add your first dog so future appointments can be scheduled from a saved profile.
+              <ThemedText
+                lightColor={palette.textMuted}
+                darkColor={palette.textMuted}
+              >
+                Add your first dog so future appointments can be scheduled from
+                a saved profile.
               </ThemedText>
             </ThemedView>
           ) : (
             dogs.map((dog) => {
-              const appointmentCount = appointments.filter((appointment) => appointment.dogId === dog.id).length;
+              const appointmentCount = appointments.filter(
+                (appointment) => appointment.dogId === dog.id,
+              ).length;
 
               return (
                 <View
@@ -212,16 +244,23 @@ export default function DogsScreen() {
                       borderColor: palette.accent,
                       shadowColor: palette.shadow,
                     },
-                  ]}>
+                  ]}
+                >
                   <View style={styles.cardHeader}>
                     <View style={styles.cardCopy}>
                       <ThemedText type="sectionTitle" style={styles.cardTitle}>
                         {dog.name}
                       </ThemedText>
-                      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
+                      <ThemedText
+                        lightColor={palette.textMuted}
+                        darkColor={palette.textMuted}
+                      >
                         {dog.address}
                       </ThemedText>
-                      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
+                      <ThemedText
+                        lightColor={palette.textMuted}
+                        darkColor={palette.textMuted}
+                      >
                         {dog.ownerPhone}
                       </ThemedText>
                     </View>
@@ -229,16 +268,27 @@ export default function DogsScreen() {
                       style={[
                         styles.countPill,
                         {
-                          backgroundColor: palette.surfaceMuted,
-                          borderColor: palette.border,
+                          backgroundColor: palette.supportSoft,
+                          borderColor: palette.support,
                         },
-                      ]}>
-                      <ThemedText style={styles.countText}>{appointmentCount} upcoming templates</ThemedText>
+                      ]}
+                    >
+                      <ThemedText
+                        lightColor={palette.onSupport}
+                        darkColor={palette.onSupport}
+                        style={styles.countText}
+                      >
+                        {appointmentCount} upcoming appoinmtnent
+                        {appointmentCount !== 1 ? "s" : ""}
+                      </ThemedText>
                     </View>
                   </View>
 
                   {dog.notes ? (
-                    <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
+                    <ThemedText
+                      lightColor={palette.textMuted}
+                      darkColor={palette.textMuted}
+                    >
                       {dog.notes}
                     </ThemedText>
                   ) : null}
@@ -250,7 +300,12 @@ export default function DogsScreen() {
                       variant="secondary"
                       icon="square.and.pencil"
                     />
-                    <AppButton label="Delete" onPress={() => handleDelete(dog.id)} variant="ghost" icon="trash.fill" />
+                    <AppButton
+                      label="Delete"
+                      onPress={() => handleDelete(dog.id)}
+                      variant="ghost"
+                      icon="trash.fill"
+                    />
                   </View>
                 </View>
               );
@@ -326,7 +381,7 @@ const styles = StyleSheet.create({
     lineHeight: 32,
   },
   countPill: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     borderRadius: Radius.pill,
     borderWidth: 1,
     paddingHorizontal: 12,
@@ -334,10 +389,10 @@ const styles = StyleSheet.create({
   },
   countText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: Spacing.xs,
   },
 });

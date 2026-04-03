@@ -31,14 +31,14 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
             style={[
               styles.timeBadge,
               {
-                backgroundColor: palette.surfaceAccent,
-                borderColor: palette.borderStrong,
+                backgroundColor: palette.supportSoft,
+                borderColor: palette.support,
               },
             ]}>
-            <ThemedText lightColor={palette.text} darkColor={palette.text} style={styles.timeLabel}>
+            <ThemedText lightColor={palette.onSupport} darkColor={palette.onSupport} style={styles.timeLabel}>
               {formatTimeLabel(occurrence.startAt)}
             </ThemedText>
-            <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} type="meta">
+            <ThemedText lightColor={palette.support} darkColor={palette.support} type="meta">
               {occurrence.appointment.kind}
             </ThemedText>
           </View>
@@ -49,7 +49,7 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
             <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} style={styles.meta}>
               {occurrence.dog.address}
             </ThemedText>
-            <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} style={styles.meta}>
+            <ThemedText lightColor={palette.support} darkColor={palette.support} style={styles.meta}>
               {describeRecurrence(occurrence.appointment)} ·{' '}
               {describeReminder(occurrence.appointment.reminderMinutesBefore)}
             </ThemedText>

@@ -100,7 +100,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.sans,
     lineHeight: 30,
     fontSize: 16,
-    color: '#D88742',
   },
   caption: {
     fontFamily: Fonts.sans,

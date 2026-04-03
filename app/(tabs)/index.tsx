@@ -3,13 +3,13 @@ import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AppointmentCard } from "@/components/appointment-card";
+import { AgendaDogCard } from "@/components/agenda-dog-card";
 import { LoadingView } from "@/components/loading-view";
 import { MonthCalendar } from "@/components/month-calendar";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AppButton } from "@/components/ui/app-button";
-import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilander } from "@/context/canilander-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatLongDate } from "@/lib/date";
@@ -58,12 +58,12 @@ export default function HomeScreen() {
               <ThemedView
                 style={[
                   styles.heroBadge,
-                  { backgroundColor: palette.surfaceAccent },
+                  { backgroundColor: palette.supportSoft },
                 ]}
               >
                 <ThemedText
-                  lightColor={palette.accent}
-                  darkColor={palette.accent}
+                  lightColor={palette.support}
+                  darkColor={palette.support}
                   type="eyebrow"
                 >
                   Daily dog-walk planner
@@ -122,18 +122,6 @@ export default function HomeScreen() {
                 {formatLongDate(selectedDate)}
               </ThemedText>
             </View>
-            <ThemedView
-              style={[
-                styles.countBadge,
-                {
-                  backgroundColor: palette.surfaceMuted,
-                  borderColor: palette.border,
-                },
-              ]}>
-              <ThemedText style={styles.countLabel}>
-                {occurrences.length}
-              </ThemedText>
-            </ThemedView>
           </View>
 
           <View style={styles.list}>
@@ -147,29 +135,17 @@ export default function HomeScreen() {
                   },
                 ]}>
                 <ThemedText type="sectionTitle" style={styles.emptyTitle}>
-                  No walks on this day yet
+                  No agenda entries for this day
                 </ThemedText>
                 <ThemedText
                   lightColor={palette.textMuted}
-                  darkColor={palette.textMuted}
-                >
-                  Add a pickup, vet visit, or repeating walk and it will appear
-                  here with its reminder.
+                  darkColor={palette.textMuted}>
+                  Add an appointment for this date and it will show up here as a dog card.
                 </ThemedText>
-                <AppButton
-                  icon="plus.circle.fill"
-                  label="Plan this day"
-                  onPress={() =>
-                    router.push({
-                      pathname: "/appointment",
-                      params: { date: selectedDate.toISOString() },
-                    } as never)
-                  }
-                />
               </ThemedView>
             ) : (
               occurrences.map((occurrence) => (
-                <AppointmentCard
+                <AgendaDogCard
                   key={occurrence.occurrenceId}
                   occurrence={occurrence}
                   onPress={() =>
@@ -225,19 +201,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 24,
-  },
-  countBadge: {
-    borderRadius: Radius.pill,
-    borderWidth: 1,
-    minWidth: 42,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  countLabel: {
-    fontFamily: Fonts.rounded,
-    fontSize: 15,
-    fontWeight: "700",
-    textAlign: "center",
   },
   list: {
     gap: Spacing.md,

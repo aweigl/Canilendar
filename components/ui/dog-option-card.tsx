@@ -20,8 +20,8 @@ export function DogOptionCard({ dog, selected, onPress }: DogOptionCardProps) {
       onPress={onPress}
       pressStyle={{ opacity: 0.96 }}
       style={{
-        backgroundColor: selected ? palette.surfaceAccent : palette.surface,
-        borderColor: selected ? palette.accent : palette.border,
+        backgroundColor: selected ? palette.supportSoft : palette.surface,
+        borderColor: selected ? palette.support : palette.border,
         borderRadius: Radius.card,
         borderWidth: 1.5,
         minHeight: 0,
@@ -32,8 +32,8 @@ export function DogOptionCard({ dog, selected, onPress }: DogOptionCardProps) {
         <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <ThemedText type="sectionTitle">{dog.name}</ThemedText>
           <ThemedText
-            lightColor={selected ? palette.accent : palette.textSubtle}
-            darkColor={selected ? palette.accent : palette.textSubtle}
+            lightColor={selected ? palette.support : palette.textSubtle}
+            darkColor={selected ? palette.support : palette.textSubtle}
             type="eyebrow">
             {selected ? 'Selected' : 'Saved dog'}
           </ThemedText>

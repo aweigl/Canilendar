@@ -80,7 +80,7 @@ export default function SettingsScreen() {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: palette.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <ThemedText type="eyebrow" lightColor={palette.accent} darkColor={palette.accent}>
+          <ThemedText type="eyebrow" lightColor={palette.support} darkColor={palette.support}>
             Planner preferences
           </ThemedText>
           <ThemedText type="title" style={styles.title}>
@@ -96,7 +96,7 @@ export default function SettingsScreen() {
             styles.card,
             {
               backgroundColor: palette.surface,
-              borderColor: palette.border,
+              borderColor: palette.support,
             },
           ]}>
           <ThemedText type="sectionTitle" style={styles.cardTitle}>
@@ -139,7 +139,7 @@ export default function SettingsScreen() {
               <ThemedText type="sectionTitle" style={styles.cardTitle}>
                 Daily summary
               </ThemedText>
-              <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
+              <ThemedText lightColor={palette.support} darkColor={palette.support}>
                 One reminder every morning with the day&apos;s appointments.
               </ThemedText>
             </View>
@@ -179,7 +179,7 @@ export default function SettingsScreen() {
           <ThemedText type="sectionTitle" style={styles.cardTitle}>
             Appearance
           </ThemedText>
-          <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
+          <ThemedText lightColor={palette.support} darkColor={palette.support}>
             {appearanceCopy()}
           </ThemedText>
           <View style={styles.chips}>
