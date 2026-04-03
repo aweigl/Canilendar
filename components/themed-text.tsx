@@ -1,12 +1,24 @@
-import { StyleSheet, Text, type TextProps } from 'react-native';
+import { type ComponentProps } from 'react';
+import { StyleSheet } from 'react-native';
+import { Text } from 'tamagui';
 
 import { Fonts } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-export type ThemedTextProps = TextProps & {
+export type ThemedTextProps = ComponentProps<typeof Text> & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'caption';
+  type?:
+    | 'default'
+    | 'title'
+    | 'display'
+    | 'defaultSemiBold'
+    | 'subtitle'
+    | 'sectionTitle'
+    | 'eyebrow'
+    | 'meta'
+    | 'link'
+    | 'caption';
 };
 
 export function ThemedText({
@@ -24,8 +36,12 @@ export function ThemedText({
         { color },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
+        type === 'display' ? styles.display : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
+        type === 'sectionTitle' ? styles.sectionTitle : undefined,
+        type === 'eyebrow' ? styles.eyebrow : undefined,
+        type === 'meta' ? styles.meta : undefined,
         type === 'link' ? styles.link : undefined,
         type === 'caption' ? styles.caption : undefined,
         style,
@@ -42,21 +58,43 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   defaultSemiBold: {
-    fontFamily: Fonts.sans,
+    fontFamily: Fonts.rounded,
     fontSize: 16,
     lineHeight: 24,
-    fontWeight: '600',
   },
   title: {
-    fontFamily: Fonts.rounded,
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 36,
+    fontFamily: Fonts.title,
+    fontSize: 34,
+    lineHeight: 38,
+    letterSpacing: -0.6,
+  },
+  display: {
+    fontFamily: Fonts.title,
+    fontSize: 40,
+    lineHeight: 44,
+    letterSpacing: -0.8,
   },
   subtitle: {
-    fontFamily: Fonts.rounded,
+    fontFamily: Fonts.title,
     fontSize: 20,
-    fontWeight: 'bold',
+    lineHeight: 24,
+  },
+  sectionTitle: {
+    fontFamily: Fonts.title,
+    fontSize: 22,
+    lineHeight: 26,
+  },
+  eyebrow: {
+    fontFamily: Fonts.rounded,
+    fontSize: 12,
+    lineHeight: 16,
+    letterSpacing: 1.1,
+    textTransform: 'uppercase',
+  },
+  meta: {
+    fontFamily: Fonts.sans,
+    fontSize: 13,
+    lineHeight: 18,
   },
   link: {
     fontFamily: Fonts.sans,

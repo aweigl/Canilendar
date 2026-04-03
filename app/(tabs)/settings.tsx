@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
-import { Alert, Linking, Platform, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { Alert, Linking, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LoadingView } from '@/components/loading-view';
@@ -8,11 +8,12 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppButton } from '@/components/ui/app-button';
 import { ChoiceChip } from '@/components/ui/choice-chip';
-import { Colors, Fonts } from '@/constants/theme';
+import { ToggleSwitch } from '@/components/ui/toggle-switch';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useCanilander } from '@/context/canilander-context';
 import { formatTimeInputValue, parseTimeValue } from '@/lib/date';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { REMINDER_OPTIONS } from '@/types/domain';
+import { REMINDER_OPTIONS, type AppearanceMode } from '@/types/domain';
 
 export default function SettingsScreen() {
   const colorScheme = useColorScheme() ?? 'light';
@@ -24,6 +25,7 @@ export default function SettingsScreen() {
     refreshNotificationPermission,
     settings,
     updateSettings,
+    updateAppearanceMode,
   } = useCanilander();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -60,12 +62,31 @@ export default function SettingsScreen() {
     return 'Canilander will ask when you save an appointment or tap enable.';
   }
 
+  function appearanceCopy() {
+    if (settings.appearanceMode === 'light') {
+      return 'Canilander always stays in light mode.';
+    }
+
+    if (settings.appearanceMode === 'dark') {
+      return 'Canilander always stays in dark mode.';
+    }
+
+    return 'Canilander follows your device appearance setting.';
+  }
+
+  const appearanceOptions: AppearanceMode[] = ['system', 'light', 'dark'];
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: palette.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <ThemedText style={styles.title}>Settings</ThemedText>
-          <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+          <ThemedText type="eyebrow" lightColor={palette.accent} darkColor={palette.accent}>
+            Planner preferences
+          </ThemedText>
+          <ThemedText type="title" style={styles.title}>
+            Settings
+          </ThemedText>
+          <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
             Adjust how Canilander reminds you about the day ahead.
           </ThemedText>
         </View>
@@ -74,12 +95,14 @@ export default function SettingsScreen() {
           style={[
             styles.card,
             {
-              backgroundColor: palette.card,
+              backgroundColor: palette.surface,
               borderColor: palette.border,
             },
           ]}>
-          <ThemedText style={styles.cardTitle}>Notifications</ThemedText>
-          <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+          <ThemedText type="sectionTitle" style={styles.cardTitle}>
+            Notifications
+          </ThemedText>
+          <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
             {permissionCopy()}
           </ThemedText>
           <View style={styles.actions}>
@@ -107,22 +130,22 @@ export default function SettingsScreen() {
           style={[
             styles.card,
             {
-              backgroundColor: palette.card,
+              backgroundColor: palette.surface,
               borderColor: palette.border,
             },
           ]}>
           <View style={styles.row}>
             <View style={styles.copy}>
-              <ThemedText style={styles.cardTitle}>Daily summary</ThemedText>
-              <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+              <ThemedText type="sectionTitle" style={styles.cardTitle}>
+                Daily summary
+              </ThemedText>
+              <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
                 One reminder every morning with the day&apos;s appointments.
               </ThemedText>
             </View>
-            <Switch
-              onValueChange={(value) => updateSettings({ dailySummaryEnabled: value })}
-              trackColor={{ false: palette.border, true: palette.accentSoft }}
-              thumbColor={settings.dailySummaryEnabled ? palette.accent : '#F9F4EE'}
-              value={settings.dailySummaryEnabled}
+            <ToggleSwitch
+              checked={settings.dailySummaryEnabled}
+              onCheckedChange={(value) => updateSettings({ dailySummaryEnabled: value })}
             />
           </View>
 
@@ -149,12 +172,40 @@ export default function SettingsScreen() {
           style={[
             styles.card,
             {
-              backgroundColor: palette.card,
+              backgroundColor: palette.surface,
               borderColor: palette.border,
             },
           ]}>
-          <ThemedText style={styles.cardTitle}>Default event reminder</ThemedText>
-          <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+          <ThemedText type="sectionTitle" style={styles.cardTitle}>
+            Appearance
+          </ThemedText>
+          <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
+            {appearanceCopy()}
+          </ThemedText>
+          <View style={styles.chips}>
+            {appearanceOptions.map((mode) => (
+              <ChoiceChip
+                key={mode}
+                label={mode === 'system' ? 'System' : mode === 'light' ? 'Light' : 'Dark'}
+                onPress={() => updateAppearanceMode(mode)}
+                selected={settings.appearanceMode === mode}
+              />
+            ))}
+          </View>
+        </ThemedView>
+
+        <ThemedView
+          style={[
+            styles.card,
+            {
+              backgroundColor: palette.surface,
+              borderColor: palette.border,
+            },
+          ]}>
+          <ThemedText type="sectionTitle" style={styles.cardTitle}>
+            Default event reminder
+          </ThemedText>
+          <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
             New appointments start with this reminder lead time. You can override it per appointment.
           </ThemedText>
           <View style={styles.chips}>
@@ -173,12 +224,14 @@ export default function SettingsScreen() {
           style={[
             styles.card,
             {
-              backgroundColor: palette.card,
+              backgroundColor: palette.surface,
               borderColor: palette.border,
             },
           ]}>
-          <ThemedText style={styles.cardTitle}>Storage</ThemedText>
-          <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+          <ThemedText type="sectionTitle" style={styles.cardTitle}>
+            Storage
+          </ThemedText>
+          <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
             Appointments, dogs, and reminder preferences are stored only on this device in v1.
           </ThemedText>
         </ThemedView>
@@ -192,33 +245,29 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    gap: 18,
+    gap: Spacing.md,
     padding: 20,
     paddingBottom: 140,
   },
   header: {
-    gap: 6,
+    gap: Spacing.xs,
   },
   title: {
-    fontFamily: Fonts.rounded,
     fontSize: 34,
-    fontWeight: '700',
   },
   card: {
-    borderRadius: 28,
-    borderWidth: 1,
-    gap: 14,
+    borderRadius: Radius.card,
+    borderWidth: 1.5,
+    gap: Spacing.sm,
     padding: 18,
   },
   cardTitle: {
-    fontFamily: Fonts.rounded,
     fontSize: 22,
-    fontWeight: '700',
   },
   row: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 14,
+    gap: Spacing.sm,
     justifyContent: 'space-between',
   },
   copy: {
@@ -226,19 +275,18 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   actions: {
-    gap: 10,
+    gap: Spacing.xs,
   },
   timePickerWrap: {
-    gap: 8,
+    gap: Spacing.xs,
   },
   inputLabel: {
-    fontFamily: Fonts.rounded,
     fontSize: 15,
     fontWeight: '700',
   },
   chips: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: Spacing.xs,
   },
 });

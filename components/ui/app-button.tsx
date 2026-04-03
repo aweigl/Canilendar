@@ -1,8 +1,10 @@
-import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, type ViewStyle } from 'react-native';
+import { Button } from 'tamagui';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
 
 type AppButtonProps = {
   label: string;
@@ -10,6 +12,7 @@ type AppButtonProps = {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   disabled?: boolean;
   style?: ViewStyle;
+  icon?: IconSymbolName;
 };
 
 export function AppButton({
@@ -18,6 +21,7 @@ export function AppButton({
   variant = 'primary',
   disabled = false,
   style,
+  icon,
 }: AppButtonProps) {
   const colorScheme = useColorScheme() ?? 'light';
   const palette = Colors[colorScheme];
@@ -25,70 +29,73 @@ export function AppButton({
   const variants = {
     primary: {
       backgroundColor: palette.accent,
+      backgroundPressed: palette.accentPressed,
       textColor: palette.onAccent,
       borderColor: palette.accent,
     },
     secondary: {
-      backgroundColor: palette.card,
+      backgroundColor: palette.surface,
+      backgroundPressed: palette.surfaceMuted,
       textColor: palette.text,
       borderColor: palette.border,
     },
     ghost: {
       backgroundColor: 'transparent',
+      backgroundPressed: palette.surfaceMuted,
       textColor: palette.text,
       borderColor: 'transparent',
     },
     danger: {
       backgroundColor: palette.danger,
-      textColor: '#FFF8F6',
+      backgroundPressed: palette.danger,
+      textColor: palette.onDanger,
       borderColor: palette.danger,
     },
   } as const;
 
   const currentVariant = variants[variant];
+  const iconColor = disabled ? palette.textSubtle : currentVariant.textColor;
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <Button
       disabled={disabled}
       onPress={onPress}
-      style={({ pressed }) => [
+      pressStyle={{
+        background: disabled ? palette.surfaceMuted : currentVariant.backgroundPressed,
+      }}
+      style={[
         styles.button,
         {
-          backgroundColor: currentVariant.backgroundColor,
+          backgroundColor: disabled ? palette.surfaceMuted : currentVariant.backgroundColor,
           borderColor: currentVariant.borderColor,
-          opacity: disabled ? 0.5 : pressed ? 0.88 : 1,
+          borderRadius: Radius.controlLarge,
+          borderWidth: 1,
+          opacity: disabled ? 0.6 : 1,
         },
         style,
       ]}>
-      <View style={styles.content}>
-        <ThemedText
-          lightColor={currentVariant.textColor}
-          darkColor={currentVariant.textColor}
-          style={styles.label}>
-          {label}
-        </ThemedText>
-      </View>
-    </Pressable>
+      {icon ? <IconSymbol name={icon} size={18} color={iconColor} style={styles.icon} /> : null}
+      <ThemedText
+        lightColor={iconColor}
+        darkColor={iconColor}
+        style={styles.label}>
+        {label}
+      </ThemedText>
+    </Button>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 18,
-    borderWidth: 1,
     minHeight: 52,
-    paddingHorizontal: 18,
-  },
-  content: {
-    alignItems: 'center',
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
   },
   label: {
     fontFamily: Fonts.rounded,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  icon: {
+    marginRight: 6,
   },
 });

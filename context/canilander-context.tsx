@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
+import { useColorScheme as useSystemColorScheme } from 'react-native';
 
 import {
   getMarkedDateKeys,
@@ -13,6 +14,7 @@ import {
 import { loadPersistedState, persistState } from '@/lib/storage';
 import {
   DEFAULT_SETTINGS,
+  type AppearanceMode,
   type Appointment,
   type AppointmentInput,
   type DogInput,
@@ -25,6 +27,7 @@ type CanilanderContextValue = {
   dogs: DogProfile[];
   appointments: Appointment[];
   settings: ReminderSettings;
+  resolvedColorScheme: 'light' | 'dark';
   isLoaded: boolean;
   notificationPermission: NotificationPermissionState;
   getDogById: (dogId: string) => DogProfile | undefined;
@@ -36,6 +39,7 @@ type CanilanderContextValue = {
   saveAppointment: (input: AppointmentInput) => Promise<Appointment>;
   deleteAppointment: (appointmentId: string) => void;
   updateSettings: (partial: Partial<ReminderSettings>) => void;
+  updateAppearanceMode: (mode: AppearanceMode) => void;
   refreshNotificationPermission: () => Promise<NotificationPermissionState>;
   requestNotificationPermission: () => Promise<NotificationPermissionState>;
 };
@@ -62,12 +66,20 @@ function buildDogRecord(input: DogInput, currentDog?: DogProfile): DogProfile {
 }
 
 export function CanilanderProvider({ children }: PropsWithChildren) {
+  const systemColorScheme = useSystemColorScheme();
   const [dogs, setDogs] = useState<DogProfile[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   const [notificationPermission, setNotificationPermission] =
     useState<NotificationPermissionState>('undetermined');
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const resolvedColorScheme: 'light' | 'dark' =
+    settings.appearanceMode === 'system'
+      ? systemColorScheme === 'dark'
+        ? 'dark'
+        : 'light'
+      : settings.appearanceMode;
 
   useEffect(() => {
     let isMounted = true;
@@ -250,6 +262,7 @@ export function CanilanderProvider({ children }: PropsWithChildren) {
         dogs,
         appointments,
         settings,
+        resolvedColorScheme,
         isLoaded,
         notificationPermission,
         getDogById,
@@ -261,6 +274,7 @@ export function CanilanderProvider({ children }: PropsWithChildren) {
         saveAppointment,
         deleteAppointment,
         updateSettings,
+        updateAppearanceMode: (mode) => updateSettings({ appearanceMode: mode }),
         refreshNotificationPermission: refreshPermission,
         requestNotificationPermission: requestPermission,
       }}>

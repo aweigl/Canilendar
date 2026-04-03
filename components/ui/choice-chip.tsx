@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Button } from 'tamagui';
 
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 type ChoiceChipProps = {
@@ -15,38 +16,36 @@ export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
   const palette = Colors[colorScheme];
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <Button
       onPress={onPress}
-      style={({ pressed }) => [
+      pressStyle={{ background: palette.surfaceMuted, opacity: 0.92 }}
+      style={[
         styles.chip,
         {
-          backgroundColor: selected ? palette.accent : palette.card,
+          backgroundColor: selected ? palette.accentMuted : palette.surface,
           borderColor: selected ? palette.accent : palette.border,
-          opacity: pressed ? 0.88 : 1,
+          borderRadius: Radius.pill,
+          borderWidth: 1.5,
         },
       ]}>
       <ThemedText
-        lightColor={selected ? palette.onAccent : palette.text}
-        darkColor={selected ? palette.onAccent : palette.text}
+        lightColor={selected ? palette.accent : palette.text}
+        darkColor={selected ? palette.accent : palette.text}
         style={styles.label}>
-        {label}
+        {selected ? `✓ ${label}` : label}
       </ThemedText>
-    </Pressable>
+    </Button>
   );
 }
 
 const styles = StyleSheet.create({
   chip: {
-    borderRadius: 999,
-    borderWidth: 1,
     minHeight: 40,
-    justifyContent: 'center',
-    paddingHorizontal: 14,
+    paddingHorizontal: Spacing.sm,
   },
   label: {
     fontFamily: Fonts.rounded,
     fontSize: 14,
-    fontWeight: '700',
+    lineHeight: 18,
   },
 });

@@ -1,21 +1,41 @@
 import { DarkTheme, DefaultTheme, ThemeProvider, type Theme } from '@react-navigation/native';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  useFonts,
+} from '@expo-google-fonts/inter';
+import { Manrope_700Bold } from '@expo-google-fonts/manrope';
+import * as SplashScreen from 'expo-splash-screen';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
+import { TamaguiProvider } from 'tamagui';
 
 import { CanilanderProvider } from '@/context/canilander-context';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { configureNotificationHandling } from '@/lib/notifications';
+import tamaguiConfig from '@/tamagui.config';
 
 export const unstable_settings = {
   anchor: '(tabs)',
 };
 
 configureNotificationHandling();
+void SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootNavigation() {
   const colorScheme = useColorScheme();
+  const [fontsLoaded, fontError] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Manrope_700Bold,
+  });
   const palette = Colors[colorScheme ?? 'light'];
   const navigationTheme: Theme = {
     ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme),
@@ -30,8 +50,18 @@ export default function RootLayout() {
     },
   };
 
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      void SplashScreen.hideAsync();
+    }
+  }, [fontError, fontsLoaded]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
+
   return (
-    <CanilanderProvider>
+    <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme ?? 'light'}>
       <ThemeProvider value={navigationTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -46,6 +76,14 @@ export default function RootLayout() {
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </ThemeProvider>
+    </TamaguiProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <CanilanderProvider>
+      <RootNavigation />
     </CanilanderProvider>
   );
 }

@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 import { describeRecurrence, describeReminder, formatTimeLabel } from '@/lib/date';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { AppointmentOccurrence } from '@/types/domain';
@@ -22,21 +22,35 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
         style={[
           styles.card,
           {
-            backgroundColor: palette.card,
+            backgroundColor: palette.surface,
             borderColor: palette.border,
           },
         ]}>
         <View style={styles.row}>
-          <View style={styles.timeBadge}>
-            <ThemedText style={styles.timeLabel}>{formatTimeLabel(occurrence.startAt)}</ThemedText>
+          <View
+            style={[
+              styles.timeBadge,
+              {
+                backgroundColor: palette.surfaceAccent,
+                borderColor: palette.borderStrong,
+              },
+            ]}>
+            <ThemedText lightColor={palette.text} darkColor={palette.text} style={styles.timeLabel}>
+              {formatTimeLabel(occurrence.startAt)}
+            </ThemedText>
+            <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} type="meta">
+              {occurrence.appointment.kind}
+            </ThemedText>
           </View>
           <View style={styles.content}>
-            <ThemedText style={styles.name}>{occurrence.dog.name}</ThemedText>
-            <ThemedText lightColor={palette.muted} darkColor={palette.muted} style={styles.meta}>
-              {occurrence.appointment.kind.toUpperCase()} - {occurrence.dog.address}
+            <ThemedText type="sectionTitle" style={styles.name}>
+              {occurrence.dog.name}
             </ThemedText>
-            <ThemedText lightColor={palette.muted} darkColor={palette.muted} style={styles.meta}>
-              {describeRecurrence(occurrence.appointment)} -{' '}
+            <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} style={styles.meta}>
+              {occurrence.dog.address}
+            </ThemedText>
+            <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} style={styles.meta}>
+              {describeRecurrence(occurrence.appointment)} ·{' '}
               {describeReminder(occurrence.appointment.reminderMinutesBefore)}
             </ThemedText>
           </View>
@@ -48,41 +62,40 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 24,
-    borderWidth: 1,
-    padding: 16,
+    borderRadius: Radius.card,
+    borderWidth: 1.5,
+    padding: Spacing.md,
   },
   row: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row',
-    gap: 14,
+    gap: Spacing.sm,
   },
   timeBadge: {
     alignItems: 'center',
-    backgroundColor: '#F6D28F',
-    borderRadius: 18,
+    borderRadius: Radius.controlLarge,
+    borderWidth: 1,
     justifyContent: 'center',
-    minHeight: 58,
-    minWidth: 74,
-    paddingHorizontal: 10,
+    minHeight: 72,
+    minWidth: 84,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
   },
   timeLabel: {
-    color: '#3F2D12',
     fontFamily: Fonts.rounded,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 17,
+    lineHeight: 22,
   },
   content: {
     flex: 1,
-    gap: 2,
+    gap: 4,
+    paddingTop: 2,
   },
   name: {
-    fontFamily: Fonts.rounded,
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 21,
   },
   meta: {
-    fontSize: 13,
+    fontSize: 14,
     lineHeight: 18,
   },
 });

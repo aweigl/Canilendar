@@ -1,4 +1,5 @@
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Spinner, YStack } from 'tamagui';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
@@ -9,12 +10,12 @@ export function LoadingView() {
   const palette = Colors[colorScheme];
 
   return (
-    <View style={[styles.container, { backgroundColor: palette.background }]}>
-      <ActivityIndicator color={palette.accent} size="large" />
+    <YStack style={[styles.container, { backgroundColor: palette.background }]}>
+      <Spinner color={palette.accent} size="large" />
       <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
         Loading your walks and reminders...
       </ThemedText>
-    </View>
+    </YStack>
   );
 }
 

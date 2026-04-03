@@ -1,7 +1,7 @@
 import { addMonths, subMonths } from 'date-fns';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 import {
   formatDayNumber,
   formatMonthLabel,
@@ -35,24 +35,32 @@ export function MonthCalendar({
   const weeks = getMonthGrid(visibleMonth);
 
   return (
-    <ThemedView style={[styles.container, { borderColor: palette.border, backgroundColor: palette.card }]}>
+    <ThemedView style={[styles.container, { borderColor: palette.border, backgroundColor: palette.surface }]}>
       <View style={styles.header}>
         <Pressable
           accessibilityRole="button"
           onPress={() => onChangeMonth(subMonths(visibleMonth, 1))}
           style={({ pressed }) => [
             styles.navButton,
-            { backgroundColor: pressed ? palette.accentSoft : palette.backgroundMuted },
+            {
+              backgroundColor: pressed ? palette.surfaceAccent : palette.surfaceMuted,
+              borderColor: pressed ? palette.borderStrong : palette.border,
+            },
           ]}>
           <ThemedText style={styles.navLabel}>{'<'}</ThemedText>
         </Pressable>
-        <ThemedText style={styles.monthLabel}>{formatMonthLabel(visibleMonth)}</ThemedText>
+        <ThemedText type="sectionTitle" style={styles.monthLabel}>
+          {formatMonthLabel(visibleMonth)}
+        </ThemedText>
         <Pressable
           accessibilityRole="button"
           onPress={() => onChangeMonth(addMonths(visibleMonth, 1))}
           style={({ pressed }) => [
             styles.navButton,
-            { backgroundColor: pressed ? palette.accentSoft : palette.backgroundMuted },
+            {
+              backgroundColor: pressed ? palette.surfaceAccent : palette.surfaceMuted,
+              borderColor: pressed ? palette.borderStrong : palette.border,
+            },
           ]}>
           <ThemedText style={styles.navLabel}>{'>'}</ThemedText>
         </Pressable>
@@ -61,7 +69,7 @@ export function MonthCalendar({
       <View style={styles.weekdayRow}>
         {WEEKDAY_LABELS.map((label) => (
           <View key={label} style={styles.weekdayCell}>
-            <ThemedText lightColor={palette.muted} darkColor={palette.muted} style={styles.weekdayLabel}>
+            <ThemedText lightColor={palette.textSubtle} darkColor={palette.textSubtle} style={styles.weekdayLabel}>
               {label}
             </ThemedText>
           </View>
@@ -83,11 +91,11 @@ export function MonthCalendar({
                 style={({ pressed }) => [
                   styles.dayCell,
                   isSelected && { backgroundColor: palette.accent },
-                  !isSelected && pressed && { backgroundColor: palette.backgroundMuted },
+                  !isSelected && pressed && { backgroundColor: palette.surfaceMuted },
                 ]}>
                 <ThemedText
-                  lightColor={isSelected ? palette.onAccent : isInCurrentMonth ? palette.text : palette.muted}
-                  darkColor={isSelected ? palette.onAccent : isInCurrentMonth ? palette.text : palette.muted}
+                  lightColor={isSelected ? palette.onAccent : isInCurrentMonth ? palette.text : palette.textSubtle}
+                  darkColor={isSelected ? palette.onAccent : isInCurrentMonth ? palette.text : palette.textSubtle}
                   style={styles.dayNumber}>
                   {formatDayNumber(date)}
                 </ThemedText>
@@ -111,10 +119,10 @@ export function MonthCalendar({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 28,
-    borderWidth: 1,
-    padding: 18,
-    gap: 12,
+    borderRadius: Radius.card,
+    borderWidth: 1.5,
+    padding: Spacing.md,
+    gap: Spacing.sm,
   },
   header: {
     alignItems: 'center',
@@ -123,20 +131,18 @@ const styles = StyleSheet.create({
   },
   navButton: {
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: Radius.control,
+    borderWidth: 1,
     height: 36,
     justifyContent: 'center',
     width: 36,
   },
   navLabel: {
     fontFamily: Fonts.rounded,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 18,
   },
   monthLabel: {
-    fontFamily: Fonts.rounded,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 21,
   },
   weekdayRow: {
     flexDirection: 'row',
@@ -155,7 +161,7 @@ const styles = StyleSheet.create({
   },
   dayCell: {
     alignItems: 'center',
-    borderRadius: 18,
+    borderRadius: Radius.control,
     flex: 1,
     gap: 4,
     paddingVertical: 10,
@@ -163,7 +169,6 @@ const styles = StyleSheet.create({
   dayNumber: {
     fontFamily: Fonts.rounded,
     fontSize: 16,
-    fontWeight: '700',
   },
   dot: {
     borderRadius: 99,

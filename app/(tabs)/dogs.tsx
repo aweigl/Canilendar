@@ -7,7 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { AppButton } from '@/components/ui/app-button';
 import { InputField } from '@/components/ui/input-field';
-import { Colors, Fonts } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useCanilander } from '@/context/canilander-context';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -117,8 +117,13 @@ export default function DogsScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={styles.headerCopy}>
-            <ThemedText style={styles.title}>Dogs</ThemedText>
-            <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+            <ThemedText type="eyebrow" lightColor={palette.accent} darkColor={palette.accent}>
+              Saved dog profiles
+            </ThemedText>
+            <ThemedText type="title" style={styles.title}>
+              Dogs
+            </ThemedText>
+            <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
               Keep client details reusable so appointments can be added in seconds.
             </ThemedText>
           </View>
@@ -126,6 +131,7 @@ export default function DogsScreen() {
             label={isEditing ? 'Cancel' : 'Add dog'}
             onPress={isEditing ? resetForm : beginCreateDog}
             variant={isEditing ? 'secondary' : 'primary'}
+            icon={isEditing ? 'square.and.pencil' : 'plus.circle.fill'}
           />
         </View>
 
@@ -134,11 +140,11 @@ export default function DogsScreen() {
             style={[
               styles.editor,
               {
-                backgroundColor: palette.card,
+                backgroundColor: palette.surface,
                 borderColor: palette.border,
               },
             ]}>
-            <ThemedText style={styles.editorTitle}>
+            <ThemedText type="sectionTitle" style={styles.editorTitle}>
               {editingDogId ? 'Edit dog profile' : 'Add a dog profile'}
             </ThemedText>
             <InputField
@@ -167,7 +173,11 @@ export default function DogsScreen() {
               placeholder="Gate code, feeding note, leash routine..."
               value={form.notes}
             />
-            <AppButton label={editingDogId ? 'Save changes' : 'Create dog'} onPress={handleSave} />
+            <AppButton
+              label={editingDogId ? 'Save changes' : 'Create dog'}
+              onPress={handleSave}
+              icon={editingDogId ? 'square.and.pencil' : 'plus.circle.fill'}
+            />
           </ThemedView>
         ) : null}
 
@@ -177,12 +187,14 @@ export default function DogsScreen() {
               style={[
                 styles.emptyState,
                 {
-                  backgroundColor: palette.card,
+                  backgroundColor: palette.surface,
                   borderColor: palette.border,
                 },
               ]}>
-              <ThemedText style={styles.emptyTitle}>No dogs saved yet</ThemedText>
-              <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+              <ThemedText type="sectionTitle" style={styles.emptyTitle}>
+                No dogs saved yet
+              </ThemedText>
+              <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
                 Add your first dog so future appointments can be scheduled from a saved profile.
               </ThemedText>
             </ThemedView>
@@ -191,41 +203,56 @@ export default function DogsScreen() {
               const appointmentCount = appointments.filter((appointment) => appointment.dogId === dog.id).length;
 
               return (
-                <ThemedView
+                <View
                   key={dog.id}
                   style={[
                     styles.card,
                     {
-                      backgroundColor: palette.card,
-                      borderColor: palette.border,
+                      backgroundColor: palette.surface,
+                      borderColor: palette.accent,
+                      shadowColor: palette.shadow,
                     },
                   ]}>
                   <View style={styles.cardHeader}>
                     <View style={styles.cardCopy}>
-                      <ThemedText style={styles.cardTitle}>{dog.name}</ThemedText>
-                      <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+                      <ThemedText type="sectionTitle" style={styles.cardTitle}>
+                        {dog.name}
+                      </ThemedText>
+                      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
                         {dog.address}
                       </ThemedText>
-                      <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+                      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
                         {dog.ownerPhone}
                       </ThemedText>
                     </View>
-                    <ThemedView style={[styles.countPill, { backgroundColor: palette.backgroundMuted }]}>
+                    <View
+                      style={[
+                        styles.countPill,
+                        {
+                          backgroundColor: palette.surfaceMuted,
+                          borderColor: palette.border,
+                        },
+                      ]}>
                       <ThemedText style={styles.countText}>{appointmentCount} upcoming templates</ThemedText>
-                    </ThemedView>
+                    </View>
                   </View>
 
                   {dog.notes ? (
-                    <ThemedText lightColor={palette.muted} darkColor={palette.muted}>
+                    <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
                       {dog.notes}
                     </ThemedText>
                   ) : null}
 
                   <View style={styles.actions}>
-                    <AppButton label="Edit" onPress={() => beginEditDog(dog.id)} variant="secondary" />
-                    <AppButton label="Delete" onPress={() => handleDelete(dog.id)} variant="ghost" />
+                    <AppButton
+                      label="Edit"
+                      onPress={() => beginEditDog(dog.id)}
+                      variant="secondary"
+                      icon="square.and.pencil"
+                    />
+                    <AppButton label="Delete" onPress={() => handleDelete(dog.id)} variant="ghost" icon="trash.fill" />
                   </View>
-                </ThemedView>
+                </View>
               );
             })
           )}
@@ -240,76 +267,77 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    gap: 18,
+    gap: Spacing.md,
     padding: 20,
     paddingBottom: 140,
   },
   header: {
-    gap: 16,
+    gap: Spacing.md,
   },
   headerCopy: {
-    gap: 6,
+    gap: Spacing.xs,
   },
   title: {
-    fontFamily: Fonts.rounded,
     fontSize: 34,
-    fontWeight: '700',
   },
   editor: {
-    borderRadius: 28,
-    borderWidth: 1,
-    gap: 14,
+    borderRadius: Radius.card,
+    borderWidth: 1.5,
+    gap: Spacing.sm,
     padding: 18,
   },
   editorTitle: {
-    fontFamily: Fonts.rounded,
     fontSize: 22,
-    fontWeight: '700',
   },
   list: {
-    gap: 14,
+    gap: Spacing.sm,
   },
   emptyState: {
-    borderRadius: 28,
-    borderWidth: 1,
-    gap: 10,
+    borderRadius: Radius.card,
+    borderWidth: 1.5,
+    gap: Spacing.xs,
     padding: 20,
   },
   emptyTitle: {
-    fontFamily: Fonts.rounded,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 22,
   },
   card: {
-    borderRadius: 28,
-    borderWidth: 1,
-    gap: 14,
+    borderRadius: Radius.card,
+    borderWidth: 2.5,
+    gap: Spacing.sm,
     padding: 18,
+    marginBottom: 2,
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 2,
   },
   cardHeader: {
-    gap: 10,
+    gap: Spacing.xs,
   },
   cardCopy: {
     gap: 4,
   },
   cardTitle: {
-    fontFamily: Fonts.rounded,
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 28,
+    lineHeight: 32,
   },
   countPill: {
     alignSelf: 'flex-start',
-    borderRadius: 999,
+    borderRadius: Radius.pill,
+    borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
   countText: {
-    fontFamily: Fonts.rounded,
     fontSize: 13,
     fontWeight: '700',
   },
   actions: {
     flexDirection: 'row',
-    gap: 10,
+    gap: Spacing.xs,
   },
 });
