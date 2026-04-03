@@ -7,8 +7,9 @@ import {
   useFonts,
 } from '@expo-google-fonts/inter';
 import { Manrope_700Bold } from '@expo-google-fonts/manrope';
+import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
@@ -55,6 +56,30 @@ function RootNavigation() {
       void SplashScreen.hideAsync();
     }
   }, [fontError, fontsLoaded]);
+
+  useEffect(() => {
+    function redirectFromNotification(notification: Notifications.Notification) {
+      const url = notification.request.content.data?.url;
+
+      if (typeof url === 'string' && url.length > 0) {
+        router.push(url as never);
+      }
+    }
+
+    const lastResponse = Notifications.getLastNotificationResponse();
+    if (lastResponse?.notification) {
+      redirectFromNotification(lastResponse.notification);
+      void Notifications.clearLastNotificationResponseAsync();
+    }
+
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      redirectFromNotification(response.notification);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   if (!fontsLoaded && !fontError) {
     return null;

@@ -48,7 +48,7 @@ export function AgendaDogCard({ occurrence, onPress }: AgendaDogCardProps) {
           {occurrence.dog.address}
         </ThemedText>
         <ThemedText lightColor={palette.support} darkColor={palette.support} type="meta">
-          {occurrence.appointment.kind} · {describeRecurrence(occurrence.appointment)}
+          {describeRecurrence(occurrence.appointment)}
         </ThemedText>
       </ThemedView>
     </Pressable>

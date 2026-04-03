@@ -1,5 +1,3 @@
-export type ServiceKind = "walk" | "pickup" | "vet" | "grooming" | "other";
-
 export type NotificationPermissionState = "granted" | "denied" | "undetermined";
 export type AppearanceMode = "system" | "light" | "dark";
 
@@ -24,7 +22,6 @@ export type Appointment = {
   dogId: string;
   startAt: string;
   endAt?: string | null;
-  kind: ServiceKind;
   notes?: string;
   metadata?: string;
   isRecurring: boolean;
@@ -70,7 +67,6 @@ export type AppointmentInput = {
   dog: DogInput;
   startAt: string;
   endAt?: string | null;
-  kind: ServiceKind;
   notes?: string;
   metadata?: string;
   isRecurring: boolean;

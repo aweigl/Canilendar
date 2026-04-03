@@ -209,7 +209,6 @@ export function CanilanderProvider({ children }: PropsWithChildren) {
       dogId: savedDog.id,
       startAt: input.startAt,
       endAt: input.endAt ?? null,
-      kind: input.kind,
       notes: normalizeText(input.notes ?? ''),
       metadata: normalizeText(input.metadata ?? ''),
       isRecurring: input.isRecurring,

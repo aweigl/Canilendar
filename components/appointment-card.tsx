@@ -38,9 +38,6 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
             <ThemedText lightColor={palette.onSupport} darkColor={palette.onSupport} style={styles.timeLabel}>
               {formatTimeLabel(occurrence.startAt)}
             </ThemedText>
-            <ThemedText lightColor={palette.support} darkColor={palette.support} type="meta">
-              {occurrence.appointment.kind}
-            </ThemedText>
           </View>
           <View style={styles.content}>
             <ThemedText type="sectionTitle" style={styles.name}>

@@ -3,15 +3,42 @@ import * as Notifications from 'expo-notifications';
 
 import {
   buildDailySummaryBody,
+  describeReminder,
   formatLongDate,
   formatTimeLabel,
   getNextNotificationTime,
   getUpcomingOccurrences,
 } from '@/lib/date';
-import type { NotificationPermissionState, PersistedAppState } from '@/types/domain';
+import type { AppointmentOccurrence, NotificationPermissionState, PersistedAppState } from '@/types/domain';
 
 const NOTIFICATION_WINDOW_DAYS = 14;
 const MAX_APPOINTMENT_NOTIFICATIONS = 50;
+const APPOINTMENT_CATEGORY_ID = 'appointmentReminder';
+const DAILY_SUMMARY_CATEGORY_ID = 'dailySummary';
+export const OPEN_APPOINTMENT_ACTION_ID = 'openAppointment';
+export const OPEN_AGENDA_ACTION_ID = 'openAgenda';
+
+function buildAppointmentSubtitle(occurrence: AppointmentOccurrence) {
+  return `Appointment at ${formatTimeLabel(occurrence.startAt)}`;
+}
+
+function buildAppointmentBody(occurrence: AppointmentOccurrence) {
+  const detailParts = [
+    occurrence.dog.address,
+    `Reminder ${describeReminder(occurrence.appointment.reminderMinutesBefore)}`,
+  ];
+
+  if (occurrence.dog.notes) {
+    detailParts.push(occurrence.dog.notes);
+  }
+
+  return detailParts.join(' • ');
+}
+
+function buildSummarySubtitle(targetDate: Date, occurrenceCount: number) {
+  const appointmentLabel = occurrenceCount === 1 ? 'appointment' : 'appointments';
+  return `${formatLongDate(targetDate)} • ${occurrenceCount} ${appointmentLabel}`;
+}
 
 export function configureNotificationHandling() {
   Notifications.setNotificationHandler({
@@ -22,6 +49,32 @@ export function configureNotificationHandling() {
       shouldSetBadge: false,
     }),
   });
+
+  if (Platform.OS === 'ios') {
+    void registerNotificationCategories();
+  }
+}
+
+async function registerNotificationCategories() {
+  await Notifications.setNotificationCategoryAsync(APPOINTMENT_CATEGORY_ID, [
+    {
+      buttonTitle: 'Open appointment',
+      identifier: OPEN_APPOINTMENT_ACTION_ID,
+      options: {
+        opensAppToForeground: true,
+      },
+    },
+  ]);
+
+  await Notifications.setNotificationCategoryAsync(DAILY_SUMMARY_CATEGORY_ID, [
+    {
+      buttonTitle: 'Open agenda',
+      identifier: OPEN_AGENDA_ACTION_ID,
+      options: {
+        opensAppToForeground: true,
+      },
+    },
+  ]);
 }
 
 export async function getNotificationPermissionState(): Promise<NotificationPermissionState> {
@@ -89,14 +142,18 @@ export async function syncScheduledNotifications(state: PersistedAppState) {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: `${occurrence.dog.name} at ${formatTimeLabel(occurrence.startAt)}`,
-        body: `${occurrence.appointment.kind.toUpperCase()} reminder - ${occurrence.dog.address}`,
+        title: occurrence.dog.name,
+        subtitle: buildAppointmentSubtitle(occurrence),
+        body: buildAppointmentBody(occurrence),
         sound: 'default',
+        categoryIdentifier: Platform.OS === 'ios' ? APPOINTMENT_CATEGORY_ID : undefined,
         data: {
           type: 'appointment',
           appointmentId: occurrence.appointment.id,
           occurrenceDate: occurrence.occurrenceDate,
+          url: `/appointment?appointmentId=${occurrence.appointment.id}`,
         },
+        ...(Platform.OS === 'ios' ? { interruptionLevel: 'active' as const } : null),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,
@@ -120,13 +177,17 @@ export async function syncScheduledNotifications(state: PersistedAppState) {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: `Today in Canilander - ${formatLongDate(targetDate)}`,
+        title: 'Today in Canilander',
+        subtitle: buildSummarySubtitle(targetDate, occurrences.length),
         body: buildDailySummaryBody(occurrences),
         sound: 'default',
+        categoryIdentifier: Platform.OS === 'ios' ? DAILY_SUMMARY_CATEGORY_ID : undefined,
         data: {
           type: 'daily-summary',
           date: targetDate.toISOString(),
+          url: '/',
         },
+        ...(Platform.OS === 'ios' ? { interruptionLevel: 'active' as const } : null),
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,

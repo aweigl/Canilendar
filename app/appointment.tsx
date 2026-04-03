@@ -27,7 +27,6 @@ import { combineDateAndTimeParts, formatTimeInputValue } from "@/lib/date";
 import {
   REMINDER_OPTIONS,
   WEEKDAY_OPTIONS,
-  type ServiceKind,
 } from "@/types/domain";
 
 const EMPTY_DOG_FORM = {
@@ -82,7 +81,6 @@ export default function AppointmentScreen() {
   });
   const [appointmentDate, setAppointmentDate] = useState(initialStartAt);
   const [appointmentTime, setAppointmentTime] = useState(initialStartAt);
-  const [kind, setKind] = useState<ServiceKind>(appointment?.kind ?? "walk");
   const [notes, setNotes] = useState(appointment?.notes ?? "");
   const [isRecurring, setIsRecurring] = useState(
     appointment?.isRecurring ?? false,
@@ -112,7 +110,6 @@ export default function AppointmentScreen() {
       });
       setAppointmentDate(startAt);
       setAppointmentTime(startAt);
-      setKind(appointment.kind);
       setNotes(appointment.notes ?? "");
       setIsRecurring(appointment.isRecurring);
       setRecurrenceWeekdays(
@@ -228,7 +225,6 @@ export default function AppointmentScreen() {
         notes: dogForm.notes,
       },
       startAt: combinedStartAt.toISOString(),
-      kind,
       notes,
       isRecurring,
       recurrenceWeekdays,
