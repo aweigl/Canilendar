@@ -18,15 +18,20 @@ export function ToggleSwitch({ checked, onCheckedChange }: ToggleSwitchProps) {
       onCheckedChange={onCheckedChange}
       unstyled
       style={{
-        backgroundColor: checked ? palette.accentSoft : palette.border,
+        alignItems: "center",
+        backgroundColor: checked ? palette.accentMuted : palette.surfaceMuted,
         borderColor: checked ? palette.accent : palette.border,
+        borderRadius: 999,
+        borderWidth: 1,
         justifyContent: "center",
+        paddingHorizontal: 3,
         width: 56,
       }}
     >
       <Switch.Thumb
         style={{
           backgroundColor: checked ? palette.accent : palette.surface,
+          borderRadius: 999,
         }}
       />
     </Switch>

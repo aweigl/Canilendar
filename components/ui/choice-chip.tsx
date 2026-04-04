@@ -18,22 +18,25 @@ export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
   return (
     <Button
       onPress={onPress}
-      pressStyle={{ background: palette.surfaceMuted, opacity: 0.92 }}
+      pressStyle={{
+        background: selected ? palette.accent : palette.surfaceAccent,
+        opacity: 0.92,
+      }}
       unstyled
       style={[
         styles.chip,
         {
-          backgroundColor: selected ? palette.accentMuted : palette.surface,
+          backgroundColor: selected ? palette.accentMuted : palette.surfaceRaised,
           borderColor: selected ? palette.accent : palette.border,
           borderRadius: Radius.pill,
-          borderWidth: 1.5,
+          borderWidth: 1,
         },
       ]}>
       <ThemedText
-        lightColor={selected ? palette.accent : palette.text}
-        darkColor={selected ? palette.accent : palette.text}
+        lightColor={selected ? palette.accentPressed : palette.text}
+        darkColor={selected ? palette.onAccent : palette.text}
         style={styles.label}>
-        {selected ? `✓ ${label}` : label}
+        {label}
       </ThemedText>
     </Button>
   );
@@ -43,8 +46,8 @@ const styles = StyleSheet.create({
   chip: {
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: Spacing.md,
+    minHeight: 46,
+    paddingHorizontal: 18,
   },
   label: {
     fontFamily: Fonts.rounded,

@@ -23,7 +23,7 @@ export function AgendaDogCard({ occurrence, onPress }: AgendaDogCardProps) {
           styles.card,
           {
             backgroundColor: palette.surface,
-            borderColor: palette.support,
+            borderColor: palette.border,
           },
         ]}>
         <View style={styles.header}>
@@ -34,11 +34,11 @@ export function AgendaDogCard({ occurrence, onPress }: AgendaDogCardProps) {
             style={[
               styles.timePill,
               {
-                backgroundColor: palette.supportSoft,
-                borderColor: palette.support,
+                backgroundColor: palette.accentMuted,
+                borderColor: palette.accent,
               },
             ]}>
-            <ThemedText lightColor={palette.onSupport} darkColor={palette.onSupport} type="meta">
+            <ThemedText lightColor={palette.accentPressed} darkColor={palette.onAccent} type="meta">
               {describePickupTime(occurrence.appointment, occurrence.startAt)}
             </ThemedText>
           </View>
@@ -47,7 +47,7 @@ export function AgendaDogCard({ occurrence, onPress }: AgendaDogCardProps) {
         <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
           {occurrence.dog.address}
         </ThemedText>
-        <ThemedText lightColor={palette.support} darkColor={palette.support} type="meta">
+        <ThemedText lightColor={palette.textSubtle} darkColor={palette.textSubtle} type="meta">
           {describeRecurrence(occurrence.appointment)}
         </ThemedText>
       </ThemedView>
@@ -58,13 +58,14 @@ export function AgendaDogCard({ occurrence, onPress }: AgendaDogCardProps) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: 6,
-    padding: Spacing.sm,
+    borderWidth: 1,
+    gap: Spacing.sm,
+    padding: 18,
   },
   header: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexDirection: 'row',
+    gap: Spacing.sm,
     justifyContent: 'space-between',
   },
   name: {
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
   timePill: {
     borderRadius: Radius.pill,
     borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
   },
 });

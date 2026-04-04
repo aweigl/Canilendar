@@ -26,15 +26,14 @@ type WeekTableProps = {
 };
 
 const MAX_VISIBLE_ROWS = 3;
-
 const DAY_ACCENTS = [
-  '#B14FD0',
-  '#26A67B',
-  '#D8902E',
-  '#4A93E7',
-  '#DA6A59',
-  '#8C70E5',
-  '#4C9FC2',
+  { strong: '#B86A46', soft: '#F0D7C8' },
+  { strong: '#9A7A28', soft: '#ECDDAD' },
+  { strong: '#5B7C62', soft: '#D9E6DB' },
+  { strong: '#347E72', soft: '#D1E8E3' },
+  { strong: '#5E7FB1', soft: '#D7E1F0' },
+  { strong: '#8B6BA7', soft: '#E1D6EA' },
+  { strong: '#B35F6D', soft: '#F0D4DA' },
 ] as const;
 
 function chunkOccurrences(occurrences: AppointmentOccurrence[]) {
@@ -63,7 +62,7 @@ export function WeekTable({
     <ThemedView
       style={[
         styles.container,
-        { backgroundColor: palette.surface, borderColor: palette.border },
+        { backgroundColor: palette.surfaceRaised, borderColor: palette.border },
       ]}
     >
       <View style={styles.header}>
@@ -73,7 +72,7 @@ export function WeekTable({
           style={({ pressed }) => [
             styles.navButton,
             {
-              backgroundColor: pressed ? palette.surfaceAccent : palette.surfaceMuted,
+              backgroundColor: pressed ? palette.surfaceAccent : palette.surface,
               borderColor: pressed ? palette.borderStrong : palette.border,
             },
           ]}
@@ -100,7 +99,7 @@ export function WeekTable({
           style={({ pressed }) => [
             styles.navButton,
             {
-              backgroundColor: pressed ? palette.surfaceAccent : palette.surfaceMuted,
+              backgroundColor: pressed ? palette.surfaceAccent : palette.surface,
               borderColor: pressed ? palette.borderStrong : palette.border,
             },
           ]}
@@ -116,7 +115,7 @@ export function WeekTable({
           const rows = chunkOccurrences(occurrences);
           const visibleRows = rows.slice(0, MAX_VISIBLE_ROWS);
           const hiddenCount = Math.max(occurrences.length - visibleRows.length * 2, 0);
-          const accentColor = DAY_ACCENTS[index];
+          const accent = DAY_ACCENTS[index];
 
           return (
             <Pressable
@@ -126,8 +125,9 @@ export function WeekTable({
               style={({ pressed }) => [
                 styles.dayCard,
                 {
-                  backgroundColor: palette.background,
-                  borderColor: isSelected ? accentColor : palette.border,
+                  backgroundColor: isSelected ? palette.surface : palette.surfaceRaised,
+                  borderColor: isSelected ? accent.strong : palette.border,
+                  borderWidth: isSelected ? 1.5 : 1,
                 },
                 pressed && !isSelected && { backgroundColor: palette.surfaceAccent },
               ]}
@@ -137,12 +137,15 @@ export function WeekTable({
                   <View
                     style={[
                       styles.dayBadge,
-                      { backgroundColor: isSelected ? accentColor : palette.surfaceMuted },
+                      {
+                        backgroundColor: isSelected ? accent.strong : accent.soft,
+                        borderColor: isSelected ? accent.strong : accent.soft,
+                      },
                     ]}
                   >
                     <ThemedText
-                      lightColor={isSelected ? palette.onAccent : accentColor}
-                      darkColor={isSelected ? palette.onAccent : accentColor}
+                      lightColor={isSelected ? palette.onAccent : accent.strong}
+                      darkColor={isSelected ? palette.onAccent : accent.strong}
                       style={styles.dayBadgeText}
                     >
                       {getWeekdayShortLabel(date.getDay())}
@@ -259,14 +262,14 @@ export function WeekTable({
 const styles = StyleSheet.create({
   container: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: Spacing.sm,
-    padding: Spacing.sm,
+    borderWidth: 1,
+    gap: Spacing.md,
+    padding: 18,
   },
   header: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   headerCopy: {
     alignItems: 'center',
@@ -293,14 +296,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   days: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   dayCard: {
     borderRadius: 24,
-    borderWidth: 1.5,
-    gap: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    borderWidth: 1,
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
   },
   dayHeader: {
     alignItems: 'center',
@@ -314,6 +317,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   dayBadge: {
+    borderWidth: 1,
     borderRadius: Radius.pill,
     minWidth: 44,
     paddingHorizontal: 10,
@@ -344,10 +348,10 @@ const styles = StyleSheet.create({
   },
   tableCell: {
     flex: 1,
-    minHeight: 38,
+    minHeight: 42,
     justifyContent: 'center',
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   cellContent: {
     gap: 1,
@@ -364,9 +368,9 @@ const styles = StyleSheet.create({
   emptyRow: {
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 38,
+    minHeight: 42,
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 8,
   },
   emptyLabel: {
     fontSize: 12,

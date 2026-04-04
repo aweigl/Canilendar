@@ -6,71 +6,75 @@ const interSemiBold = 'Inter_600SemiBold';
 const interBold = 'Inter_700Bold';
 const manropeBold = 'Manrope_700Bold';
 
-const lightAccent = '#8A5215';
-const darkAccent = '#B97B3A';
-const success = '#5A9422';
-const info = '#2B9A84';
-const danger = '#C96030';
-const support = '#4E7A58';
+const lightAccent = '#8F6437';
+const darkAccent = '#C89259';
+const success = '#668D3A';
+const info = '#347E72';
+const danger = '#B86A46';
+const support = '#5B7C62';
 
 const lightPalette = {
   text: '#291608',
   textMuted: '#6B4422',
   textSubtle: '#8D6B4D',
-  background: '#FBF3E8',
-  surface: '#F2DFC0',
-  surfaceMuted: '#E7CFAC',
-  surfaceAccent: '#F8E8D0',
-  border: '#D1B48A',
-  borderStrong: '#B9874D',
+  background: '#F8F1E6',
+  surface: '#F4E6D2',
+  surfaceRaised: '#FBF4EA',
+  surfaceMuted: '#E8D7BE',
+  surfaceAccent: '#F0E0CD',
+  border: '#D8C0A2',
+  borderStrong: '#C39A6E',
   accent: lightAccent,
-  accentMuted: '#DFC09E',
-  accentPressed: '#6E3F0D',
-  onAccent: '#FFF7EF',
+  accentMuted: '#E6D0B3',
+  accentSoft: '#F2E6D7',
+  accentPressed: '#7A542E',
+  onAccent: '#FFF8F1',
   success,
-  successSoft: '#EEF6E8',
+  successSoft: '#EEF3E8',
   onSuccess: '#23420D',
   danger,
-  dangerSoft: '#FBF0EA',
-  onDanger: '#5A250F',
+  dangerSoft: '#F8ECE6',
+  onDanger: '#64311D',
   info,
-  infoSoft: '#E8F4F2',
+  infoSoft: '#E7F1EF',
   onInfo: '#123F38',
   support,
-  supportSoft: '#EFF4F0',
+  supportSoft: '#EDF2ED',
   onSupport: '#1F3A26',
   icon: '#6B4422',
-  shadow: 'rgba(54, 27, 2, 0.16)',
+  shadow: 'rgba(54, 27, 2, 0.1)',
 };
 
 const darkPalette = {
   text: '#F7EBDD',
   textMuted: '#D7B99A',
   textSubtle: '#A98969',
-  background: '#1D130B',
-  surface: '#2A1C11',
-  surfaceMuted: '#382618',
-  surfaceAccent: '#49311E',
-  border: '#6B4A2B',
-  borderStrong: '#8A5215',
+  background: '#1C130D',
+  surface: '#2A1E14',
+  surfaceRaised: '#332419',
+  surfaceMuted: '#3A281B',
+  surfaceAccent: '#46301F',
+  border: '#6F543A',
+  borderStrong: '#98704A',
   accent: darkAccent,
-  accentMuted: '#5A3A1C',
-  accentPressed: '#D69A5C',
+  accentMuted: '#5E4226',
+  accentSoft: '#493421',
+  accentPressed: '#DEAB73',
   onAccent: '#201206',
   success: '#7BB83F',
-  successSoft: '#223718',
+  successSoft: '#283921',
   onSuccess: '#EAF6DD',
   danger: '#E0865D',
-  dangerSoft: '#462519',
+  dangerSoft: '#48291E',
   onDanger: '#FFF0E8',
   info: '#57C6B5',
-  infoSoft: '#183837',
+  infoSoft: '#1C3937',
   onInfo: '#E7FBF7',
   support: '#7AA286',
-  supportSoft: '#203227',
+  supportSoft: '#24362A',
   onSupport: '#E8F4EC',
   icon: '#D7B99A',
-  shadow: 'rgba(0, 0, 0, 0.28)',
+  shadow: 'rgba(0, 0, 0, 0.2)',
 };
 
 export const Colors = {
@@ -79,7 +83,7 @@ export const Colors = {
     backgroundMuted: lightPalette.surfaceMuted,
     card: lightPalette.surface,
     tint: lightPalette.accent,
-    accentSoft: lightPalette.accentMuted,
+    accentSoft: lightPalette.accentSoft,
     muted: lightPalette.textMuted,
     tabIconDefault: lightPalette.textSubtle,
     tabIconSelected: lightPalette.accent,
@@ -89,7 +93,7 @@ export const Colors = {
     backgroundMuted: darkPalette.surfaceMuted,
     card: darkPalette.surface,
     tint: darkPalette.accent,
-    accentSoft: darkPalette.accentMuted,
+    accentSoft: darkPalette.accentSoft,
     muted: darkPalette.textMuted,
     tabIconDefault: darkPalette.textSubtle,
     tabIconSelected: darkPalette.accent,
@@ -138,6 +142,7 @@ export const Spacing = {
   md: 16,
   lg: 24,
   xl: 32,
+  xxl: 40,
 } as const;
 
 export const Radius = {

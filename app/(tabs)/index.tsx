@@ -9,7 +9,7 @@ import { LoadingView } from "@/components/loading-view";
 import { MonthCalendar } from "@/components/month-calendar";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { AppButton } from "@/components/ui/app-button";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { WeekTable } from "@/components/week-table";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
@@ -21,11 +21,8 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const today = new Date();
-  const {
-    getMarkedDatesForMonth,
-    getOccurrencesForDate,
-    isLoaded,
-  } = useCanilendar();
+  const { getMarkedDatesForMonth, getOccurrencesForDate, isLoaded } =
+    useCanilendar();
   const [selectedDate, setSelectedDate] = useState(today);
   const [visibleMonth, setVisibleMonth] = useState(today);
   const [visibleWeekStart, setVisibleWeekStart] = useState(today);
@@ -124,15 +121,16 @@ export default function HomeScreen() {
                     styles.viewToggleButton,
                     {
                       backgroundColor: isActive
-                        ? palette.accent
+                        ? palette.accentMuted
                         : pressed
-                          ? palette.surfaceMuted
+                          ? palette.surfaceAccent
                           : "transparent",
+                      borderColor: isActive ? palette.accent : "transparent",
                     },
                   ]}
                 >
                   <ThemedText
-                    lightColor={isActive ? palette.onAccent : palette.text}
+                    lightColor={isActive ? palette.accentPressed : palette.text}
                     darkColor={isActive ? palette.onAccent : palette.text}
                     type="defaultSemiBold"
                     style={styles.viewToggleLabel}
@@ -174,22 +172,6 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.screenSection}>
-          <View style={{ width: "100%" }}>
-            <AppButton
-              icon="plus.circle.fill"
-              label={t("home.newAppointment")}
-              onPress={() =>
-                router.push({
-                  pathname: "/appointment",
-                  params: { date: selectedDate.toISOString() },
-                } as never)
-              }
-              style={styles.heroButton}
-            />
-          </View>
-        </View>
-
-        <View style={styles.screenSection}>
           <View style={styles.sectionHeader}>
             <View>
               <ThemedText type="sectionTitle" style={styles.sectionTitle}>
@@ -204,44 +186,79 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <View style={styles.list}>
-            {occurrences.length === 0 ? (
-              <ThemedView
-                style={[
-                  styles.emptyState,
-                  {
-                    backgroundColor: palette.surface,
-                    borderColor: palette.border,
-                  },
-                ]}
-              >
-                <ThemedText type="sectionTitle" style={styles.emptyTitle}>
-                  {t("home.emptyTitle")}
-                </ThemedText>
-                <ThemedText
-                  lightColor={palette.textMuted}
-                  darkColor={palette.textMuted}
+          <ThemedView
+            style={[
+              styles.sectionCard,
+              {
+                backgroundColor: palette.surfaceRaised,
+                borderColor: palette.border,
+              },
+            ]}>
+            <View style={styles.list}>
+              {occurrences.length === 0 ? (
+                <ThemedView
+                  style={[
+                    styles.emptyState,
+                    {
+                      backgroundColor: palette.surface,
+                      borderColor: palette.border,
+                    },
+                  ]}
                 >
-                  {t("home.emptyDescription")}
-                </ThemedText>
-              </ThemedView>
-            ) : (
-              occurrences.map((occurrence) => (
-                <AgendaDogCard
-                  key={occurrence.occurrenceId}
-                  occurrence={occurrence}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/appointment",
-                      params: { appointmentId: occurrence.appointment.id },
-                    } as never)
-                  }
-                />
-              ))
-            )}
-          </View>
+                  <ThemedText type="sectionTitle" style={styles.emptyTitle}>
+                    {t("home.emptyTitle")}
+                  </ThemedText>
+                  <ThemedText
+                    lightColor={palette.textMuted}
+                    darkColor={palette.textMuted}
+                  >
+                    {t("home.emptyDescription")}
+                  </ThemedText>
+                </ThemedView>
+              ) : (
+                occurrences.map((occurrence) => (
+                  <AgendaDogCard
+                    key={occurrence.occurrenceId}
+                    occurrence={occurrence}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/appointment",
+                        params: { appointmentId: occurrence.appointment.id },
+                      } as never)
+                    }
+                  />
+                ))
+              )}
+            </View>
+          </ThemedView>
         </View>
       </ScrollView>
+
+      <Pressable
+        accessibilityLabel={t("home.newAppointment")}
+        accessibilityRole="button"
+        onPress={() =>
+          router.push({
+            pathname: "/appointment",
+            params: { date: selectedDate.toISOString() },
+          } as never)
+        }
+        style={({ pressed }) => [
+          styles.fab,
+          {
+            backgroundColor: pressed ? palette.accentPressed : palette.accent,
+            borderColor: palette.accentPressed,
+            shadowColor: palette.shadow,
+            transform: [{ scale: pressed ? 0.96 : 1 }],
+          },
+        ]}
+      >
+        <IconSymbol
+          name="calendar.badge.plus"
+          size={24}
+          color={palette.onAccent}
+        />
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -251,21 +268,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    gap: Spacing.lg,
-    padding: 20,
-    paddingBottom: 140,
+    gap: Spacing.xl,
+    padding: 24,
+    paddingBottom: 156,
   },
   screenSection: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   hero: {
     borderRadius: Radius.hero,
-    borderWidth: 1.5,
-    gap: Spacing.md,
-    padding: Spacing.md,
+    borderWidth: 1,
+    gap: Spacing.lg,
+    padding: 24,
   },
   heroCopy: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   heroBadge: {
     alignSelf: "flex-start",
@@ -273,17 +290,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     paddingVertical: 6,
   },
-  heroButton: {
-    alignSelf: "flex-start",
+  fab: {
+    alignItems: "center",
+    borderRadius: Radius.pill,
+    borderWidth: 1,
+    bottom: 32,
+    height: 62,
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    width: 62,
+    elevation: 5,
   },
   viewToggle: {
     borderRadius: Radius.controlLarge,
-    borderWidth: 1.5,
+    borderWidth: 1,
     flexDirection: "row",
     padding: 4,
   },
   viewToggleButton: {
     alignItems: "center",
+    borderWidth: 1,
     borderRadius: Radius.control,
     flex: 1,
     justifyContent: "center",
@@ -294,12 +327,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   sectionHeader: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    gap: Spacing.xs,
   },
   sectionTitle: {
     fontSize: 24,
+  },
+  sectionCard: {
+    borderRadius: Radius.card,
+    borderWidth: 1,
+    padding: 20,
   },
   list: {
     gap: Spacing.md,
@@ -317,8 +353,8 @@ const styles = StyleSheet.create({
   },
   emptyState: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: Spacing.sm,
+    borderWidth: 1,
+    gap: Spacing.md,
     padding: 20,
   },
   emptyTitle: {

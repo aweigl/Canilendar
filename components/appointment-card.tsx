@@ -31,11 +31,11 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
             style={[
               styles.timeBadge,
               {
-                backgroundColor: palette.supportSoft,
-                borderColor: palette.support,
+                backgroundColor: palette.accentMuted,
+                borderColor: palette.accent,
               },
             ]}>
-            <ThemedText lightColor={palette.onSupport} darkColor={palette.onSupport} style={styles.timeLabel}>
+            <ThemedText lightColor={palette.accentPressed} darkColor={palette.onAccent} style={styles.timeLabel}>
               {describePickupTime(occurrence.appointment, occurrence.startAt)}
             </ThemedText>
           </View>
@@ -46,7 +46,7 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
             <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} style={styles.meta}>
               {occurrence.dog.address}
             </ThemedText>
-            <ThemedText lightColor={palette.support} darkColor={palette.support} style={styles.meta}>
+            <ThemedText lightColor={palette.textSubtle} darkColor={palette.textSubtle} style={styles.meta}>
               {describeRecurrence(occurrence.appointment)} ·{' '}
               {describeReminder(occurrence.appointment.reminderMinutesBefore)}
             </ThemedText>
@@ -60,7 +60,7 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
+    borderWidth: 1,
     padding: Spacing.md,
   },
   row: {

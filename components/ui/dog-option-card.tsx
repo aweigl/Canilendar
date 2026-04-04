@@ -24,21 +24,21 @@ export function DogOptionCard({ dog, selected, onPress }: DogOptionCardProps) {
       unstyled
       style={{
         alignItems: 'stretch',
-        backgroundColor: selected ? palette.supportSoft : palette.surface,
-        borderColor: selected ? palette.support : palette.border,
+        backgroundColor: selected ? palette.accentSoft : palette.surfaceRaised,
+        borderColor: selected ? palette.accent : palette.border,
         borderRadius: Radius.card,
-        borderWidth: 1.5,
+        borderWidth: 1,
         justifyContent: 'flex-start',
         minHeight: 0,
-        paddingHorizontal: Spacing.md,
-        paddingVertical: Spacing.md,
+        paddingHorizontal: 18,
+        paddingVertical: 18,
       }}>
-      <YStack gap={Spacing.xs} width="100%">
-        <XStack style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+      <YStack gap={Spacing.sm} width="100%">
+        <XStack style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
           <ThemedText type="sectionTitle">{dog.name}</ThemedText>
           <ThemedText
-            lightColor={selected ? palette.support : palette.textSubtle}
-            darkColor={selected ? palette.support : palette.textSubtle}
+            lightColor={selected ? palette.accentPressed : palette.textSubtle}
+            darkColor={selected ? palette.onAccent : palette.textSubtle}
             type="eyebrow">
             {selected ? t('dogCard.selected') : t('dogCard.savedDog')}
           </ThemedText>

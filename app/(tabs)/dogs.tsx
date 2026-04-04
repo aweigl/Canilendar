@@ -258,7 +258,7 @@ export default function DogsScreen() {
                     styles.card,
                     {
                       backgroundColor: palette.surface,
-                      borderColor: palette.accent,
+                      borderColor: palette.border,
                       shadowColor: palette.shadow,
                     },
                   ]}
@@ -338,46 +338,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    gap: Spacing.md,
-    padding: 20,
-    paddingBottom: 140,
+    gap: Spacing.xl,
+    padding: 24,
+    paddingBottom: 156,
   },
   header: {
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   headerCopy: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   title: {
     fontSize: 34,
   },
   editor: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: Spacing.sm,
-    padding: 18,
+    borderWidth: 1,
+    gap: Spacing.md,
+    padding: 24,
   },
   editorTitle: {
     fontSize: 22,
   },
   list: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   emptyState: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: Spacing.xs,
-    padding: 20,
+    borderWidth: 1,
+    gap: Spacing.sm,
+    padding: 24,
   },
   emptyTitle: {
     fontSize: 22,
   },
   card: {
     borderRadius: Radius.card,
-    borderWidth: 2.5,
-    gap: Spacing.sm,
-    padding: 18,
-    marginBottom: 2,
+    borderWidth: 1,
+    gap: Spacing.md,
+    padding: 22,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -387,10 +386,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardHeader: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   cardCopy: {
-    gap: 4,
+    gap: 6,
   },
   cardTitle: {
     fontSize: 28,
@@ -409,6 +408,8 @@ const styles = StyleSheet.create({
   },
   actions: {
     flexDirection: "row",
-    gap: Spacing.xs,
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
   },
 });

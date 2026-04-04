@@ -59,11 +59,11 @@ export function InputField({
   const fieldStyle = [
     styles.input,
     {
-      backgroundColor: palette.surface,
+      backgroundColor: palette.surfaceRaised,
       borderColor: error
         ? palette.danger
         : isFocused
-          ? palette.accent
+          ? palette.borderStrong
           : palette.border,
       color: palette.text,
       minHeight,
@@ -108,7 +108,7 @@ export function InputField({
       ) : (
         <Input
           accessibilityState={{ disabled: rest.editable === false }}
-          focusStyle={{ borderColor: palette.accent } as never}
+          focusStyle={{ borderColor: palette.borderStrong } as never}
           onBlur={handleBlur}
           onFocus={handleFocus}
           placeholderTextColor={palette.textSubtle as any}
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderRadius: Radius.controlLarge,
-    borderWidth: 1.5,
+    borderWidth: 1,
     fontFamily: Fonts.sans,
     fontSize: 16,
     lineHeight: 22,

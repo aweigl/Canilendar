@@ -300,7 +300,7 @@ export default function SettingsScreen() {
         >
           <ThemedText
             type="sectionTitle"
-            style={(styles.cardTitle, styles.marginBottom)}
+            style={[styles.cardTitle, styles.marginBottom]}
           >
             {t("settings.pro.title")}
           </ThemedText>
@@ -721,12 +721,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    gap: Spacing.md,
-    padding: 20,
-    paddingBottom: 140,
+    gap: Spacing.xl,
+    padding: 24,
+    paddingBottom: 156,
   },
   header: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   title: {
     fontSize: 34,
@@ -734,8 +734,8 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: Radius.card,
     borderWidth: 1.5,
-    gap: Spacing.sm,
-    padding: 18,
+    gap: Spacing.md,
+    padding: 24,
   },
   cardTitle: {
     fontSize: 22,
@@ -743,18 +743,19 @@ const styles = StyleSheet.create({
   row: {
     alignItems: "center",
     flexDirection: "row",
-    gap: Spacing.sm,
+    gap: Spacing.md,
     justifyContent: "space-between",
   },
   copy: {
     flex: 1,
-    gap: 4,
+    gap: Spacing.xs,
   },
   actions: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
   },
   timePickerWrap: {
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   splashPreview: {
     alignItems: "center",
@@ -772,7 +773,7 @@ const styles = StyleSheet.create({
   chips: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: Spacing.xs,
+    gap: Spacing.sm,
   },
   marginBottom: {
     marginBottom: Spacing.sm,

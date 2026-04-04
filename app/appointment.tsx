@@ -1,6 +1,7 @@
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
+import * as Haptics from "expo-haptics";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -26,6 +27,7 @@ import {
   getDateOnlyStartAt,
   getDefaultPickupTime,
 } from "@/lib/date";
+import { triggerNotification } from "@/lib/haptics";
 import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
 
 const EMPTY_DOG_FORM = {
@@ -290,6 +292,7 @@ export default function AppointmentScreen() {
       return;
     }
 
+    await triggerNotification(Haptics.NotificationFeedbackType.Success);
     router.back();
   }
 
@@ -307,6 +310,7 @@ export default function AppointmentScreen() {
           text: t("common.delete"),
           style: "destructive",
           onPress: () => {
+            void triggerNotification(Haptics.NotificationFeedbackType.Warning);
             deleteAppointment(appointment.id);
             router.back();
           },
@@ -334,7 +338,7 @@ export default function AppointmentScreen() {
           style={[
             styles.hero,
             {
-              backgroundColor: palette.surface,
+              backgroundColor: palette.surfaceRaised,
               borderColor: palette.border,
             },
           ]}
@@ -363,92 +367,101 @@ export default function AppointmentScreen() {
           style={[
             styles.section,
             {
-              backgroundColor: palette.surface,
+              backgroundColor: palette.surfaceRaised,
               borderColor: palette.border,
             },
           ]}
         >
-          <ThemedText type="sectionTitle" style={styles.sectionTitle}>
-            {t("appointment.dogDetails")}
-          </ThemedText>
-          <View style={styles.toggleRow}>
-            <ChoiceChip
-              label={t("appointment.savedDog")}
-              onPress={() => setDogMode("existing")}
-              selected={dogMode === "existing"}
-            />
-            <ChoiceChip
-              label={t("appointment.newDog")}
-              onPress={() => setDogMode("new")}
-              selected={dogMode === "new"}
-            />
-          </View>
+          <View style={styles.sectionBlock}>
+            <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+              {t("appointment.dogDetails")}
+            </ThemedText>
+            <View style={styles.toggleRow}>
+              <ChoiceChip
+                label={t("appointment.savedDog")}
+                onPress={() => setDogMode("existing")}
+                selected={dogMode === "existing"}
+              />
+              <ChoiceChip
+                label={t("appointment.newDog")}
+                onPress={() => setDogMode("new")}
+                selected={dogMode === "new"}
+              />
+            </View>
 
-          {dogMode === "existing" ? (
-            <View style={styles.savedDogs}>
-              {dogs.length === 0 ? (
-                <ThemedText
-                  lightColor={palette.textMuted}
-                  darkColor={palette.textMuted}
-                >
-                  {t("appointment.noSavedDogs")}
-                </ThemedText>
-              ) : (
-                <>
+            {dogMode === "existing" ? (
+              <View style={styles.savedDogs}>
+                {dogs.length === 0 ? (
                   <ThemedText
                     lightColor={palette.textMuted}
                     darkColor={palette.textMuted}
-                    type="caption"
                   >
-                    {t("appointment.savedDogsHelp")}
+                    {t("appointment.noSavedDogs")}
                   </ThemedText>
-                  {dogs.map((dog) => (
-                    <DogOptionCard
-                      key={dog.id}
-                      dog={dog}
-                      onPress={() => setSelectedDogId(dog.id)}
-                      selected={selectedDogId === dog.id}
-                    />
-                  ))}
-                </>
-              )}
-            </View>
-          ) : null}
+                ) : (
+                  <>
+                    <ThemedText
+                      lightColor={palette.textMuted}
+                      darkColor={palette.textMuted}
+                      type="caption"
+                    >
+                      {t("appointment.savedDogsHelp")}
+                    </ThemedText>
+                    {dogs.map((dog) => (
+                      <DogOptionCard
+                        key={dog.id}
+                        dog={dog}
+                        onPress={() => setSelectedDogId(dog.id)}
+                        selected={selectedDogId === dog.id}
+                      />
+                    ))}
+                  </>
+                )}
+              </View>
+            ) : null}
+          </View>
 
-          <InputField
-            label={t("appointment.dogName")}
-            onChangeText={(value) =>
-              setDogForm((current) => ({ ...current, name: value }))
-            }
-            placeholder={t("appointment.placeholders.dogName")}
-            value={dogForm.name}
-          />
-          <InputField
-            label={t("appointment.pickupAddress")}
-            onChangeText={(value) =>
-              setDogForm((current) => ({ ...current, address: value }))
-            }
-            placeholder={t("appointment.placeholders.pickupAddress")}
-            value={dogForm.address}
-          />
-          <InputField
-            keyboardType="phone-pad"
-            label={t("appointment.ownerPhone")}
-            onChangeText={(value) =>
-              setDogForm((current) => ({ ...current, ownerPhone: value }))
-            }
-            placeholder={t("appointment.placeholders.ownerPhone")}
-            value={dogForm.ownerPhone}
-          />
-          <InputField
-            label={t("appointment.dogNotes")}
-            multiline
-            onChangeText={(value) =>
-              setDogForm((current) => ({ ...current, notes: value }))
-            }
-            placeholder={t("appointment.placeholders.dogNotes")}
-            value={dogForm.notes}
-          />
+          <View
+            style={[
+              styles.sectionBlock,
+              styles.sectionBlockSeparated,
+              { borderColor: palette.border },
+            ]}>
+            <InputField
+              label={t("appointment.dogName")}
+              onChangeText={(value) =>
+                setDogForm((current) => ({ ...current, name: value }))
+              }
+              placeholder={t("appointment.placeholders.dogName")}
+              value={dogForm.name}
+            />
+            <InputField
+              label={t("appointment.pickupAddress")}
+              onChangeText={(value) =>
+                setDogForm((current) => ({ ...current, address: value }))
+              }
+              placeholder={t("appointment.placeholders.pickupAddress")}
+              value={dogForm.address}
+            />
+            <InputField
+              keyboardType="phone-pad"
+              label={t("appointment.ownerPhone")}
+              onChangeText={(value) =>
+                setDogForm((current) => ({ ...current, ownerPhone: value }))
+              }
+              placeholder={t("appointment.placeholders.ownerPhone")}
+              value={dogForm.ownerPhone}
+            />
+            <InputField
+              label={t("appointment.dogNotes")}
+              multiline
+              onChangeText={(value) =>
+                setDogForm((current) => ({ ...current, notes: value }))
+              }
+              placeholder={t("appointment.placeholders.dogNotes")}
+              value={dogForm.notes}
+            />
+          </View>
         </ThemedView>
 
         <ThemedView
@@ -460,125 +473,147 @@ export default function AppointmentScreen() {
             },
           ]}
         >
-          <View style={styles.pickerGroup}>
-            <ThemedText style={styles.inputLabel}>
-              {t("common.pickerDate")}
-            </ThemedText>
-            <DateTimePicker
-              display={Platform.OS === "ios" ? "compact" : "default"}
-              mode="date"
-              minimumDate={appointment ? undefined : new Date()}
-              onChange={handleDateChange}
-              value={appointmentDate}
-            />
-          </View>
-
-          <View style={styles.row}>
-            <View style={styles.copy}>
-              <ThemedText style={styles.inputLabel}>
-                {t("common.pickupTime")}
-              </ThemedText>
-              <ThemedText
-                lightColor={palette.textMuted}
-                darkColor={palette.textMuted}
-                type="caption"
-              >
-                {hasPickupTime
-                  ? t("appointment.pickupTimeEnabled")
-                  : t("appointment.pickupTimeDisabled")}
-              </ThemedText>
-            </View>
-            <ToggleSwitch
-              checked={hasPickupTime}
-              onCheckedChange={setHasPickupTime}
-            />
-          </View>
-
-          {hasPickupTime ? (
+          <View style={styles.sectionBlock}>
             <View style={styles.pickerGroup}>
+              <ThemedText style={styles.inputLabel}>
+                {t("common.pickerDate")}
+              </ThemedText>
               <DateTimePicker
                 display={Platform.OS === "ios" ? "compact" : "default"}
-                mode="time"
-                onChange={handleTimeChange}
-                value={appointmentTime}
+                mode="date"
+                minimumDate={appointment ? undefined : new Date()}
+                onChange={handleDateChange}
+                value={appointmentDate}
               />
             </View>
-          ) : null}
-
-          <View style={styles.row}>
-            <View style={styles.copy}>
-              <ThemedText style={styles.inputLabel}>
-                {t("appointment.repeatWeekly")}
-              </ThemedText>
-              <ThemedText
-                lightColor={palette.textMuted}
-                darkColor={palette.textMuted}
-                type="caption"
-              >
-                {isRecurring
-                  ? t("appointment.recurringOn")
-                  : t("appointment.oneTime")}
-              </ThemedText>
-            </View>
-            <ToggleSwitch
-              checked={isRecurring}
-              onCheckedChange={setIsRecurring}
-            />
           </View>
 
-          {isRecurring ? (
-            <View style={styles.chips}>
-              {WEEKDAY_OPTIONS.map((option) => (
-                <ChoiceChip
-                  key={option.value}
-                  label={t(
-                    `common.weekdayShort.${getWeekdayTranslationKey(option.value)}`,
-                  )}
-                  onPress={() => toggleWeekday(option.value)}
-                  selected={recurrenceWeekdays.includes(option.value)}
-                />
-              ))}
+          <View
+            style={[
+              styles.sectionBlock,
+              styles.sectionBlockSeparated,
+              { borderColor: palette.border },
+            ]}>
+            <View style={styles.row}>
+              <View style={styles.copy}>
+                <ThemedText style={styles.inputLabel}>
+                  {t("common.pickupTime")}
+                </ThemedText>
+                <ThemedText
+                  lightColor={palette.textMuted}
+                  darkColor={palette.textMuted}
+                  type="caption"
+                >
+                  {hasPickupTime
+                    ? t("appointment.pickupTimeEnabled")
+                    : t("appointment.pickupTimeDisabled")}
+                </ThemedText>
+              </View>
+              <ToggleSwitch
+                checked={hasPickupTime}
+                onCheckedChange={setHasPickupTime}
+              />
             </View>
-          ) : null}
 
-          {hasPickupTime ? (
-            <View style={styles.pickerGroup}>
-              <ThemedText style={styles.inputLabel}>
-                {t("appointment.reminderLeadTime")}
-              </ThemedText>
+            {hasPickupTime ? (
+              <>
+                <View style={styles.pickerGroup}>
+                  <DateTimePicker
+                    display={Platform.OS === "ios" ? "compact" : "default"}
+                    mode="time"
+                    onChange={handleTimeChange}
+                    value={appointmentTime}
+                  />
+                </View>
+                <View style={styles.pickerGroup}>
+                  <ThemedText style={styles.inputLabel}>
+                    {t("appointment.reminderLeadTime")}
+                  </ThemedText>
+                  <View style={styles.chips}>
+                    {REMINDER_OPTIONS.map((minutes) => (
+                      <ChoiceChip
+                        key={minutes}
+                        label={`${minutes} min`}
+                        onPress={() => setReminderMinutesBefore(minutes)}
+                        selected={reminderMinutesBefore === minutes}
+                      />
+                    ))}
+                  </View>
+                </View>
+              </>
+            ) : null}
+          </View>
+
+          <View
+            style={[
+              styles.sectionBlock,
+              styles.sectionBlockSeparated,
+              { borderColor: palette.border },
+            ]}>
+            <View style={styles.row}>
+              <View style={styles.copy}>
+                <ThemedText style={styles.inputLabel}>
+                  {t("appointment.repeatWeekly")}
+                </ThemedText>
+                <ThemedText
+                  lightColor={palette.textMuted}
+                  darkColor={palette.textMuted}
+                  type="caption"
+                >
+                  {isRecurring
+                    ? t("appointment.recurringOn")
+                    : t("appointment.oneTime")}
+                </ThemedText>
+              </View>
+              <ToggleSwitch
+                checked={isRecurring}
+                onCheckedChange={setIsRecurring}
+              />
+            </View>
+
+            {isRecurring ? (
               <View style={styles.chips}>
-                {REMINDER_OPTIONS.map((minutes) => (
+                {WEEKDAY_OPTIONS.map((option) => (
                   <ChoiceChip
-                    key={minutes}
-                    label={`${minutes} min`}
-                    onPress={() => setReminderMinutesBefore(minutes)}
-                    selected={reminderMinutesBefore === minutes}
+                    key={option.value}
+                    label={t(
+                      `common.weekdayShort.${getWeekdayTranslationKey(option.value)}`,
+                    )}
+                    onPress={() => toggleWeekday(option.value)}
+                    selected={recurrenceWeekdays.includes(option.value)}
                   />
                 ))}
               </View>
-            </View>
-          ) : null}
+            ) : null}
+          </View>
 
-          <InputField
-            label={t("appointment.appointmentNotes")}
-            multiline
-            onChangeText={setNotes}
-            placeholder={t("appointment.placeholders.appointmentNotes")}
-            value={notes}
-          />
+          <View
+            style={[
+              styles.sectionBlock,
+              styles.sectionBlockSeparated,
+              { borderColor: palette.border },
+            ]}>
+            <InputField
+              label={t("appointment.appointmentNotes")}
+              multiline
+              onChangeText={setNotes}
+              placeholder={t("appointment.placeholders.appointmentNotes")}
+              value={notes}
+            />
 
-          <ThemedText
-            lightColor={palette.textMuted}
-            darkColor={palette.textMuted}
-            type="caption"
-          >
-            {hasPickupTime
-              ? t("appointment.reminderPreview", {
-                  time: formatTimeInputValue(appointmentTime),
-                  count: reminderMinutesBefore,
-                })
-              : t("appointment.reminderDisabled")}
-          </ThemedText>
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+              type="caption"
+            >
+              {hasPickupTime
+                ? t("appointment.reminderPreview", {
+                    time: formatTimeInputValue(appointmentTime),
+                    count: reminderMinutesBefore,
+                  })
+                : t("appointment.reminderDisabled")}
+            </ThemedText>
+          </View>
         </ThemedView>
 
         <View style={styles.footerActions}>
@@ -610,27 +645,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    gap: Spacing.lg,
-    padding: 20,
-    paddingBottom: 72,
+    gap: Spacing.xl,
+    padding: 24,
+    paddingBottom: 96,
   },
   hero: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: Spacing.sm,
-    padding: 24,
+    borderWidth: 1,
+    gap: Spacing.md,
+    padding: 28,
   },
   title: {
     fontSize: 28,
   },
   section: {
     borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: Spacing.md,
+    borderWidth: 1,
+    gap: Spacing.lg,
     padding: 24,
   },
   sectionTitle: {
     fontSize: 22,
+  },
+  sectionBlock: {
+    gap: Spacing.md,
+  },
+  sectionBlockSeparated: {
+    borderTopWidth: 1,
+    paddingTop: Spacing.lg,
   },
   toggleRow: {
     flexDirection: "row",
@@ -643,10 +685,10 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   savedDogs: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   pickerGroup: {
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   inputLabel: {
     fontSize: 15,
@@ -660,10 +702,10 @@ const styles = StyleSheet.create({
   },
   copy: {
     flex: 1,
-    gap: 6,
+    gap: Spacing.xs,
   },
   footerActions: {
-    gap: Spacing.sm,
-    marginTop: Spacing.xs,
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
   },
 });
