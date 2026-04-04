@@ -21,7 +21,7 @@ import { DogOptionCard } from "@/components/ui/dog-option-card";
 import { InputField } from "@/components/ui/input-field";
 import { ToggleSwitch } from "@/components/ui/toggle-switch";
 import { Colors, Radius, Spacing } from "@/constants/theme";
-import { useCanilander } from "@/context/canilander-context";
+import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { combineDateAndTimeParts, formatTimeInputValue } from "@/lib/date";
 import {
@@ -51,7 +51,7 @@ export default function AppointmentScreen() {
     getDogById,
     saveAppointment,
     deleteAppointment,
-  } = useCanilander();
+  } = useCanilendar();
   const appointment = params.appointmentId
     ? getAppointmentById(params.appointmentId)
     : undefined;

@@ -10,7 +10,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AppButton } from "@/components/ui/app-button";
 import { Colors, Radius, Spacing } from "@/constants/theme";
-import { useCanilander } from "@/context/canilander-context";
+import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatLongDate } from "@/lib/date";
 
@@ -18,7 +18,7 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { isLoaded, getOccurrencesForDate, getMarkedDatesForMonth } =
-    useCanilander();
+    useCanilendar();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [visibleMonth, setVisibleMonth] = useState(new Date());
 
@@ -53,7 +53,7 @@ export default function HomeScreen() {
                 darkColor={palette.text}
                 type="title"
               >
-                Canilander
+                Canilendar
               </ThemedText>
               <ThemedView
                 style={[

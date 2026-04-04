@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { DEFAULT_SETTINGS, type Appointment, type PersistedAppState } from '@/types/domain';
 
-const STORAGE_KEY = '@canilander/app-state-v1';
+const STORAGE_KEY = '@canilendar/app-state-v1';
 
 const FALLBACK_STATE: PersistedAppState = {
   dogs: [],

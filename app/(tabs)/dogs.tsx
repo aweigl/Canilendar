@@ -8,7 +8,7 @@ import { ThemedView } from "@/components/themed-view";
 import { AppButton } from "@/components/ui/app-button";
 import { InputField } from "@/components/ui/input-field";
 import { Colors, Radius, Spacing } from "@/constants/theme";
-import { useCanilander } from "@/context/canilander-context";
+import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 const EMPTY_DOG = {
@@ -21,7 +21,7 @@ const EMPTY_DOG = {
 export default function DogsScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
-  const { dogs, appointments, isLoaded, saveDog, deleteDog } = useCanilander();
+  const { dogs, appointments, isLoaded, saveDog, deleteDog } = useCanilendar();
   const [isEditing, setIsEditing] = useState(false);
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_DOG);

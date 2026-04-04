@@ -10,7 +10,7 @@ import { AppButton } from '@/components/ui/app-button';
 import { ChoiceChip } from '@/components/ui/choice-chip';
 import { ToggleSwitch } from '@/components/ui/toggle-switch';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { useCanilander } from '@/context/canilander-context';
+import { useCanilendar } from '@/context/canilendar-context';
 import { formatTimeInputValue, parseTimeValue } from '@/lib/date';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { REMINDER_OPTIONS, type AppearanceMode } from '@/types/domain';
@@ -26,7 +26,7 @@ export default function SettingsScreen() {
     settings,
     updateSettings,
     updateAppearanceMode,
-  } = useCanilander();
+  } = useCanilendar();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   if (!isLoaded) {
@@ -39,7 +39,7 @@ export default function SettingsScreen() {
     if (status === 'denied') {
       Alert.alert(
         'Notifications are off',
-        'Open iPhone Settings for Canilander if you want reminder banners and daily summaries.'
+        'Open iPhone Settings for Canilendar if you want reminder banners and daily summaries.'
       );
     }
   }
@@ -59,19 +59,19 @@ export default function SettingsScreen() {
       return 'Notifications are blocked in system settings.';
     }
 
-    return 'Canilander will ask when you save an appointment or tap enable.';
+    return 'Canilendar will ask when you save an appointment or tap enable.';
   }
 
   function appearanceCopy() {
     if (settings.appearanceMode === 'light') {
-      return 'Canilander always stays in light mode.';
+      return 'Canilendar always stays in light mode.';
     }
 
     if (settings.appearanceMode === 'dark') {
-      return 'Canilander always stays in dark mode.';
+      return 'Canilendar always stays in dark mode.';
     }
 
-    return 'Canilander follows your device appearance setting.';
+    return 'Canilendar follows your device appearance setting.';
   }
 
   const appearanceOptions: AppearanceMode[] = ['system', 'light', 'dark'];
@@ -87,7 +87,7 @@ export default function SettingsScreen() {
             Settings
           </ThemedText>
           <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-            Adjust how Canilander reminds you about the day ahead.
+            Adjust how Canilendar reminds you about the day ahead.
           </ThemedText>
         </View>
 

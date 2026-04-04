@@ -177,7 +177,7 @@ export async function syncScheduledNotifications(state: PersistedAppState) {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Today in Canilander',
+        title: 'Today in Canilendar',
         subtitle: buildSummarySubtitle(targetDate, occurrences.length),
         body: buildDailySummaryBody(occurrences),
         sound: 'default',

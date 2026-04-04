@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "canilander",
-    "slug": "canilander",
+    "name": "canilendar",
+    "slug": "canilendar",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "canilander",
+    "scheme": "canilendar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSUserNotificationsUsageDescription": "Canilander uses notifications to remind you about your dog walking appointments and daily schedule."
+        "NSUserNotificationsUsageDescription": "Canilendar uses notifications to remind you about your dog walking appointments and daily schedule."
       }
     },
     "android": {

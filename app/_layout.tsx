@@ -15,7 +15,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { TamaguiProvider } from 'tamagui';
 
-import { CanilanderProvider } from '@/context/canilander-context';
+import { CanilendarProvider } from '@/context/canilendar-context';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { configureNotificationHandling } from '@/lib/notifications';
@@ -107,8 +107,8 @@ function RootNavigation() {
 
 export default function RootLayout() {
   return (
-    <CanilanderProvider>
+    <CanilendarProvider>
       <RootNavigation />
-    </CanilanderProvider>
+    </CanilendarProvider>
   );
 }

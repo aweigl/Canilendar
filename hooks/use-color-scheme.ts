@@ -1,7 +1,7 @@
-import { useCanilander } from '@/context/canilander-context';
+import { useCanilendar } from '@/context/canilendar-context';
 
 export function useColorScheme() {
-  const { resolvedColorScheme } = useCanilander();
+  const { resolvedColorScheme } = useCanilendar();
 
   return resolvedColorScheme;
 }

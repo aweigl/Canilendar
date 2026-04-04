@@ -23,7 +23,7 @@ import {
   type ReminderSettings,
 } from '@/types/domain';
 
-type CanilanderContextValue = {
+type CanilendarContextValue = {
   dogs: DogProfile[];
   appointments: Appointment[];
   settings: ReminderSettings;
@@ -44,7 +44,7 @@ type CanilanderContextValue = {
   requestNotificationPermission: () => Promise<NotificationPermissionState>;
 };
 
-const CanilanderContext = createContext<CanilanderContextValue | undefined>(undefined);
+const CanilendarContext = createContext<CanilendarContextValue | undefined>(undefined);
 
 function normalizeText(value: string) {
   return value.trim();
@@ -65,7 +65,7 @@ function buildDogRecord(input: DogInput, currentDog?: DogProfile): DogProfile {
   };
 }
 
-export function CanilanderProvider({ children }: PropsWithChildren) {
+export function CanilendarProvider({ children }: PropsWithChildren) {
   const systemColorScheme = useSystemColorScheme();
   const [dogs, setDogs] = useState<DogProfile[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -256,7 +256,7 @@ export function CanilanderProvider({ children }: PropsWithChildren) {
   }
 
   return (
-    <CanilanderContext.Provider
+    <CanilendarContext.Provider
       value={{
         dogs,
         appointments,
@@ -278,15 +278,15 @@ export function CanilanderProvider({ children }: PropsWithChildren) {
         requestNotificationPermission: requestPermission,
       }}>
       {children}
-    </CanilanderContext.Provider>
+    </CanilendarContext.Provider>
   );
 }
 
-export function useCanilander() {
-  const context = useContext(CanilanderContext);
+export function useCanilendar() {
+  const context = useContext(CanilendarContext);
 
   if (!context) {
-    throw new Error('useCanilander must be used within a CanilanderProvider');
+    throw new Error('useCanilendar must be used within a CanilendarProvider');
   }
 
   return context;
