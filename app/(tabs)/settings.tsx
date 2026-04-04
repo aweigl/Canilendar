@@ -43,13 +43,16 @@ export default function SettingsScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const {
+    authUser,
     currentOffering,
+    isAppleAuthEnabled,
     isPro,
     isRevenueCatReady,
     isRevenueCatPurchaseSupported,
     openCustomerCenter,
     presentPaywall,
     restorePurchases,
+    signOut,
     subscriptionStatus,
   } = useAppSession();
   const {
@@ -155,6 +158,7 @@ export default function SettingsScreen() {
   ];
   const deviceLanguage = detectSystemLanguage();
   const currentLanguage = resolveAppLanguage(settings.language);
+  const signedInLabel = authUser?.email || authUser?.appleUserId || "";
 
   async function handleRestorePurchases() {
     setIsRestoring(true);
@@ -197,6 +201,23 @@ export default function SettingsScreen() {
     );
   }
 
+  function handleSignOut() {
+    Alert.alert(
+      t("settings.account.signOutTitle"),
+      t("settings.account.signOutBody"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("settings.account.signOut"),
+          style: "destructive",
+          onPress: () => {
+            void signOut();
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: palette.background }]}
@@ -223,6 +244,50 @@ export default function SettingsScreen() {
             {t("settings.description")}
           </ThemedText>
         </View>
+
+        {isAppleAuthEnabled && authUser ? (
+          <ThemedView
+            style={[
+              styles.card,
+              {
+                backgroundColor: palette.surface,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <ThemedText type="sectionTitle" style={styles.cardTitle}>
+              {t("settings.account.title")}
+            </ThemedText>
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+            >
+              {t("settings.account.description")}
+            </ThemedText>
+            <ThemedText
+              lightColor={palette.support}
+              darkColor={palette.support}
+            >
+              {t("settings.account.signedInAs", {
+                value: signedInLabel,
+              })}
+            </ThemedText>
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+              type="caption"
+            >
+              {t("settings.account.revenueCatReference", {
+                value: authUser.revenueCatAppUserId,
+              })}
+            </ThemedText>
+            <AppButton
+              label={t("settings.account.signOut")}
+              onPress={handleSignOut}
+              variant="secondary"
+            />
+          </ThemedView>
+        ) : null}
 
         <ThemedView
           style={[

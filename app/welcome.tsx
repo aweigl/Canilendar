@@ -1,35 +1,57 @@
-import { router } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import {
+  AppleButton,
+  appleAuth,
+} from "@invertase/react-native-apple-authentication";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Alert, Platform, StyleSheet, View } from "react-native";
 
 import { AuthShell } from "@/components/auth/auth-shell";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { AppButton } from "@/components/ui/app-button";
 import { Colors, Radius, Spacing } from "@/constants/theme";
+import { useAppSession } from "@/context/app-session-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
-const VALUE_POINTS = [
-  "Save each dog once, then schedule walks in seconds.",
-  "See your day in one agenda with recurring appointments.",
-  "Keep premium simple: one pro plan unlocks unlimited dogs and bookings.",
-];
-
 export default function WelcomeScreen() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
+  const { isAuthenticating, signInWithApple } = useAppSession();
+  const [isHandlingSignIn, setIsHandlingSignIn] = useState(false);
+  const canUseAppleSignIn = Platform.OS === "ios" && appleAuth.isSupported;
+  const valuePoints = [
+    t("welcome.valuePointOne"),
+    t("welcome.valuePointTwo"),
+    t("welcome.valuePointThree"),
+  ];
+
+  async function handleAppleSignIn() {
+    if (isAuthenticating || isHandlingSignIn) {
+      return;
+    }
+
+    setIsHandlingSignIn(true);
+    const error = await signInWithApple();
+    setIsHandlingSignIn(false);
+
+    if (error) {
+      Alert.alert(t("welcome.signInErrorTitle"), error);
+    }
+  }
 
   return (
     <AuthShell
-      eyebrow="Canilendar"
-      title="Dog walks, calm days, zero chaos."
-      description="No account needed. Set up your first dog and first appointment on this device, then decide later whether you need pro."
+      eyebrow={t("welcome.eyebrow")}
+      title={t("welcome.title")}
+      description={t("welcome.description")}
       footer={
         <ThemedText
           lightColor={palette.textSubtle}
           darkColor={palette.textSubtle}
           type="caption"
         >
-          Your data stays local on this device in v1. Store purchases can still be restored from Settings.
+          {t("welcome.footer")}
         </ThemedText>
       }
     >
@@ -42,7 +64,7 @@ export default function WelcomeScreen() {
           },
         ]}
       >
-        {VALUE_POINTS.map((point) => (
+        {valuePoints.map((point) => (
           <View key={point} style={styles.pointRow}>
             <View
               style={[
@@ -57,11 +79,41 @@ export default function WelcomeScreen() {
         ))}
       </ThemedView>
 
-      <AppButton
-        label="Start setup"
-        onPress={() => router.push("/onboarding" as never)}
-        icon="arrow.right.circle.fill"
-      />
+      {canUseAppleSignIn ? (
+        <AppleButton
+          buttonStyle={
+            colorScheme === "dark"
+              ? AppleButton.Style.WHITE
+              : AppleButton.Style.BLACK
+          }
+          buttonType={AppleButton.Type.SIGN_IN}
+          cornerRadius={Radius.controlLarge}
+          onPress={() => {
+            void handleAppleSignIn();
+          }}
+          style={[
+            styles.appleButton,
+            (isAuthenticating || isHandlingSignIn) && styles.disabledButton,
+          ]}
+        />
+      ) : (
+        <ThemedView
+          style={[
+            styles.unsupportedCard,
+            {
+              backgroundColor: palette.surface,
+              borderColor: palette.border,
+            },
+          ]}
+        >
+          <ThemedText
+            lightColor={palette.textMuted}
+            darkColor={palette.textMuted}
+          >
+            {t("welcome.appleUnavailable")}
+          </ThemedText>
+        </ThemedView>
+      )}
     </AuthShell>
   );
 }
@@ -82,5 +134,16 @@ const styles = StyleSheet.create({
     borderRadius: Radius.pill,
     height: 10,
     width: 10,
+  },
+  appleButton: {
+    height: 56,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  unsupportedCard: {
+    borderRadius: Radius.card,
+    borderWidth: 1.5,
+    padding: Spacing.md,
   },
 });

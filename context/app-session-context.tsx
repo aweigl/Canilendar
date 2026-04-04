@@ -1,3 +1,4 @@
+import appleAuth from "@invertase/react-native-apple-authentication";
 import {
   createContext,
   useCallback,
@@ -8,16 +9,19 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
+import { Platform } from "react-native";
 import type { CustomerInfo, PurchasesPackage } from "react-native-purchases";
 import Purchases from "react-native-purchases";
 
-import { isRevenueCatConfigured } from "@/lib/env";
+import { isAppleAuthEnabled, isRevenueCatConfigured } from "@/lib/env";
 import {
   CANILENDAR_PRO_ENTITLEMENT_ID,
   configureRevenueCat,
   getRevenueCatCustomerInfo,
   getRevenueCatOfferings,
   hasActiveProEntitlement,
+  logInRevenueCat,
+  logOutRevenueCat,
   PAYWALL_RESULT,
   presentRevenueCatCustomerCenter,
   presentRevenueCatPaywall,
@@ -29,18 +33,40 @@ import {
   revenueCatUiIsReady,
   type RevenueCatOffering,
 } from "@/lib/revenuecat";
-import type { PaywallTrigger, SubscriptionStatus } from "@/types/domain";
+import {
+  clearAuthSession,
+  loadAuthSession,
+  persistAuthSession,
+} from "@/lib/storage";
+import type {
+  AuthSession,
+  PaywallTrigger,
+  SubscriptionStatus,
+} from "@/types/domain";
+
+type RefreshSubscriptionStateOptions = {
+  forceCustomerInfo?: boolean;
+  requiredEntitlementId?: string;
+};
 
 type AppSessionContextValue = {
+  authUser: AuthSession | null;
   subscriptionStatus: SubscriptionStatus;
   isReady: boolean;
+  isAppleAuthEnabled: boolean;
+  isAuthenticated: boolean;
+  isAuthenticating: boolean;
   isRevenueCatReady: boolean;
   isRevenueCatPurchaseSupported: boolean;
   isPro: boolean;
   currentOffering: RevenueCatOffering;
   customerInfo: CustomerInfo | null;
   pendingPaywallTrigger: PaywallTrigger | null;
-  refreshSubscriptionState: () => Promise<void>;
+  signInWithApple: () => Promise<string | null>;
+  signOut: () => Promise<void>;
+  refreshSubscriptionState: (
+    options?: RefreshSubscriptionStateOptions,
+  ) => Promise<void>;
   purchasePackage: (pkg: PurchasesPackage) => Promise<string | null>;
   restorePurchases: () => Promise<string | null>;
   presentHostedPaywall: (options?: {
@@ -56,6 +82,10 @@ const AppSessionContext = createContext<AppSessionContextValue | undefined>(
 );
 
 export function AppSessionProvider({ children }: PropsWithChildren) {
+  const [authUser, setAuthUser] = useState<AuthSession | null>(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isRevenueCatLoaded, setIsRevenueCatLoaded] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [subscriptionStatus, setSubscriptionStatus] =
     useState<SubscriptionStatus>("loading");
   const [currentOffering, setCurrentOffering] =
@@ -66,39 +96,123 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
   const listenerRef = useRef<((info: CustomerInfo) => void) | null>(null);
   const listenerAttachedRef = useRef(false);
   const isRevenueCatReady = isRevenueCatConfigured();
+  const appleAuthEnabled = isAppleAuthEnabled();
   const isRevenueCatPurchaseSupported = revenueCatPurchasesAreSupported();
   const isRevenueCatUiReady = revenueCatUiIsReady();
   const isPro = hasActiveProEntitlement(customerInfo);
+  const isAuthenticated = !appleAuthEnabled || authUser !== null;
+  const isReady = isAuthReady && isRevenueCatLoaded;
 
-  function applySubscriptionState(
-    nextCustomerInfo: CustomerInfo | null,
-    nextOffering?: RevenueCatOffering,
-  ) {
-    setCustomerInfo(nextCustomerInfo);
+  const applySubscriptionState = useCallback(
+    (
+      nextCustomerInfo: CustomerInfo | null,
+      nextOffering?: RevenueCatOffering,
+    ) => {
+      setCustomerInfo(nextCustomerInfo);
 
-    if (nextOffering !== undefined) {
-      setCurrentOffering(nextOffering);
-    }
+      if (nextOffering !== undefined) {
+        setCurrentOffering(nextOffering);
+      }
 
-    setSubscriptionStatus(
-      hasActiveProEntitlement(nextCustomerInfo) ? "active" : "inactive",
-    );
-  }
+      setSubscriptionStatus(
+        hasActiveProEntitlement(nextCustomerInfo) ? "active" : "inactive",
+      );
+    },
+    [],
+  );
 
   useEffect(() => {
     let isMounted = true;
 
-    async function bootstrap() {
-      await configureRevenueCat();
-
-      if (!isRevenueCatReady) {
+    async function bootstrapAuth() {
+      if (!appleAuthEnabled) {
         if (isMounted) {
-          setSubscriptionStatus("unavailable");
+          setAuthUser(null);
+          setIsAuthReady(true);
         }
         return;
       }
 
       try {
+        const persistedSession = await loadAuthSession();
+        let nextAuthUser = persistedSession;
+
+        if (
+          persistedSession &&
+          Platform.OS === "ios" &&
+          appleAuth.isSupported
+        ) {
+          try {
+            const credentialState = await appleAuth.getCredentialStateForUser(
+              persistedSession.appleUserId,
+            );
+
+            if (credentialState !== appleAuth.State.AUTHORIZED) {
+              await clearAuthSession();
+              nextAuthUser = null;
+            }
+          } catch {
+            // Simulators can throw here; keep the persisted session.
+          }
+        }
+
+        if (!isMounted) {
+          return;
+        }
+
+        setAuthUser(nextAuthUser);
+      } catch (error) {
+        console.warn("Unable to restore Apple session", error);
+        if (!isMounted) {
+          return;
+        }
+
+        setAuthUser(null);
+      } finally {
+        if (isMounted) {
+          setIsAuthReady(true);
+        }
+      }
+    }
+
+    void bootstrapAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [appleAuthEnabled]);
+
+  useEffect(() => {
+    if (!isAuthReady) {
+      return;
+    }
+
+    let isMounted = true;
+    setIsRevenueCatLoaded(false);
+    setSubscriptionStatus("loading");
+
+    async function bootstrapRevenueCat() {
+      await configureRevenueCat();
+
+      if (!isRevenueCatReady) {
+        if (!isMounted) {
+          return;
+        }
+
+        setCurrentOffering(null);
+        setCustomerInfo(null);
+        setSubscriptionStatus("unavailable");
+        setIsRevenueCatLoaded(true);
+        return;
+      }
+
+      try {
+        if (authUser) {
+          await logInRevenueCat(authUser.revenueCatAppUserId);
+        } else {
+          await logOutRevenueCat();
+        }
+
         const [nextCustomerInfo, nextOffering] = await Promise.all([
           getRevenueCatCustomerInfo(),
           getRevenueCatOfferings(),
@@ -111,21 +225,29 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
         applySubscriptionState(nextCustomerInfo, nextOffering);
       } catch (error) {
         console.warn("Unable to load RevenueCat state", error);
+        if (!isMounted) {
+          return;
+        }
+
+        setCurrentOffering(null);
+        setCustomerInfo(null);
+        setSubscriptionStatus("unavailable");
+      } finally {
         if (isMounted) {
-          setSubscriptionStatus("unavailable");
+          setIsRevenueCatLoaded(true);
         }
       }
     }
 
-    void bootstrap();
+    void bootstrapRevenueCat();
 
     return () => {
       isMounted = false;
     };
-  }, [isRevenueCatReady]);
+  }, [applySubscriptionState, authUser, isAuthReady, isRevenueCatReady]);
 
   useEffect(() => {
-    if (!isRevenueCatReady) {
+    if (!isRevenueCatReady || !authUser) {
       return;
     }
 
@@ -148,13 +270,80 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       Purchases.removeCustomerInfoUpdateListener(listenerRef.current);
       listenerAttachedRef.current = false;
     };
-  }, [isRevenueCatReady]);
+  }, [applySubscriptionState, authUser, isRevenueCatReady]);
+
+  const signInWithApple = useCallback(async () => {
+    if (!appleAuthEnabled) {
+      return "Sign in with Apple is disabled for this build.";
+    }
+
+    if (Platform.OS !== "ios" || !appleAuth.isSupported) {
+      return "Sign in with Apple is only available on iPhone and iPad.";
+    }
+
+    setIsAuthenticating(true);
+
+    try {
+      const response = await appleAuth.performRequest({
+        requestedOperation: appleAuth.Operation.LOGIN,
+        requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+        user: authUser?.appleUserId,
+      });
+      const nextEmail =
+        response.email?.trim().toLowerCase() ??
+        (authUser?.appleUserId === response.user ? authUser.email : null);
+      const nextAuthUser: AuthSession = {
+        provider: "apple",
+        appleUserId: response.user,
+        revenueCatAppUserId: nextEmail || response.user,
+        email: nextEmail,
+        givenName: response.fullName?.givenName ?? authUser?.givenName ?? null,
+        familyName:
+          response.fullName?.familyName ?? authUser?.familyName ?? null,
+      };
+
+      await persistAuthSession(nextAuthUser);
+      setPendingPaywallTrigger(null);
+      setAuthUser(nextAuthUser);
+      return null;
+    } catch (error: any) {
+      if (error?.code === appleAuth.Error.CANCELED) {
+        return null;
+      }
+
+      return error instanceof Error
+        ? error.message
+        : "Apple sign-in failed.";
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }, [appleAuthEnabled, authUser]);
+
+  const signOut = useCallback(async () => {
+    if (!appleAuthEnabled) {
+      return;
+    }
+
+    await clearAuthSession();
+    if (isRevenueCatReady) {
+      await logOutRevenueCat();
+    }
+    setPendingPaywallTrigger(null);
+    setCurrentOffering(null);
+    setCustomerInfo(null);
+    setSubscriptionStatus("inactive");
+    setAuthUser(null);
+  }, [appleAuthEnabled, isRevenueCatReady]);
 
   const refreshSubscriptionState = useCallback(
-    async (options?: {
-      forceCustomerInfo?: boolean;
-      requiredEntitlementId?: string;
-    }) => {
+    async (options?: RefreshSubscriptionStateOptions) => {
+      if (appleAuthEnabled && !authUser) {
+        setCurrentOffering(null);
+        setCustomerInfo(null);
+        setSubscriptionStatus("inactive");
+        return;
+      }
+
       if (!isRevenueCatReady) {
         setSubscriptionStatus("unavailable");
         return;
@@ -177,11 +366,15 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
         setSubscriptionStatus("unavailable");
       }
     },
-    [isRevenueCatReady],
+    [appleAuthEnabled, applySubscriptionState, authUser, isRevenueCatReady],
   );
 
   const purchasePackage = useCallback(
     async (pkg: PurchasesPackage) => {
+      if (appleAuthEnabled && !authUser) {
+        return "Sign in with Apple first.";
+      }
+
       if (!isRevenueCatReady) {
         return "RevenueCat is not configured yet. Add the iOS API key first.";
       }
@@ -212,10 +405,20 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
         return error instanceof Error ? error.message : "Purchase failed.";
       }
     },
-    [isRevenueCatReady, isRevenueCatPurchaseSupported],
+    [
+      applySubscriptionState,
+      appleAuthEnabled,
+      authUser,
+      isRevenueCatPurchaseSupported,
+      isRevenueCatReady,
+    ],
   );
 
   const restorePurchases = useCallback(async () => {
+    if (appleAuthEnabled && !authUser) {
+      return "Sign in with Apple first.";
+    }
+
     if (!isRevenueCatReady) {
       return "RevenueCat is not configured yet. Add the iOS API key first.";
     }
@@ -240,10 +443,20 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
     } catch (error) {
       return error instanceof Error ? error.message : "Restore failed.";
     }
-  }, [isRevenueCatReady, isRevenueCatPurchaseSupported]);
+  }, [
+    applySubscriptionState,
+    appleAuthEnabled,
+    authUser,
+    isRevenueCatPurchaseSupported,
+    isRevenueCatReady,
+  ]);
 
   const presentHostedPaywall = useCallback(
     async (options?: { onlyIfNeeded?: boolean }) => {
+      if (appleAuthEnabled && !authUser) {
+        return "Sign in with Apple first.";
+      }
+
       if (!isRevenueCatReady) {
         return "RevenueCat is not configured yet. Add the iOS API key first.";
       }
@@ -283,6 +496,8 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       }
     },
     [
+      appleAuthEnabled,
+      authUser,
       currentOffering,
       isRevenueCatReady,
       isRevenueCatUiReady,
@@ -291,6 +506,10 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
   );
 
   const openCustomerCenter = useCallback(async () => {
+    if (appleAuthEnabled && !authUser) {
+      return "Sign in with Apple first.";
+    }
+
     if (!isRevenueCatReady) {
       return "RevenueCat is not configured yet. Add the iOS API key first.";
     }
@@ -313,18 +532,30 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
         ? error.message
         : "Could not open RevenueCat Customer Center.";
     }
-  }, [isRevenueCatReady, isRevenueCatUiReady, refreshSubscriptionState]);
+  }, [
+    appleAuthEnabled,
+    authUser,
+    isRevenueCatReady,
+    isRevenueCatUiReady,
+    refreshSubscriptionState,
+  ]);
 
   const value = useMemo<AppSessionContextValue>(
     () => ({
+      authUser,
       subscriptionStatus,
-      isReady: subscriptionStatus !== "loading",
+      isReady,
+      isAppleAuthEnabled: appleAuthEnabled,
+      isAuthenticated,
+      isAuthenticating,
       isRevenueCatReady,
       isRevenueCatPurchaseSupported,
       isPro,
       currentOffering,
       customerInfo,
       pendingPaywallTrigger,
+      signInWithApple,
+      signOut,
       refreshSubscriptionState,
       purchasePackage,
       restorePurchases,
@@ -334,9 +565,14 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       clearPaywall: () => setPendingPaywallTrigger(null),
     }),
     [
+      authUser,
+      appleAuthEnabled,
       currentOffering,
       customerInfo,
+      isAuthenticated,
+      isAuthenticating,
       isPro,
+      isReady,
       isRevenueCatPurchaseSupported,
       isRevenueCatReady,
       openCustomerCenter,
@@ -345,6 +581,8 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       purchasePackage,
       refreshSubscriptionState,
       restorePurchases,
+      signInWithApple,
+      signOut,
       subscriptionStatus,
     ],
   );

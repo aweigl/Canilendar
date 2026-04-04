@@ -50,6 +50,22 @@ const resources = {
         emptyDescription:
           "Add an appointment for this date and it will show up here as a dog card.",
       },
+      welcome: {
+        eyebrow: "Canilendar",
+        title: "Dog walks, calm days, zero chaos.",
+        description:
+          "Sign in with Apple to unlock your planner, keep purchases tied to your Apple identity, and continue setup on this device.",
+        valuePointOne: "Save each dog once, then schedule walks in seconds.",
+        valuePointTwo:
+          "See your day in one agenda with recurring appointments.",
+        valuePointThree:
+          "Keep premium simple: one Pro plan unlocks unlimited dogs and bookings.",
+        appleUnavailable:
+          "Sign in with Apple needs an iPhone or iPad development build.",
+        signInErrorTitle: "Apple sign-in failed",
+        footer:
+          "Your appointments stay on this device in v1, and purchases stay linked to your Apple sign-in.",
+      },
       appointment: {
         screenTitleNew: "New Appointment",
         screenTitleEdit: "Edit Appointment",
@@ -177,6 +193,17 @@ const resources = {
         dailyAppointmentLimit: "Appointments per day",
         dailyAppointmentLimitDescription:
           "Limit each day to {{count}} dog appointments. You can choose up to 15.",
+        account: {
+          title: "Account",
+          description:
+            "Apple sign-in unlocks your planner and links purchases to the same identity in RevenueCat.",
+          signedInAs: "Signed in as {{value}}",
+          revenueCatReference: "RevenueCat reference: {{value}}",
+          signOut: "Sign out",
+          signOutTitle: "Sign out?",
+          signOutBody:
+            "You can sign back in with Apple anytime. Your local planner data stays attached to this Apple account on this device.",
+        },
         pro: {
           title: "Canilendar Pro",
           description:
@@ -349,6 +376,23 @@ const resources = {
         emptyDescription:
           "Fuge fur dieses Datum einen Termin hinzu, dann erscheint er hier als Hundekarte.",
       },
+      welcome: {
+        eyebrow: "Canilendar",
+        title: "Gassi-Runden, ruhige Tage, kein Chaos.",
+        description:
+          "Melde dich mit Apple an, um deinen Planer freizuschalten, Kaufe an deine Apple-Identitat zu binden und das Setup auf diesem Gerat fortzusetzen.",
+        valuePointOne:
+          "Speichere jeden Hund einmal und plane Spaziergange dann in Sekunden.",
+        valuePointTwo:
+          "Sieh deinen Tag in einer Agenda mit wiederkehrenden Terminen.",
+        valuePointThree:
+          "Halte Premium einfach: Ein Pro-Abo schaltet unbegrenzt Hunde und Termine frei.",
+        appleUnavailable:
+          "Mit Apple anmelden braucht einen iPhone- oder iPad-Development-Build.",
+        signInErrorTitle: "Apple-Anmeldung fehlgeschlagen",
+        footer:
+          "Deine Termine bleiben in v1 auf diesem Gerat, und Kaufe bleiben mit deiner Apple-Anmeldung verknupft.",
+      },
       appointment: {
         screenTitleNew: "Neuer Termin",
         screenTitleEdit: "Termin bearbeiten",
@@ -482,6 +526,17 @@ const resources = {
         dailyAppointmentLimit: "Termine pro Tag",
         dailyAppointmentLimitDescription:
           "Begrenze jeden Tag auf {{count}} Hundetermine. Maximal 15 sind moglich.",
+        account: {
+          title: "Konto",
+          description:
+            "Die Apple-Anmeldung schaltet deinen Planer frei und verknupft Kaufe in RevenueCat mit derselben Identitat.",
+          signedInAs: "Angemeldet als {{value}}",
+          revenueCatReference: "RevenueCat-Referenz: {{value}}",
+          signOut: "Abmelden",
+          signOutTitle: "Abmelden?",
+          signOutBody:
+            "Du kannst dich jederzeit wieder mit Apple anmelden. Deine lokalen Planerdaten bleiben auf diesem Gerat an dieses Apple-Konto gebunden.",
+        },
         pro: {
           title: "Canilendar Pro",
           description:
@@ -656,6 +711,23 @@ const resources = {
         emptyDescription:
           "Ajoutez un rendez-vous a cette date et il apparaitra ici sous forme de fiche chien.",
       },
+      welcome: {
+        eyebrow: "Canilendar",
+        title: "Promenades calmes, journees fluides, zero chaos.",
+        description:
+          "Connectez-vous avec Apple pour debloquer votre agenda, lier vos achats a votre identite Apple et poursuivre la configuration sur cet appareil.",
+        valuePointOne:
+          "Enregistrez chaque chien une fois, puis planifiez les promenades en quelques secondes.",
+        valuePointTwo:
+          "Retrouvez votre journee dans un seul agenda avec les rendez-vous recurrents.",
+        valuePointThree:
+          "Gardez le premium simple : une offre Pro debloque les chiens et rendez-vous illimites.",
+        appleUnavailable:
+          "La connexion Apple necessite une build iPhone ou iPad de developpement.",
+        signInErrorTitle: "Echec de la connexion Apple",
+        footer:
+          "Vos rendez-vous restent sur cet appareil en v1, et vos achats restent lies a votre connexion Apple.",
+      },
       appointment: {
         screenTitleNew: "Nouveau rendez-vous",
         screenTitleEdit: "Modifier le rendez-vous",
@@ -789,6 +861,17 @@ const resources = {
         dailyAppointmentLimit: "Rendez-vous par jour",
         dailyAppointmentLimitDescription:
           "Limitez chaque jour a {{count}} rendez-vous chien. Vous pouvez aller jusqu'a 15.",
+        account: {
+          title: "Compte",
+          description:
+            "La connexion Apple debloque votre agenda et lie les achats a la meme identite dans RevenueCat.",
+          signedInAs: "Connecte en tant que {{value}}",
+          revenueCatReference: "Reference RevenueCat : {{value}}",
+          signOut: "Se deconnecter",
+          signOutTitle: "Se deconnecter ?",
+          signOutBody:
+            "Vous pourrez vous reconnecter avec Apple a tout moment. Vos donnees locales restent associees a ce compte Apple sur cet appareil.",
+        },
         pro: {
           title: "Canilendar Pro",
           description:
@@ -966,6 +1049,23 @@ const resources = {
         emptyDescription:
           "Agrega una cita para esta fecha y aparecera aqui como una tarjeta del perro.",
       },
+      welcome: {
+        eyebrow: "Canilendar",
+        title: "Paseos tranquilos, dias claros, cero caos.",
+        description:
+          "Inicia sesion con Apple para desbloquear tu agenda, vincular las compras a tu identidad de Apple y seguir con la configuracion en este dispositivo.",
+        valuePointOne:
+          "Guarda cada perro una vez y programa paseos en segundos.",
+        valuePointTwo:
+          "Ve tu dia en una sola agenda con citas recurrentes.",
+        valuePointThree:
+          "Manten premium simple: un plan Pro desbloquea perros y citas ilimitados.",
+        appleUnavailable:
+          "Iniciar sesion con Apple necesita una build de desarrollo para iPhone o iPad.",
+        signInErrorTitle: "Fallo al iniciar sesion con Apple",
+        footer:
+          "Tus citas se quedan en este dispositivo en v1 y las compras siguen vinculadas a tu inicio de sesion con Apple.",
+      },
       appointment: {
         screenTitleNew: "Nueva cita",
         screenTitleEdit: "Editar cita",
@@ -1099,6 +1199,17 @@ const resources = {
         dailyAppointmentLimit: "Citas por dia",
         dailyAppointmentLimitDescription:
           "Limita cada dia a {{count}} citas de perros. Puedes subir hasta 15.",
+        account: {
+          title: "Cuenta",
+          description:
+            "El inicio de sesion con Apple desbloquea tu agenda y vincula las compras con la misma identidad en RevenueCat.",
+          signedInAs: "Sesion iniciada como {{value}}",
+          revenueCatReference: "Referencia de RevenueCat: {{value}}",
+          signOut: "Cerrar sesion",
+          signOutTitle: "Cerrar sesion?",
+          signOutBody:
+            "Puedes volver a iniciar sesion con Apple cuando quieras. Tus datos locales siguen asociados a esta cuenta de Apple en este dispositivo.",
+        },
         pro: {
           title: "Canilendar Pro",
           description:

@@ -87,7 +87,7 @@ function RootNavigation() {
       notification: palette.accent,
     },
   };
-  const { isReady, pendingPaywallTrigger } = useAppSession();
+  const { isAuthenticated, isReady, pendingPaywallTrigger } = useAppSession();
   const { isLoaded, onboardingStatus } = useCanilendar();
   const pathname = usePathname();
   const segments = useSegments();
@@ -134,27 +134,35 @@ function RootNavigation() {
     const isOnboardingRoute = topSegment === "onboarding";
     const isPaywallRoute = topSegment === "paywall";
 
-    if (onboardingStatus !== "complete") {
-      if (!isWelcomeRoute && !isOnboardingRoute) {
+    if (!isAuthenticated) {
+      if (!isWelcomeRoute) {
         router.replace("/welcome" as never);
       }
       return;
     }
 
-    if (isWelcomeRoute || isOnboardingRoute) {
-      router.replace("/(tabs)" as never);
+    if (onboardingStatus !== "complete") {
+      if (!isOnboardingRoute) {
+        router.replace("/onboarding" as never);
+      }
       return;
     }
 
-    if (!pendingPaywallTrigger && isPaywallRoute) {
+    if (
+      isWelcomeRoute ||
+      isOnboardingRoute ||
+      (!pendingPaywallTrigger && isPaywallRoute)
+    ) {
       router.replace("/(tabs)" as never);
+      return;
     }
-  }, [isLoaded, isReady, onboardingStatus, pendingPaywallTrigger, topSegment]);
+  }, [isAuthenticated, isLoaded, isReady, onboardingStatus, pendingPaywallTrigger, topSegment]);
 
   useEffect(() => {
     if (
       !isReady ||
       !isLoaded ||
+      !isAuthenticated ||
       onboardingStatus !== "complete" ||
       !pendingPaywallTrigger ||
       pathname === "/paywall"
@@ -166,7 +174,7 @@ function RootNavigation() {
       pathname: "/paywall",
       params: { trigger: pendingPaywallTrigger },
     } as never);
-  }, [isLoaded, isReady, onboardingStatus, pathname, pendingPaywallTrigger]);
+  }, [isAuthenticated, isLoaded, isReady, onboardingStatus, pathname, pendingPaywallTrigger]);
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -194,10 +202,17 @@ function RootNavigation() {
 }
 
 function AppProviders() {
-  const { isPro, presentPaywall } = useAppSession();
+  const { authUser, isAppleAuthEnabled, isPro, presentPaywall } =
+    useAppSession();
 
   return (
-    <CanilendarProvider isPro={isPro} onRequireUpgrade={presentPaywall}>
+    <CanilendarProvider
+      isPro={isPro}
+      onRequireUpgrade={presentPaywall}
+      storageScopeKey={
+        authUser?.appleUserId ?? (isAppleAuthEnabled ? null : "local-device")
+      }
+    >
       <RootNavigation />
     </CanilendarProvider>
   );

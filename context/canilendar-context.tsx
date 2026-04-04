@@ -16,7 +16,7 @@ import {
   requestNotificationAccess,
   syncScheduledNotifications,
 } from '@/lib/notifications';
-import { loadPersistedState, persistState } from '@/lib/storage';
+import { loadScopedPersistedState, persistState } from '@/lib/storage';
 import {
   DAILY_APPOINTMENT_LIMIT_MAX,
   DAILY_APPOINTMENT_LIMIT_MIN,
@@ -139,12 +139,14 @@ function buildDraftAppointment(input: AppointmentInput, currentAppointment?: App
 type CanilendarProviderProps = PropsWithChildren<{
   isPro: boolean;
   onRequireUpgrade: (trigger: PaywallTrigger) => void;
+  storageScopeKey: string | null;
 }>;
 
 export function CanilendarProvider({
   children,
   isPro,
   onRequireUpgrade,
+  storageScopeKey,
 }: CanilendarProviderProps) {
   const systemColorScheme = useSystemColorScheme();
   const [dogs, setDogs] = useState<DogProfile[]>([]);
@@ -170,11 +172,26 @@ export function CanilendarProvider({
   useEffect(() => {
     let isMounted = true;
 
+    setIsLoaded(false);
+
     async function bootstrap() {
-      const [persistedState, permissionState] = await Promise.all([
-        loadPersistedState(),
-        getNotificationPermissionState(),
-      ]);
+      const permissionState = await getNotificationPermissionState();
+
+      if (!storageScopeKey) {
+        if (!isMounted) {
+          return;
+        }
+
+        setDogs([]);
+        setAppointments([]);
+        setSettings(DEFAULT_SETTINGS);
+        setOnboardingChecklist(DEFAULT_ONBOARDING_CHECKLIST);
+        setNotificationPermission(permissionState);
+        setIsLoaded(true);
+        return;
+      }
+
+      const persistedState = await loadScopedPersistedState(storageScopeKey);
 
       if (!isMounted) {
         return;
@@ -196,7 +213,7 @@ export function CanilendarProvider({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [storageScopeKey]);
 
   useEffect(() => {
     if (!isLoaded) {
@@ -211,7 +228,7 @@ export function CanilendarProvider({
   }, [isLoaded, settings.language]);
 
   useEffect(() => {
-    if (!isLoaded) {
+    if (!isLoaded || !storageScopeKey) {
       return;
     }
 
@@ -220,8 +237,8 @@ export function CanilendarProvider({
       appointments,
       settings,
       onboarding: onboardingChecklist,
-    });
-  }, [appointments, dogs, isLoaded, onboardingChecklist, settings]);
+    }, storageScopeKey);
+  }, [appointments, dogs, isLoaded, onboardingChecklist, settings, storageScopeKey]);
 
   useEffect(() => {
     if (!isLoaded || notificationPermission !== 'granted') {

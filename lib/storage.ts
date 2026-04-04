@@ -6,12 +6,14 @@ import {
   DEFAULT_ONBOARDING_CHECKLIST,
   DEFAULT_SETTINGS,
   type Appointment,
+  type AuthSession,
   type PersistedAppState,
 } from '@/types/domain';
 
 const STORAGE_KEY = '@canilendar/app-state-v3';
 const STORAGE_KEY_PREFIX = '@canilendar/app-state-v2';
 const LEGACY_STORAGE_KEY = '@canilendar/app-state-v1';
+const AUTH_STORAGE_KEY = '@canilendar/auth-session-v1';
 
 const FALLBACK_STATE: PersistedAppState = {
   dogs: [],
@@ -78,6 +80,35 @@ function normalizeAppointment(value: unknown): Appointment | null {
   };
 }
 
+function getScopedStorageKey(scopeKey: string) {
+  return `${STORAGE_KEY}:${scopeKey}`;
+}
+
+function normalizeAuthSession(value: unknown): AuthSession | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (
+    candidate.provider !== 'apple' ||
+    typeof candidate.appleUserId !== 'string' ||
+    typeof candidate.revenueCatAppUserId !== 'string'
+  ) {
+    return null;
+  }
+
+  return {
+    provider: 'apple',
+    appleUserId: candidate.appleUserId,
+    revenueCatAppUserId: candidate.revenueCatAppUserId,
+    email: typeof candidate.email === 'string' ? candidate.email : null,
+    givenName: typeof candidate.givenName === 'string' ? candidate.givenName : null,
+    familyName: typeof candidate.familyName === 'string' ? candidate.familyName : null,
+  };
+}
+
 function normalizePersistedState(parsed: Partial<PersistedAppState>): PersistedAppState {
   return {
     dogs: Array.isArray(parsed.dogs) ? parsed.dogs : [],
@@ -135,6 +166,86 @@ export async function loadPersistedState(): Promise<PersistedAppState> {
   }
 }
 
-export async function persistState(state: PersistedAppState) {
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+export async function loadScopedPersistedState(
+  scopeKey: string | null | undefined,
+): Promise<PersistedAppState> {
+  if (!scopeKey) {
+    return FALLBACK_STATE;
+  }
+
+  const scopedStorageKey = getScopedStorageKey(scopeKey);
+
+  try {
+    const scopedValue = await AsyncStorage.getItem(scopedStorageKey);
+
+    if (scopedValue) {
+      return normalizePersistedState(JSON.parse(scopedValue) as Partial<PersistedAppState>);
+    }
+
+    const rawValue = await AsyncStorage.getItem(STORAGE_KEY);
+
+    if (rawValue) {
+      const migratedState = normalizePersistedState(JSON.parse(rawValue) as Partial<PersistedAppState>);
+      await AsyncStorage.setItem(scopedStorageKey, JSON.stringify(migratedState));
+      await AsyncStorage.removeItem(STORAGE_KEY);
+      return migratedState;
+    }
+
+    const allKeys = await AsyncStorage.getAllKeys();
+    const migratedUserScopedKey = allKeys.find((key) => key.startsWith(`${STORAGE_KEY_PREFIX}:`));
+
+    if (migratedUserScopedKey) {
+      const migratedRawValue = await AsyncStorage.getItem(migratedUserScopedKey);
+
+      if (migratedRawValue) {
+        const migratedState = normalizePersistedState(
+          JSON.parse(migratedRawValue) as Partial<PersistedAppState>
+        );
+        await AsyncStorage.setItem(scopedStorageKey, JSON.stringify(migratedState));
+        return migratedState;
+      }
+    }
+
+    const legacyValue = await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+
+    if (!legacyValue) {
+      return FALLBACK_STATE;
+    }
+
+    const migrated = normalizePersistedState(JSON.parse(legacyValue) as Partial<PersistedAppState>);
+    await AsyncStorage.setItem(scopedStorageKey, JSON.stringify(migrated));
+    return migrated;
+  } catch {
+    return FALLBACK_STATE;
+  }
+}
+
+export async function persistState(
+  state: PersistedAppState,
+  scopeKey?: string | null,
+) {
+  const storageKey = scopeKey ? getScopedStorageKey(scopeKey) : STORAGE_KEY;
+  await AsyncStorage.setItem(storageKey, JSON.stringify(state));
+}
+
+export async function loadAuthSession(): Promise<AuthSession | null> {
+  try {
+    const rawValue = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
+
+    if (!rawValue) {
+      return null;
+    }
+
+    return normalizeAuthSession(JSON.parse(rawValue));
+  } catch {
+    return null;
+  }
+}
+
+export async function persistAuthSession(session: AuthSession) {
+  await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+}
+
+export async function clearAuthSession() {
+  await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
 }

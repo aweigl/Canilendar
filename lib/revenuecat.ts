@@ -97,6 +97,12 @@ export async function logOutRevenueCat() {
     return;
   }
 
+  const isAnonymous = await Purchases.isAnonymous();
+
+  if (isAnonymous) {
+    return;
+  }
+
   await Purchases.logOut();
 }
 
@@ -215,7 +221,6 @@ export async function presentRevenueCatCustomerCenter() {
 }
 
 export function hasActiveProEntitlement(customerInfo: CustomerInfo | null) {
-  console.log("isPro", customerInfo?.entitlements.active);
   return Boolean(
     customerInfo?.entitlements.active[CANILENDAR_PRO_ENTITLEMENT_ID],
   );

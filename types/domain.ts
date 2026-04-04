@@ -14,6 +14,7 @@ export type PaywallTrigger =
   | "settings"
   | "onboarding";
 export type ChecklistTarget = "dogs" | "settings";
+export type AuthProvider = "apple";
 
 export type RecurrenceRule = {
   frequency: "weekly";
@@ -67,6 +68,15 @@ export type PersistedAppState = {
   appointments: Appointment[];
   settings: ReminderSettings;
   onboarding: OnboardingChecklistState;
+};
+
+export type AuthSession = {
+  provider: AuthProvider;
+  appleUserId: string;
+  revenueCatAppUserId: string;
+  email: string | null;
+  givenName: string | null;
+  familyName: string | null;
 };
 
 export type AppointmentOccurrence = {
