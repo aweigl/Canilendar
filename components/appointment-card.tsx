@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
-import { describeRecurrence, describeReminder, formatTimeLabel } from '@/lib/date';
+import { describePickupTime, describeRecurrence, describeReminder } from '@/lib/date';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { AppointmentOccurrence } from '@/types/domain';
 
@@ -36,7 +36,7 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
               },
             ]}>
             <ThemedText lightColor={palette.onSupport} darkColor={palette.onSupport} style={styles.timeLabel}>
-              {formatTimeLabel(occurrence.startAt)}
+              {describePickupTime(occurrence.appointment, occurrence.startAt)}
             </ThemedText>
           </View>
           <View style={styles.content}>

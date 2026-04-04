@@ -3,7 +3,11 @@ export type AppearanceMode = "system" | "light" | "dark";
 export type AppLanguage = "en" | "de" | "fr" | "es";
 export type LanguagePreference = "system" | AppLanguage;
 export type OnboardingStatus = "loading" | "incomplete" | "complete";
-export type SubscriptionStatus = "loading" | "inactive" | "active" | "unavailable";
+export type SubscriptionStatus =
+  | "loading"
+  | "inactive"
+  | "active"
+  | "unavailable";
 export type PaywallTrigger =
   | "dog_limit"
   | "appointment_limit"
@@ -31,6 +35,7 @@ export type Appointment = {
   id: string;
   dogId: string;
   startAt: string;
+  hasPickupTime: boolean;
   endAt?: string | null;
   notes?: string;
   metadata?: string;
@@ -45,6 +50,7 @@ export type ReminderSettings = {
   dailySummaryEnabled: boolean;
   dailySummaryTime: string;
   defaultReminderMinutes: number;
+  dailyAppointmentLimit: number;
   appearanceMode: AppearanceMode;
   language: LanguagePreference;
 };
@@ -85,6 +91,7 @@ export type AppointmentInput = {
   id?: string;
   dog: DogInput;
   startAt: string;
+  hasPickupTime: boolean;
   endAt?: string | null;
   notes?: string;
   metadata?: string;
@@ -94,6 +101,11 @@ export type AppointmentInput = {
 };
 
 export const REMINDER_OPTIONS = [15, 30, 60, 90];
+export const DAILY_APPOINTMENT_LIMIT_MIN = 6;
+export const DAILY_APPOINTMENT_LIMIT_MAX = 15;
+export const DAILY_APPOINTMENT_LIMIT_OPTIONS = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+] as const;
 
 export const FREE_TIER_LIMITS = {
   dogs: 1,
@@ -114,6 +126,7 @@ export const DEFAULT_SETTINGS: ReminderSettings = {
   dailySummaryEnabled: true,
   dailySummaryTime: "07:00",
   defaultReminderMinutes: 60,
+  dailyAppointmentLimit: DAILY_APPOINTMENT_LIMIT_MIN,
   appearanceMode: "system",
   language: "system",
 };

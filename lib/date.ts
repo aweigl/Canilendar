@@ -1,6 +1,7 @@
 import {
   addDays,
   addMinutes,
+  addWeeks,
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
@@ -14,6 +15,7 @@ import {
   startOfDay,
   startOfMonth,
   startOfWeek,
+  subWeeks,
   subMinutes,
 } from 'date-fns';
 import { de, enUS, es, fr } from 'date-fns/locale';
@@ -54,6 +56,10 @@ export function getMonthGrid(visibleMonth: Date) {
   return weeks;
 }
 
+export function getWeekDays(anchorDate: Date) {
+  return Array.from({ length: 7 }, (_, index) => addDays(anchorDate, index));
+}
+
 export function isCurrentMonthDay(day: Date, visibleMonth: Date) {
   return isSameMonth(day, visibleMonth);
 }
@@ -64,6 +70,22 @@ export function toDateKey(date: Date) {
 
 export function formatMonthLabel(date: Date, language?: AppLanguage) {
   return format(date, 'MMMM yyyy', { locale: getDateFnsLocale(getLanguage(language)) });
+}
+
+export function formatWeekRange(date: Date, language?: AppLanguage) {
+  const locale = getDateFnsLocale(getLanguage(language));
+  const weekStart = date;
+  const weekEnd = addDays(date, 6);
+
+  if (format(weekStart, 'MMM yyyy', { locale }) === format(weekEnd, 'MMM yyyy', { locale })) {
+    return `${format(weekStart, 'MMM d', { locale })} - ${format(weekEnd, 'd', { locale })}`;
+  }
+
+  if (format(weekStart, 'yyyy', { locale }) === format(weekEnd, 'yyyy', { locale })) {
+    return `${format(weekStart, 'MMM d', { locale })} - ${format(weekEnd, 'MMM d', { locale })}`;
+  }
+
+  return `${format(weekStart, 'MMM d, yyyy', { locale })} - ${format(weekEnd, 'MMM d, yyyy', { locale })}`;
 }
 
 export function formatLongDate(date: Date, language?: AppLanguage) {
@@ -102,6 +124,19 @@ export function combineDateAndTimeParts(date: Date, time: Date) {
     seconds: 0,
     milliseconds: 0,
   });
+}
+
+export function getDefaultPickupTime(date: Date) {
+  return set(date, {
+    hours: 9,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+  });
+}
+
+export function getDateOnlyStartAt(date: Date) {
+  return startOfDay(date);
 }
 
 export function parseTimeValue(timeValue: string) {
@@ -155,7 +190,7 @@ export function buildOccurrence(
   date: Date
 ): AppointmentOccurrence {
   const startAt = getOccurrenceStartAt(appointment, date);
-  const reminderAt = appointment.reminderMinutesBefore > 0
+  const reminderAt = appointment.hasPickupTime && appointment.reminderMinutesBefore > 0
     ? subMinutes(startAt, appointment.reminderMinutesBefore)
     : null;
 
@@ -230,7 +265,11 @@ export function buildDailySummaryBody(occurrences: AppointmentOccurrence[], lang
 
   const headline = occurrences
     .slice(0, 3)
-    .map((occurrence) => `${formatTimeLabel(occurrence.startAt, language)} ${occurrence.dog.name}`)
+    .map((occurrence) =>
+      occurrence.appointment.hasPickupTime
+        ? `${formatTimeLabel(occurrence.startAt, language)} ${occurrence.dog.name}`
+        : occurrence.dog.name
+    )
     .join(' • ');
 
   if (occurrences.length <= 3) {
@@ -238,6 +277,14 @@ export function buildDailySummaryBody(occurrences: AppointmentOccurrence[], lang
   }
 
   return t('notifications.summaryMore', { headline, count: occurrences.length - 3 });
+}
+
+export function getPreviousWeek(date: Date) {
+  return subWeeks(date, 1);
+}
+
+export function getNextWeek(date: Date) {
+  return addWeeks(date, 1);
 }
 
 export function getNextNotificationTime(date: Date, timeValue: string) {
@@ -281,6 +328,18 @@ export function describeReminder(minutes: number, language?: AppLanguage) {
     hours: Math.floor(minutes / 60),
     minutes: minutes % 60,
   });
+}
+
+export function describePickupTime(
+  appointment: Appointment,
+  startAt: Date,
+  language?: AppLanguage
+) {
+  if (!appointment.hasPickupTime) {
+    return getFixedT(language)('appointment.noPickupTime');
+  }
+
+  return formatTimeLabel(startAt, language);
 }
 
 export function withReminderOffset(date: Date, minutes: number) {

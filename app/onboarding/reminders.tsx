@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Alert, StyleSheet, View } from "react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
@@ -10,6 +11,7 @@ import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function OnboardingRemindersScreen() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { requestNotificationPermission } = useCanilendar();
@@ -19,8 +21,8 @@ export default function OnboardingRemindersScreen() {
 
     if (permission === "denied") {
       Alert.alert(
-        "Notifications are off",
-        "You can still finish setup now and enable reminders later in Settings."
+        t("onboarding.reminders.deniedTitle"),
+        t("onboarding.reminders.deniedBody"),
       );
     }
 
@@ -31,9 +33,9 @@ export default function OnboardingRemindersScreen() {
     <OnboardingShell
       step={4}
       totalSteps={5}
-      eyebrow="Reminders"
-      title="Turn on notifications when you’re ready"
-      description="Your first dog and first appointment are saved already, so enabling reminders now immediately has value."
+      eyebrow={t("onboarding.reminders.eyebrow")}
+      title={t("onboarding.reminders.title")}
+      description={t("onboarding.reminders.description")}
     >
       <ThemedView
         style={[
@@ -42,32 +44,32 @@ export default function OnboardingRemindersScreen() {
         ]}
       >
         <View style={styles.pointRow}>
-          <ThemedText type="sectionTitle">Appointment alerts</ThemedText>
+          <ThemedText type="sectionTitle">{t("onboarding.reminders.appointmentAlertsTitle")}</ThemedText>
           <ThemedText
             lightColor={palette.textMuted}
             darkColor={palette.textMuted}
           >
-            Get a heads-up before pickup time.
+            {t("onboarding.reminders.appointmentAlertsBody")}
           </ThemedText>
         </View>
         <View style={styles.pointRow}>
-          <ThemedText type="sectionTitle">Daily summary</ThemedText>
+          <ThemedText type="sectionTitle">{t("onboarding.reminders.dailySummaryTitle")}</ThemedText>
           <ThemedText
             lightColor={palette.textMuted}
             darkColor={palette.textMuted}
           >
-            See the day ahead from one morning reminder.
+            {t("onboarding.reminders.dailySummaryBody")}
           </ThemedText>
         </View>
       </ThemedView>
 
       <AppButton
-        label="Enable reminders"
+        label={t("settings.enableReminders")}
         onPress={handleEnableReminders}
         icon="bell.badge.fill"
       />
       <AppButton
-        label="Maybe later"
+        label={t("onboarding.reminders.maybeLater")}
         onPress={() => router.push("/onboarding/success" as never)}
         variant="ghost"
       />

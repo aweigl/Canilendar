@@ -36,6 +36,14 @@ const resources = {
         badge: "Daily dog-walk planner",
         description:
           "Stay on top of pickups, repeat walks, and today's route without leaving your phone calendar half-finished.",
+        monthView: "Month",
+        weekView: "Week table",
+        weekTable: "Week table",
+        weekCount_one: "{{count}} dog",
+        weekCount_other: "{{count}} dogs",
+        weekEmpty: "No walks scheduled",
+        weekMore_one: "+{{count}} more walk",
+        weekMore_other: "+{{count}} more walks",
         newAppointment: "New appointment",
         agenda: "Agenda",
         emptyTitle: "No agenda entries for this day",
@@ -61,10 +69,15 @@ const resources = {
         pickupAddress: "Pickup address",
         ownerPhone: "Owner phone",
         dogNotes: "Dog notes",
+        pickupTimeEnabled: "Adds a specific pickup time and enables reminder notifications.",
+        pickupTimeDisabled:
+          "Disabled by default. This walk stays on the day plan without a time-based reminder.",
         repeatWeekly: "Repeat weekly",
         recurringOn: "Shows on every selected weekday.",
         oneTime: "Keeps this as a one-time appointment.",
         reminderLeadTime: "Reminder lead time",
+        reminderDisabled: "Enable pickup time if you want a reminder before the walk.",
+        noPickupTime: "No pickup time",
         appointmentNotes: "Appointment notes",
         reminderPreview:
           "Reminder time: {{time}} with a {{count}}-minute heads-up.",
@@ -85,6 +98,9 @@ const resources = {
           chooseDogTitle: "Choose a dog",
           chooseDogBody:
             "Select an existing dog or switch to a new dog profile.",
+          dayLimitTitle: "Daily limit reached",
+          dayLimitBody:
+            "This would exceed your {{limit}}-dog daily limit on {{dates}}.",
           repeatDaysTitle: "Pick repeat days",
           repeatDaysBody: "Choose at least one weekday for the recurring walk.",
           pastAppointmentTitle: "Past appointment",
@@ -158,6 +174,39 @@ const resources = {
         defaultReminder: "Default event reminder",
         defaultReminderDescription:
           "New appointments start with this reminder lead time. You can override it per appointment.",
+        dailyAppointmentLimit: "Appointments per day",
+        dailyAppointmentLimitDescription:
+          "Limit each day to {{count}} dog appointments. You can choose up to 15.",
+        pro: {
+          title: "Canilendar Pro",
+          description:
+            "Upgrade only when you need more than the first free dog and appointment.",
+          active: "Canilendar Pro is active.",
+          unavailable: "Purchases are not configured on this build yet.",
+          freeTier:
+            "You are on the free tier with 1 dog and 1 appointment included.",
+          upgrade: "Upgrade to Pro",
+          restore: "Restore purchases",
+          restoring: "Restoring...",
+          restoreFailedTitle: "Restore failed",
+          restoreSuccessTitle: "Restore complete",
+          restoreSuccessBody: "Your subscription status has been refreshed.",
+          customerCenter: "Open Customer Center",
+          customerCenterTitle: "Customer Center",
+          currentOffering:
+            "Current offering: {{identifier}} with {{count}} package options.",
+          expoGo:
+            "This build is running in Expo Go preview mode. Use `npx expo run:ios` to test real RevenueCat purchases, restores, and Customer Center.",
+          hostedUi:
+            "Hosted RevenueCat Paywall UI and Customer Center need an iOS development build or production build. They are unavailable in Expo Go.",
+        },
+        devReset: {
+          title: "Reset local data?",
+          body:
+            "This DEV action removes all dogs, appointments, settings, and onboarding progress saved on this simulator.",
+          button: "Reset local data",
+          confirm: "Reset",
+        },
         storage: "Storage",
         storageDescription:
           "Appointments, dogs, and reminder preferences are stored only on this device in v1.",
@@ -165,6 +214,41 @@ const resources = {
           notificationsOffTitle: "Notifications are off",
           notificationsOffBody:
             "Open system settings for Canilendar if you want reminder banners and daily summaries.",
+        },
+      },
+      onboarding: {
+        appointment: {
+          eyebrow: "First appointment",
+          title: "Put the first walk on the calendar",
+          descriptionWithDog:
+            "{{name}} will be reused from the profile you just saved.",
+          descriptionWithoutDog:
+            "We'll attach this appointment to the dog you just added.",
+          missingDogTitle: "Missing dog",
+          missingDogBody: "Create the dog profile first.",
+          pickupTimeEnabled: "A specific pickup time is enabled for this walk.",
+          pickupTimeDisabled:
+            "Leave this off if pickup happens sometime in the morning.",
+          oneTime: "Keeps the first appointment as a one-time walk.",
+          reminderDisabled:
+            "No pickup-time reminder will be scheduled until you enable a time.",
+          save: "Save appointment",
+          pastAppointmentBody:
+            "The first appointment needs to be in the future.",
+        },
+        reminders: {
+          eyebrow: "Reminders",
+          title: "Turn on notifications when you're ready",
+          description:
+            "Your first dog and first appointment are saved already, so enabling reminders now immediately has value.",
+          deniedTitle: "Notifications are off",
+          deniedBody:
+            "You can still finish setup now and enable reminders later in Settings.",
+          appointmentAlertsTitle: "Appointment alerts",
+          appointmentAlertsBody: "Get a heads-up before pickup time.",
+          dailySummaryTitle: "Daily summary",
+          dailySummaryBody: "See the day ahead from one morning reminder.",
+          maybeLater: "Maybe later",
         },
       },
       notifications: {
@@ -239,6 +323,14 @@ const resources = {
         badge: "Planer fur tagliche Gassi-Runden",
         description:
           "Behalte Abholungen, wiederkehrende Spaziergange und die heutige Route im Blick, ohne deinen Handykalender halbfertig zu lassen.",
+        monthView: "Monat",
+        weekView: "Wochenplan",
+        weekTable: "Wochenplan",
+        weekCount_one: "{{count}} Hund",
+        weekCount_other: "{{count}} Hunde",
+        weekEmpty: "Keine Spaziergange geplant",
+        weekMore_one: "+{{count}} weiterer Spaziergang",
+        weekMore_other: "+{{count}} weitere Spaziergange",
         newAppointment: "Neuer Termin",
         agenda: "Tagesplan",
         emptyTitle: "Keine Eintrage fur diesen Tag",
@@ -264,10 +356,17 @@ const resources = {
         pickupAddress: "Abholadresse",
         ownerPhone: "Telefon Besitzer",
         dogNotes: "Notizen zum Hund",
+        pickupTimeEnabled:
+          "Fugt eine konkrete Abholzeit hinzu und aktiviert Erinnerungen fur diesen Termin.",
+        pickupTimeDisabled:
+          "StandardmaBig deaktiviert. Dieser Termin bleibt ohne zeitbasierte Erinnerung im Tagesplan.",
         repeatWeekly: "Wochentlich wiederholen",
         recurringOn: "Erscheint an jedem ausgewahlten Wochentag.",
         oneTime: "Bleibt ein einmaliger Termin.",
         reminderLeadTime: "Erinnerung vorher",
+        reminderDisabled:
+          "Aktiviere eine Abholzeit, wenn du vor dem Spaziergang erinnert werden mochtest.",
+        noPickupTime: "Keine Abholzeit",
         appointmentNotes: "Notizen zum Termin",
         reminderPreview:
           "Erinnerungszeit: {{time}} mit {{count}} Minuten Vorlauf.",
@@ -289,6 +388,9 @@ const resources = {
           chooseDogTitle: "Hund auswahlen",
           chooseDogBody:
             "Wahle einen gespeicherten Hund oder wechsle zu einem neuen Hundprofil.",
+          dayLimitTitle: "Tageslimit erreicht",
+          dayLimitBody:
+            "Damit wurde dein Tageslimit von {{limit}} Hunden am {{dates}} uberschritten.",
           repeatDaysTitle: "Wiederholungstage auswahlen",
           repeatDaysBody:
             "Wahle mindestens einen Wochentag fur den wiederkehrenden Spaziergang.",
@@ -365,6 +467,39 @@ const resources = {
         defaultReminder: "Standard-Erinnerung",
         defaultReminderDescription:
           "Neue Termine starten mit dieser Vorlaufzeit. Du kannst sie pro Termin uberschreiben.",
+        dailyAppointmentLimit: "Termine pro Tag",
+        dailyAppointmentLimitDescription:
+          "Begrenze jeden Tag auf {{count}} Hundetermine. Maximal 15 sind moglich.",
+        pro: {
+          title: "Canilendar Pro",
+          description:
+            "Upgrade nur, wenn du mehr als den ersten kostenlosen Hund und Termin brauchst.",
+          active: "Canilendar Pro ist aktiv.",
+          unavailable: "Kaufe sind in diesem Build noch nicht eingerichtet.",
+          freeTier:
+            "Du nutzt den kostenlosen Tarif mit 1 Hund und 1 Termin.",
+          upgrade: "Auf Pro upgraden",
+          restore: "Kaufe wiederherstellen",
+          restoring: "Stelle wieder her...",
+          restoreFailedTitle: "Wiederherstellung fehlgeschlagen",
+          restoreSuccessTitle: "Wiederherstellung abgeschlossen",
+          restoreSuccessBody: "Dein Abo-Status wurde aktualisiert.",
+          customerCenter: "Customer Center offnen",
+          customerCenterTitle: "Customer Center",
+          currentOffering:
+            "Aktuelles Angebot: {{identifier}} mit {{count}} Paketoptionen.",
+          expoGo:
+            "Dieser Build lauft im Expo-Go-Vorschaumodus. Verwende `npx expo run:ios`, um echte RevenueCat-Kaufe, Wiederherstellungen und das Customer Center zu testen.",
+          hostedUi:
+            "Die gehostete RevenueCat-Paywall und das Customer Center brauchen einen iOS-Development-Build oder Produktions-Build. In Expo Go sind sie nicht verfugbar.",
+        },
+        devReset: {
+          title: "Lokale Daten zurucksetzen?",
+          body:
+            "Diese DEV-Aktion entfernt alle Hunde, Termine, Einstellungen und den Onboarding-Fortschritt von diesem Simulator.",
+          button: "Lokale Daten zurucksetzen",
+          confirm: "Zurucksetzen",
+        },
         storage: "Speicher",
         storageDescription:
           "Termine, Hunde und Erinnerungs-Einstellungen werden in v1 nur auf diesem Gerät gespeichert.",
@@ -372,6 +507,43 @@ const resources = {
           notificationsOffTitle: "Benachrichtigungen sind aus",
           notificationsOffBody:
             "Offne die Systemeinstellungen fur Canilendar, wenn du Banner und Tageszusammenfassungen erhalten mochtest.",
+        },
+      },
+      onboarding: {
+        appointment: {
+          eyebrow: "Erster Termin",
+          title: "Trage den ersten Spaziergang in den Kalender ein",
+          descriptionWithDog:
+            "{{name}} wird aus dem eben gespeicherten Profil ubernommen.",
+          descriptionWithoutDog:
+            "Wir verknupfen diesen Termin mit dem Hund, den du gerade angelegt hast.",
+          missingDogTitle: "Hund fehlt",
+          missingDogBody: "Lege zuerst das Hundeprofil an.",
+          pickupTimeEnabled:
+            "Fur diesen Spaziergang ist eine konkrete Abholzeit aktiviert.",
+          pickupTimeDisabled:
+            "Lass das aus, wenn die Abholung irgendwann am Morgen passiert.",
+          oneTime: "Der erste Termin bleibt ein einmaliger Spaziergang.",
+          reminderDisabled:
+            "Es wird keine Abholzeit-Erinnerung geplant, bis du eine Uhrzeit aktivierst.",
+          save: "Termin speichern",
+          pastAppointmentBody:
+            "Der erste Termin muss in der Zukunft liegen.",
+        },
+        reminders: {
+          eyebrow: "Erinnerungen",
+          title: "Aktiviere Benachrichtigungen, wenn du bereit bist",
+          description:
+            "Dein erster Hund und dein erster Termin sind schon gespeichert, deshalb lohnt sich das Aktivieren jetzt sofort.",
+          deniedTitle: "Benachrichtigungen sind aus",
+          deniedBody:
+            "Du kannst das Setup jetzt trotzdem abschliessen und Erinnerungen spater in den Einstellungen aktivieren.",
+          appointmentAlertsTitle: "Termin-Erinnerungen",
+          appointmentAlertsBody: "Erhalte vor der Abholzeit einen Hinweis.",
+          dailySummaryTitle: "Tageszusammenfassung",
+          dailySummaryBody:
+            "Sieh den Tag mit einer morgendlichen Erinnerung im Voraus.",
+          maybeLater: "Vielleicht spater",
         },
       },
       notifications: {
@@ -446,6 +618,14 @@ const resources = {
         badge: "Planificateur quotidien de promenades",
         description:
           "Gardez le controle des prises en charge, des promenades recurrentes et de l'itineraire du jour sans laisser le calendrier de votre telephone inacheve.",
+        monthView: "Mois",
+        weekView: "Tableau semaine",
+        weekTable: "Tableau semaine",
+        weekCount_one: "{{count}} chien",
+        weekCount_other: "{{count}} chiens",
+        weekEmpty: "Aucune promenade prevue",
+        weekMore_one: "+{{count}} promenade de plus",
+        weekMore_other: "+{{count}} promenades de plus",
         newAppointment: "Nouveau rendez-vous",
         agenda: "Agenda",
         emptyTitle: "Aucune entree pour ce jour",
@@ -471,10 +651,17 @@ const resources = {
         pickupAddress: "Adresse de prise en charge",
         ownerPhone: "Telephone du proprietaire",
         dogNotes: "Notes sur le chien",
+        pickupTimeEnabled:
+          "Ajoute une heure de prise en charge precise et active les rappels.",
+        pickupTimeDisabled:
+          "Desactive par defaut. Cette promenade reste dans le plan du jour sans rappel horaire.",
         repeatWeekly: "Repeter chaque semaine",
         recurringOn: "S affiche a chaque jour selectionne.",
         oneTime: "Reste un rendez-vous unique.",
         reminderLeadTime: "Delai du rappel",
+        reminderDisabled:
+          "Activez l heure de prise en charge pour envoyer un rappel avant la promenade.",
+        noPickupTime: "Pas d heure de prise en charge",
         appointmentNotes: "Notes du rendez-vous",
         reminderPreview:
           "Heure du rappel : {{time}} avec {{count}} minutes d avance.",
@@ -496,6 +683,9 @@ const resources = {
           chooseDogTitle: "Choisissez un chien",
           chooseDogBody:
             "Selectionnez un chien existant ou passez a un nouveau profil.",
+          dayLimitTitle: "Limite journaliere atteinte",
+          dayLimitBody:
+            "Cela depasserait votre limite quotidienne de {{limit}} chiens le {{dates}}.",
           repeatDaysTitle: "Choisissez les jours de repetition",
           repeatDaysBody:
             "Selectionnez au moins un jour pour la promenade recurrente.",
@@ -572,6 +762,40 @@ const resources = {
         defaultReminder: "Rappel par defaut de l'evenement",
         defaultReminderDescription:
           "Les nouveaux rendez-vous commencent avec ce delai de rappel. Vous pouvez le remplacer pour chaque rendez-vous.",
+        dailyAppointmentLimit: "Rendez-vous par jour",
+        dailyAppointmentLimitDescription:
+          "Limitez chaque jour a {{count}} rendez-vous chien. Vous pouvez aller jusqu'a 15.",
+        pro: {
+          title: "Canilendar Pro",
+          description:
+            "Passez a la version Pro seulement quand vous avez besoin de plus que le premier chien et rendez-vous gratuits.",
+          active: "Canilendar Pro est actif.",
+          unavailable:
+            "Les achats ne sont pas encore configures dans cette version.",
+          freeTier:
+            "Vous utilisez l'offre gratuite avec 1 chien et 1 rendez-vous inclus.",
+          upgrade: "Passer a Pro",
+          restore: "Restaurer les achats",
+          restoring: "Restauration...",
+          restoreFailedTitle: "Echec de la restauration",
+          restoreSuccessTitle: "Restauration terminee",
+          restoreSuccessBody: "Le statut de votre abonnement a ete actualise.",
+          customerCenter: "Ouvrir le Customer Center",
+          customerCenterTitle: "Customer Center",
+          currentOffering:
+            "Offre actuelle : {{identifier}} avec {{count}} options de forfait.",
+          expoGo:
+            "Cette version fonctionne en mode apercu Expo Go. Utilisez `npx expo run:ios` pour tester les vrais achats RevenueCat, les restaurations et le Customer Center.",
+          hostedUi:
+            "L'interface Paywall hebergee de RevenueCat et le Customer Center necessitent une build iOS de developpement ou de production. Ils ne sont pas disponibles dans Expo Go.",
+        },
+        devReset: {
+          title: "Reinitialiser les donnees locales ?",
+          body:
+            "Cette action DEV supprime tous les chiens, rendez-vous, reglages et la progression d'onboarding enregistres sur ce simulateur.",
+          button: "Reinitialiser les donnees locales",
+          confirm: "Reinitialiser",
+        },
         storage: "Stockage",
         storageDescription:
           "Les rendez-vous, chiens et preferences de rappel sont stockes uniquement sur cet appareil dans v1.",
@@ -579,6 +803,44 @@ const resources = {
           notificationsOffTitle: "Les notifications sont desactivees",
           notificationsOffBody:
             "Ouvrez les reglages systeme de Canilendar si vous voulez des bannieres de rappel et des resumes quotidiens.",
+        },
+      },
+      onboarding: {
+        appointment: {
+          eyebrow: "Premier rendez-vous",
+          title: "Ajoutez la premiere promenade au calendrier",
+          descriptionWithDog:
+            "{{name}} sera repris depuis le profil que vous venez d'enregistrer.",
+          descriptionWithoutDog:
+            "Nous associerons ce rendez-vous au chien que vous venez d'ajouter.",
+          missingDogTitle: "Chien manquant",
+          missingDogBody: "Creez d'abord le profil du chien.",
+          pickupTimeEnabled:
+            "Une heure de prise en charge precise est activee pour cette promenade.",
+          pickupTimeDisabled:
+            "Laissez cette option desactivee si la prise en charge se fait dans la matinee.",
+          oneTime: "Le premier rendez-vous reste une promenade unique.",
+          reminderDisabled:
+            "Aucun rappel lie a l'heure ne sera planifie tant que vous n'aurez pas active une heure.",
+          save: "Enregistrer le rendez-vous",
+          pastAppointmentBody:
+            "Le premier rendez-vous doit etre prevu dans le futur.",
+        },
+        reminders: {
+          eyebrow: "Rappels",
+          title: "Activez les notifications quand vous etes pret",
+          description:
+            "Votre premier chien et votre premier rendez-vous sont deja enregistres, donc activer les rappels maintenant est deja utile.",
+          deniedTitle: "Les notifications sont desactivees",
+          deniedBody:
+            "Vous pouvez quand meme terminer la configuration maintenant et activer les rappels plus tard dans les reglages.",
+          appointmentAlertsTitle: "Alertes de rendez-vous",
+          appointmentAlertsBody:
+            "Recevez un rappel avant l'heure de prise en charge.",
+          dailySummaryTitle: "Resume quotidien",
+          dailySummaryBody:
+            "Voyez la journee a venir avec un seul rappel matinal.",
+          maybeLater: "Peut-etre plus tard",
         },
       },
       notifications: {
@@ -654,6 +916,14 @@ const resources = {
         badge: "Planificador diario de paseos",
         description:
           "Controla recogidas, paseos recurrentes y la ruta de hoy sin dejar a medias el calendario del telefono.",
+        monthView: "Mes",
+        weekView: "Tabla semanal",
+        weekTable: "Tabla semanal",
+        weekCount_one: "{{count}} perro",
+        weekCount_other: "{{count}} perros",
+        weekEmpty: "No hay paseos programados",
+        weekMore_one: "+{{count}} paseo mas",
+        weekMore_other: "+{{count}} paseos mas",
         newAppointment: "Nueva cita",
         agenda: "Agenda",
         emptyTitle: "No hay entradas para este dia",
@@ -679,10 +949,17 @@ const resources = {
         pickupAddress: "Direccion de recogida",
         ownerPhone: "Telefono del propietario",
         dogNotes: "Notas del perro",
+        pickupTimeEnabled:
+          "Agrega una hora concreta de recogida y activa los recordatorios.",
+        pickupTimeDisabled:
+          "Desactivado por defecto. Este paseo queda en el plan del dia sin recordatorio por hora.",
         repeatWeekly: "Repetir cada semana",
         recurringOn: "Se muestra en cada dia seleccionado.",
         oneTime: "Se mantiene como una cita unica.",
         reminderLeadTime: "Antelacion del recordatorio",
+        reminderDisabled:
+          "Activa la hora de recogida si quieres un recordatorio antes del paseo.",
+        noPickupTime: "Sin hora de recogida",
         appointmentNotes: "Notas de la cita",
         reminderPreview:
           "Hora del recordatorio: {{time}} con {{count}} minutos de aviso.",
@@ -705,6 +982,9 @@ const resources = {
           chooseDogTitle: "Elige un perro",
           chooseDogBody:
             "Selecciona un perro existente o cambia a un perfil nuevo.",
+          dayLimitTitle: "Limite diario alcanzado",
+          dayLimitBody:
+            "Esto superaria tu limite diario de {{limit}} perros el {{dates}}.",
           repeatDaysTitle: "Elige dias de repeticion",
           repeatDaysBody:
             "Selecciona al menos un dia de la semana para el paseo recurrente.",
@@ -780,6 +1060,39 @@ const resources = {
         defaultReminder: "Recordatorio predeterminado",
         defaultReminderDescription:
           "Las nuevas citas empiezan con este tiempo de aviso. Puedes cambiarlo en cada cita.",
+        dailyAppointmentLimit: "Citas por dia",
+        dailyAppointmentLimitDescription:
+          "Limita cada dia a {{count}} citas de perros. Puedes subir hasta 15.",
+        pro: {
+          title: "Canilendar Pro",
+          description:
+            "Mejora solo cuando necesites mas que el primer perro y la primera cita gratuitos.",
+          active: "Canilendar Pro esta activo.",
+          unavailable: "Las compras aun no estan configuradas en esta build.",
+          freeTier:
+            "Estas en el plan gratuito con 1 perro y 1 cita incluidos.",
+          upgrade: "Mejorar a Pro",
+          restore: "Restaurar compras",
+          restoring: "Restaurando...",
+          restoreFailedTitle: "La restauracion fallo",
+          restoreSuccessTitle: "Restauracion completada",
+          restoreSuccessBody: "Se ha actualizado el estado de tu suscripcion.",
+          customerCenter: "Abrir Customer Center",
+          customerCenterTitle: "Customer Center",
+          currentOffering:
+            "Oferta actual: {{identifier}} con {{count}} opciones de paquete.",
+          expoGo:
+            "Esta build se esta ejecutando en modo de vista previa de Expo Go. Usa `npx expo run:ios` para probar compras reales de RevenueCat, restauraciones y Customer Center.",
+          hostedUi:
+            "La Paywall UI alojada de RevenueCat y Customer Center necesitan una build de iOS de desarrollo o produccion. No estan disponibles en Expo Go.",
+        },
+        devReset: {
+          title: "Reiniciar datos locales?",
+          body:
+            "Esta accion DEV elimina todos los perros, citas, ajustes y el progreso del onboarding guardados en este simulador.",
+          button: "Reiniciar datos locales",
+          confirm: "Reiniciar",
+        },
         storage: "Almacenamiento",
         storageDescription:
           "Las citas, los perros y las preferencias de recordatorio se guardan solo en este dispositivo en v1.",
@@ -787,6 +1100,44 @@ const resources = {
           notificationsOffTitle: "Las notificaciones estan desactivadas",
           notificationsOffBody:
             "Abre los ajustes del sistema de Canilendar si quieres banners y resúmenes diarios.",
+        },
+      },
+      onboarding: {
+        appointment: {
+          eyebrow: "Primera cita",
+          title: "Pon el primer paseo en el calendario",
+          descriptionWithDog:
+            "{{name}} se reutilizara del perfil que acabas de guardar.",
+          descriptionWithoutDog:
+            "Asociaremos esta cita al perro que acabas de agregar.",
+          missingDogTitle: "Falta el perro",
+          missingDogBody: "Crea primero el perfil del perro.",
+          pickupTimeEnabled:
+            "Hay una hora concreta de recogida activada para este paseo.",
+          pickupTimeDisabled:
+            "Dejalo desactivado si la recogida ocurre en algun momento de la manana.",
+          oneTime: "La primera cita se mantiene como un paseo unico.",
+          reminderDisabled:
+            "No se programara ningun recordatorio por hora hasta que actives una hora.",
+          save: "Guardar cita",
+          pastAppointmentBody:
+            "La primera cita tiene que estar en el futuro.",
+        },
+        reminders: {
+          eyebrow: "Recordatorios",
+          title: "Activa las notificaciones cuando quieras",
+          description:
+            "Tu primer perro y tu primera cita ya estan guardados, asi que activar recordatorios ahora ya aporta valor.",
+          deniedTitle: "Las notificaciones estan desactivadas",
+          deniedBody:
+            "Aun puedes terminar la configuracion ahora y activar los recordatorios mas tarde en Ajustes.",
+          appointmentAlertsTitle: "Alertas de cita",
+          appointmentAlertsBody:
+            "Recibe un aviso antes de la hora de recogida.",
+          dailySummaryTitle: "Resumen diario",
+          dailySummaryBody:
+            "Mira el dia por delante con un solo recordatorio matutino.",
+          maybeLater: "Quizas mas tarde",
         },
       },
       notifications: {

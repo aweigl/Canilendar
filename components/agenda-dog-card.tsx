@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { describeRecurrence, formatTimeLabel } from '@/lib/date';
+import { describePickupTime, describeRecurrence } from '@/lib/date';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { AppointmentOccurrence } from '@/types/domain';
 
@@ -39,7 +39,7 @@ export function AgendaDogCard({ occurrence, onPress }: AgendaDogCardProps) {
               },
             ]}>
             <ThemedText lightColor={palette.onSupport} darkColor={palette.onSupport} type="meta">
-              {formatTimeLabel(occurrence.startAt)}
+              {describePickupTime(occurrence.appointment, occurrence.startAt)}
             </ThemedText>
           </View>
         </View>

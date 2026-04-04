@@ -1,7 +1,7 @@
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AgendaDogCard } from "@/components/agenda-dog-card";
@@ -10,6 +10,7 @@ import { MonthCalendar } from "@/components/month-calendar";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AppButton } from "@/components/ui/app-button";
+import { WeekTable } from "@/components/week-table";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -19,19 +20,27 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
+  const today = new Date();
   const {
-    dismissHomeChecklist,
     getMarkedDatesForMonth,
     getOccurrencesForDate,
     isLoaded,
-    onboardingChecklist,
   } = useCanilendar();
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [visibleMonth, setVisibleMonth] = useState(new Date());
-  const showChecklist =
-    !onboardingChecklist.dismissed &&
-    (!onboardingChecklist.hasVisitedDogs ||
-      !onboardingChecklist.hasVisitedSettings);
+  const [selectedDate, setSelectedDate] = useState(today);
+  const [visibleMonth, setVisibleMonth] = useState(today);
+  const [visibleWeekStart, setVisibleWeekStart] = useState(today);
+  const [viewMode, setViewMode] = useState<"calendar" | "week">("calendar");
+
+  function handleChangeViewMode(nextMode: "calendar" | "week") {
+    if (nextMode === "week") {
+      const nextToday = new Date();
+      setSelectedDate(nextToday);
+      setVisibleMonth(nextToday);
+      setVisibleWeekStart(nextToday);
+    }
+
+    setViewMode(nextMode);
+  }
 
   if (!isLoaded) {
     return <LoadingView />;
@@ -91,16 +100,77 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.screenSection}>
-          <MonthCalendar
-            selectedDate={selectedDate}
-            visibleMonth={visibleMonth}
-            markedDates={markedDates}
-            onChangeMonth={setVisibleMonth}
-            onSelectDate={(date) => {
-              setSelectedDate(date);
-              setVisibleMonth(date);
-            }}
-          />
+          <ThemedView
+            style={[
+              styles.viewToggle,
+              {
+                backgroundColor: palette.surface,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            {[
+              { key: "calendar" as const, label: t("home.monthView") },
+              { key: "week" as const, label: t("home.weekView") },
+            ].map((option) => {
+              const isActive = option.key === viewMode;
+
+              return (
+                <Pressable
+                  key={option.key}
+                  accessibilityRole="button"
+                  onPress={() => handleChangeViewMode(option.key)}
+                  style={({ pressed }) => [
+                    styles.viewToggleButton,
+                    {
+                      backgroundColor: isActive
+                        ? palette.accent
+                        : pressed
+                          ? palette.surfaceMuted
+                          : "transparent",
+                    },
+                  ]}
+                >
+                  <ThemedText
+                    lightColor={isActive ? palette.onAccent : palette.text}
+                    darkColor={isActive ? palette.onAccent : palette.text}
+                    type="defaultSemiBold"
+                    style={styles.viewToggleLabel}
+                  >
+                    {option.label}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </ThemedView>
+
+          {viewMode === "calendar" ? (
+            <MonthCalendar
+              selectedDate={selectedDate}
+              visibleMonth={visibleMonth}
+              markedDates={markedDates}
+              onChangeMonth={setVisibleMonth}
+              onSelectDate={(date) => {
+                setSelectedDate(date);
+                setVisibleMonth(date);
+              }}
+            />
+          ) : (
+            <WeekTable
+              visibleWeekStart={visibleWeekStart}
+              selectedDate={selectedDate}
+              getOccurrencesForDate={getOccurrencesForDate}
+              onChangeWeek={(date) => {
+                setVisibleWeekStart(date);
+                setSelectedDate(date);
+                setVisibleMonth(date);
+              }}
+              onSelectDate={(date) => {
+                setSelectedDate(date);
+                setVisibleMonth(date);
+              }}
+            />
+          )}
         </View>
 
         <View style={styles.screenSection}>
@@ -205,6 +275,23 @@ const styles = StyleSheet.create({
   },
   heroButton: {
     alignSelf: "flex-start",
+  },
+  viewToggle: {
+    borderRadius: Radius.controlLarge,
+    borderWidth: 1.5,
+    flexDirection: "row",
+    padding: 4,
+  },
+  viewToggleButton: {
+    alignItems: "center",
+    borderRadius: Radius.control,
+    flex: 1,
+    justifyContent: "center",
+    minHeight: 44,
+    paddingHorizontal: Spacing.md,
+  },
+  viewToggleLabel: {
+    textAlign: "center",
   },
   sectionHeader: {
     alignItems: "center",

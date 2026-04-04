@@ -1,10 +1,14 @@
+import { addDays, getDay, parseISO, startOfDay } from 'date-fns';
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
 import { useColorScheme as useSystemColorScheme } from 'react-native';
 
 import i18n, { resolveAppLanguage } from '@/i18n';
 import {
+  occursOnDate,
+  getRecurrenceWeekdays,
   getMarkedDateKeys,
   getOccurrencesForDate,
+  toDateKey,
 } from '@/lib/date';
 import { createId } from '@/lib/ids';
 import {
@@ -14,6 +18,8 @@ import {
 } from '@/lib/notifications';
 import { loadPersistedState, persistState } from '@/lib/storage';
 import {
+  DAILY_APPOINTMENT_LIMIT_MAX,
+  DAILY_APPOINTMENT_LIMIT_MIN,
   DEFAULT_ONBOARDING_CHECKLIST,
   DEFAULT_SETTINGS,
   FREE_TIER_LIMITS,
@@ -30,6 +36,12 @@ import {
   type ReminderSettings,
 } from '@/types/domain';
 
+type DailyLimitValidationResult = {
+  exceededDates: Date[];
+  isValid: boolean;
+  limit: number;
+};
+
 type CanilendarContextValue = {
   dogs: DogProfile[];
   appointments: Appointment[];
@@ -45,6 +57,7 @@ type CanilendarContextValue = {
   getAppointmentById: (appointmentId: string) => Appointment | undefined;
   getOccurrencesForDate: (date: Date) => ReturnType<typeof getOccurrencesForDate>;
   getMarkedDatesForMonth: (visibleMonth: Date) => Set<string>;
+  validateAppointmentDailyLimit: (input: AppointmentInput) => DailyLimitValidationResult;
   saveDog: (input: DogInput) => DogProfile | null;
   deleteDog: (dogId: string) => boolean;
   saveAppointment: (input: AppointmentInput) => Promise<Appointment | null>;
@@ -76,6 +89,49 @@ function buildDogRecord(input: DogInput, currentDog?: DogProfile): DogProfile {
     notes: normalizeText(input.notes ?? ''),
     metadata: normalizeText(input.metadata ?? ''),
     createdAt: currentDog?.createdAt ?? timestamp,
+    updatedAt: timestamp,
+  };
+}
+
+function clampDailyAppointmentLimit(limit: number) {
+  return Math.min(DAILY_APPOINTMENT_LIMIT_MAX, Math.max(DAILY_APPOINTMENT_LIMIT_MIN, Math.round(limit)));
+}
+
+function getFirstOccurrenceOnOrAfter(startAt: Date, weekday: number) {
+  const startDate = startOfDay(startAt);
+  const dayOffset = (weekday - getDay(startDate) + 7) % 7;
+
+  return addDays(startDate, dayOffset);
+}
+
+function buildDraftAppointment(input: AppointmentInput, currentAppointment?: Appointment): Appointment {
+  const recurrenceWeekdays = input.isRecurring
+    ? input.recurrenceWeekdays.length > 0
+      ? input.recurrenceWeekdays
+      : [new Date(input.startAt).getDay()]
+    : [];
+  const timestamp = new Date().toISOString();
+
+  return {
+    id: currentAppointment?.id ?? input.id ?? 'draft-appointment',
+    dogId: currentAppointment?.dogId ?? input.dog.id ?? 'draft-dog',
+    startAt: input.startAt,
+    hasPickupTime: input.hasPickupTime,
+    endAt: input.endAt ?? currentAppointment?.endAt ?? null,
+    notes: normalizeText(input.notes ?? currentAppointment?.notes ?? ''),
+    metadata: normalizeText(input.metadata ?? currentAppointment?.metadata ?? ''),
+    isRecurring: input.isRecurring,
+    recurrenceRule: input.isRecurring
+      ? {
+          frequency: 'weekly',
+          weekdays: recurrenceWeekdays,
+        }
+      : null,
+    reminderMinutesBefore:
+      input.reminderMinutesBefore ??
+      currentAppointment?.reminderMinutesBefore ??
+      DEFAULT_SETTINGS.defaultReminderMinutes,
+    createdAt: currentAppointment?.createdAt ?? timestamp,
     updatedAt: timestamp,
   };
 }
@@ -196,6 +252,77 @@ export function CanilendarProvider({
     return getMarkedDateKeys(appointments, dogs, visibleMonth);
   }
 
+  function validateAppointmentDailyLimit(input: AppointmentInput): DailyLimitValidationResult {
+    const currentAppointment = input.id ? getAppointmentById(input.id) : undefined;
+    const candidateAppointment = buildDraftAppointment(input, currentAppointment);
+    const comparisonAppointments = currentAppointment
+      ? appointments.filter((appointment) => appointment.id !== currentAppointment.id)
+      : appointments;
+    const validationDates = new Map<string, Date>();
+    const candidateStartAt = parseISO(candidateAppointment.startAt);
+    const candidateWeekdays = candidateAppointment.isRecurring
+      ? getRecurrenceWeekdays(candidateAppointment)
+      : [getDay(candidateStartAt)];
+
+    function addValidationDate(date: Date) {
+      const normalizedDate = startOfDay(date);
+      validationDates.set(toDateKey(normalizedDate), normalizedDate);
+    }
+
+    if (candidateAppointment.isRecurring) {
+      candidateWeekdays.forEach((weekday) => {
+        addValidationDate(getFirstOccurrenceOnOrAfter(candidateStartAt, weekday));
+      });
+
+      comparisonAppointments.forEach((appointment) => {
+        const appointmentStartAt = parseISO(appointment.startAt);
+
+        if (!appointment.isRecurring) {
+          if (
+            appointmentStartAt >= startOfDay(candidateStartAt) &&
+            candidateWeekdays.includes(getDay(appointmentStartAt))
+          ) {
+            addValidationDate(appointmentStartAt);
+          }
+
+          return;
+        }
+
+        getRecurrenceWeekdays(appointment).forEach((weekday) => {
+          if (!candidateWeekdays.includes(weekday)) {
+            return;
+          }
+
+          const candidateDate = getFirstOccurrenceOnOrAfter(candidateStartAt, weekday);
+          const recurringStartDate = getFirstOccurrenceOnOrAfter(appointmentStartAt, weekday);
+
+          addValidationDate(
+            recurringStartDate > candidateDate ? recurringStartDate : candidateDate
+          );
+        });
+      });
+    } else {
+      addValidationDate(candidateStartAt);
+    }
+
+    const limit = settings.dailyAppointmentLimit;
+    const candidateAndExistingAppointments = [...comparisonAppointments, candidateAppointment];
+    const exceededDates = [...validationDates.values()]
+      .filter((date) => {
+        const currentCount = appointments.filter((appointment) => occursOnDate(appointment, date)).length;
+        const nextCount = candidateAndExistingAppointments.filter((appointment) => occursOnDate(appointment, date)).length;
+
+        return nextCount > limit && nextCount > currentCount;
+      })
+      .sort((left, right) => left.getTime() - right.getTime());
+
+    return {
+      exceededDates,
+      isValid: exceededDates.length === 0,
+      limit,
+    };
+  }
+
   const canCreateDog = isPro || dogs.length < FREE_TIER_LIMITS.dogs;
   const canCreateAppointment = isPro || appointments.length < FREE_TIER_LIMITS.appointments;
 
@@ -260,6 +387,10 @@ export function CanilendarProvider({
       return null;
     }
 
+    if (!validateAppointmentDailyLimit(input).isValid) {
+      return null;
+    }
+
     const savedDog = saveDog(input.dog);
 
     if (!savedDog) {
@@ -277,6 +408,7 @@ export function CanilendarProvider({
       id: currentAppointment?.id ?? input.id ?? createId(),
       dogId: savedDog.id,
       startAt: input.startAt,
+      hasPickupTime: input.hasPickupTime,
       endAt: input.endAt ?? null,
       notes: normalizeText(input.notes ?? ''),
       metadata: normalizeText(input.metadata ?? ''),
@@ -321,6 +453,10 @@ export function CanilendarProvider({
     setSettings((currentSettings) => ({
       ...currentSettings,
       ...partial,
+      dailyAppointmentLimit:
+        partial.dailyAppointmentLimit === undefined
+          ? currentSettings.dailyAppointmentLimit
+          : clampDailyAppointmentLimit(partial.dailyAppointmentLimit),
     }));
   }
 
@@ -380,6 +516,7 @@ export function CanilendarProvider({
         getAppointmentById,
         getOccurrencesForDate: getOccurrencesByDate,
         getMarkedDatesForMonth,
+        validateAppointmentDailyLimit,
         saveDog,
         deleteDog,
         saveAppointment,

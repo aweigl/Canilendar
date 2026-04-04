@@ -3,6 +3,7 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, Platform, StyleSheet, View } from "react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
@@ -15,17 +16,28 @@ import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getWeekdayTranslationKey } from "@/i18n/helpers";
-import { combineDateAndTimeParts, formatTimeInputValue } from "@/lib/date";
+import {
+  combineDateAndTimeParts,
+  formatShortDate,
+  formatTimeInputValue,
+  getDateOnlyStartAt,
+  getDefaultPickupTime,
+} from "@/lib/date";
 import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
 
 export default function OnboardingAppointmentScreen() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
-  const { dogs, settings, saveAppointment } = useCanilendar();
+  const { dogs, settings, saveAppointment, validateAppointmentDailyLimit } =
+    useCanilendar();
   const dog = useMemo(() => dogs[0], [dogs]);
   const initialStartAt = new Date(Date.now() + 60 * 60 * 1000);
   const [appointmentDate, setAppointmentDate] = useState(initialStartAt);
-  const [appointmentTime, setAppointmentTime] = useState(initialStartAt);
+  const [hasPickupTime, setHasPickupTime] = useState(false);
+  const [appointmentTime, setAppointmentTime] = useState(
+    getDefaultPickupTime(initialStartAt),
+  );
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceWeekdays, setRecurrenceWeekdays] = useState<number[]>([
     initialStartAt.getDay(),
@@ -46,25 +58,69 @@ export default function OnboardingAppointmentScreen() {
 
   async function handleContinue() {
     if (!dog) {
-      Alert.alert("Missing dog", "Create the dog profile first.");
+      Alert.alert(
+        t("onboarding.appointment.missingDogTitle"),
+        t("onboarding.appointment.missingDogBody"),
+      );
       router.replace("/onboarding/dog" as never);
       return;
     }
 
     if (isRecurring && recurrenceWeekdays.length === 0) {
       Alert.alert(
-        "Pick repeat days",
-        "Choose at least one weekday for the recurring walk.",
+        t("appointment.alerts.repeatDaysTitle"),
+        t("appointment.alerts.repeatDaysBody"),
       );
       return;
     }
 
-    const startAt = combineDateAndTimeParts(appointmentDate, appointmentTime);
+    const startAt = hasPickupTime
+      ? combineDateAndTimeParts(appointmentDate, appointmentTime)
+      : getDateOnlyStartAt(appointmentDate);
 
-    if (startAt.getTime() < Date.now()) {
+    if (
+      hasPickupTime
+        ? startAt.getTime() < Date.now()
+        : startAt.getTime() < getDateOnlyStartAt(new Date()).getTime()
+    ) {
       Alert.alert(
-        "Past appointment",
-        "The first appointment needs to be in the future.",
+        t("appointment.alerts.pastAppointmentTitle"),
+        t("onboarding.appointment.pastAppointmentBody"),
+      );
+      return;
+    }
+
+    const dailyLimitValidation = validateAppointmentDailyLimit({
+      dog: {
+        id: dog.id,
+        name: dog.name,
+        address: dog.address,
+        ownerPhone: dog.ownerPhone,
+        notes: dog.notes,
+      },
+      startAt: startAt.toISOString(),
+      hasPickupTime,
+      isRecurring,
+      recurrenceWeekdays,
+      reminderMinutesBefore,
+    });
+
+    if (!dailyLimitValidation.isValid) {
+      const previewDates = dailyLimitValidation.exceededDates
+        .slice(0, 3)
+        .map((date) => formatShortDate(date))
+        .join(", ");
+      const dateSummary =
+        dailyLimitValidation.exceededDates.length > 3
+          ? `${previewDates}, ...`
+          : previewDates;
+
+      Alert.alert(
+        t("appointment.alerts.dayLimitTitle"),
+        t("appointment.alerts.dayLimitBody", {
+          dates: dateSummary,
+          limit: dailyLimitValidation.limit,
+        }),
       );
       return;
     }
@@ -78,12 +134,11 @@ export default function OnboardingAppointmentScreen() {
         notes: dog.notes,
       },
       startAt: startAt.toISOString(),
+      hasPickupTime,
       isRecurring,
       recurrenceWeekdays,
       reminderMinutesBefore,
     });
-
-    console.log("Saved appointment", savedAppointment);
 
     if (!savedAppointment) {
       return;
@@ -96,12 +151,12 @@ export default function OnboardingAppointmentScreen() {
     <OnboardingShell
       step={3}
       totalSteps={5}
-      eyebrow="First appointment"
-      title="Put the first walk on the calendar"
+      eyebrow={t("onboarding.appointment.eyebrow")}
+      title={t("onboarding.appointment.title")}
       description={
         dog
-          ? `${dog.name} will be reused from the profile you just saved.`
-          : "We’ll attach this appointment to the dog you just added."
+          ? t("onboarding.appointment.descriptionWithDog", { name: dog.name })
+          : t("onboarding.appointment.descriptionWithoutDog")
       }
     >
       <ThemedView
@@ -111,7 +166,7 @@ export default function OnboardingAppointmentScreen() {
         ]}
       >
         <View style={styles.pickerGroup}>
-          <ThemedText type="sectionTitle">Date</ThemedText>
+          <ThemedText type="sectionTitle">{t("common.pickerDate")}</ThemedText>
           <DateTimePicker
             display={Platform.OS === "ios" ? "compact" : "default"}
             mode="date"
@@ -123,29 +178,49 @@ export default function OnboardingAppointmentScreen() {
           />
         </View>
 
-        <View style={styles.pickerGroup}>
-          <ThemedText type="sectionTitle">Pickup time</ThemedText>
-          <DateTimePicker
-            display={Platform.OS === "ios" ? "compact" : "default"}
-            mode="time"
-            onChange={(_: DateTimePickerEvent, value?: Date) =>
-              value ? setAppointmentTime(value) : null
-            }
-            value={appointmentTime}
+        <View style={styles.switchRow}>
+          <View style={styles.switchCopy}>
+            <ThemedText type="sectionTitle">{t("common.pickupTime")}</ThemedText>
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+              type="caption"
+            >
+              {hasPickupTime
+                ? t("onboarding.appointment.pickupTimeEnabled")
+                : t("onboarding.appointment.pickupTimeDisabled")}
+            </ThemedText>
+          </View>
+          <ToggleSwitch
+            checked={hasPickupTime}
+            onCheckedChange={setHasPickupTime}
           />
         </View>
 
+        {hasPickupTime ? (
+          <View style={styles.pickerGroup}>
+            <DateTimePicker
+              display={Platform.OS === "ios" ? "compact" : "default"}
+              mode="time"
+              onChange={(_: DateTimePickerEvent, value?: Date) =>
+                value ? setAppointmentTime(value) : null
+              }
+              value={appointmentTime}
+            />
+          </View>
+        ) : null}
+
         <View style={styles.switchRow}>
           <View style={styles.switchCopy}>
-            <ThemedText type="sectionTitle">Repeat weekly</ThemedText>
+            <ThemedText type="sectionTitle">{t("appointment.repeatWeekly")}</ThemedText>
             <ThemedText
               lightColor={palette.textMuted}
               darkColor={palette.textMuted}
               type="caption"
             >
               {isRecurring
-                ? "Shows on the weekdays you select."
-                : "Keeps the first appointment as a one-time walk."}
+                ? t("appointment.recurringOn")
+                : t("onboarding.appointment.oneTime")}
             </ThemedText>
           </View>
           <ToggleSwitch
@@ -159,7 +234,9 @@ export default function OnboardingAppointmentScreen() {
             {WEEKDAY_OPTIONS.map((option) => (
               <ChoiceChip
                 key={option.value}
-                label={getWeekdayTranslationKey(option.value).slice(0, 3)}
+                label={t(
+                  `common.weekdayShort.${getWeekdayTranslationKey(option.value)}`,
+                )}
                 onPress={() => toggleWeekday(option.value)}
                 selected={recurrenceWeekdays.includes(option.value)}
               />
@@ -167,32 +244,38 @@ export default function OnboardingAppointmentScreen() {
           </View>
         ) : null}
 
-        <View style={styles.pickerGroup}>
-          <ThemedText type="sectionTitle">Reminder lead time</ThemedText>
-          <View style={styles.chips}>
-            {REMINDER_OPTIONS.map((minutes) => (
-              <ChoiceChip
-                key={minutes}
-                label={`${minutes} min`}
-                onPress={() => setReminderMinutesBefore(minutes)}
-                selected={reminderMinutesBefore === minutes}
-              />
-            ))}
+        {hasPickupTime ? (
+          <View style={styles.pickerGroup}>
+            <ThemedText type="sectionTitle">{t("appointment.reminderLeadTime")}</ThemedText>
+            <View style={styles.chips}>
+              {REMINDER_OPTIONS.map((minutes) => (
+                <ChoiceChip
+                  key={minutes}
+                  label={`${minutes} min`}
+                  onPress={() => setReminderMinutesBefore(minutes)}
+                  selected={reminderMinutesBefore === minutes}
+                />
+              ))}
+            </View>
           </View>
-        </View>
+        ) : null}
 
         <ThemedText
           lightColor={palette.textMuted}
           darkColor={palette.textMuted}
           type="caption"
         >
-          Reminder preview: {formatTimeInputValue(appointmentTime)} with a{" "}
-          {reminderMinutesBefore}-minute heads-up.
+          {hasPickupTime
+            ? t("appointment.reminderPreview", {
+                time: formatTimeInputValue(appointmentTime),
+                count: reminderMinutesBefore,
+              })
+            : t("onboarding.appointment.reminderDisabled")}
         </ThemedText>
       </ThemedView>
 
       <AppButton
-        label="Save appointment"
+        label={t("onboarding.appointment.save")}
         onPress={handleContinue}
         icon="calendar.badge.plus"
       />

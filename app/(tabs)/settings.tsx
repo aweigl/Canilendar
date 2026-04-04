@@ -28,6 +28,7 @@ import {
   revenueCatUiIsReady,
 } from "@/lib/revenuecat";
 import {
+  DAILY_APPOINTMENT_LIMIT_OPTIONS,
   REMINDER_OPTIONS,
   type AppearanceMode,
   type LanguagePreference,
@@ -44,7 +45,6 @@ export default function SettingsScreen() {
     isRevenueCatPurchaseSupported,
     openCustomerCenter,
     presentPaywall,
-    presentHostedPaywall,
     restorePurchases,
     subscriptionStatus,
   } = useAppSession();
@@ -132,40 +132,32 @@ export default function SettingsScreen() {
     setIsRestoring(false);
 
     if (error) {
-      Alert.alert("Restore failed", error);
+      Alert.alert(t("settings.pro.restoreFailedTitle"), error);
       return;
     }
 
     Alert.alert(
-      "Restore complete",
-      "Your subscription status has been refreshed.",
+      t("settings.pro.restoreSuccessTitle"),
+      t("settings.pro.restoreSuccessBody"),
     );
-  }
-
-  async function handleHostedPaywall() {
-    const error = await presentHostedPaywall({ onlyIfNeeded: true });
-
-    if (error) {
-      Alert.alert("RevenueCat Paywall", error);
-    }
   }
 
   async function handleCustomerCenter() {
     const error = await openCustomerCenter();
 
     if (error) {
-      Alert.alert("Customer Center", error);
+      Alert.alert(t("settings.pro.customerCenterTitle"), error);
     }
   }
 
   function handleResetLocalData() {
     Alert.alert(
-      "Reset local data?",
-      "This DEV action removes all dogs, appointments, settings, and onboarding progress saved on this simulator.",
+      t("settings.devReset.title"),
+      t("settings.devReset.body"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Reset",
+          text: t("settings.devReset.confirm"),
           style: "destructive",
           onPress: () => {
             resetLocalData();
@@ -215,15 +207,14 @@ export default function SettingsScreen() {
             type="sectionTitle"
             style={(styles.cardTitle, styles.marginBottom)}
           >
-            Canilendar Pro
+            {t("settings.pro.title")}
           </ThemedText>
           <ThemedText
             style={styles.marginBottom}
             lightColor={palette.textMuted}
             darkColor={palette.textMuted}
           >
-            Upgrade only when you need more than the first free dog and
-            appointment.
+            {t("settings.pro.description")}
           </ThemedText>
           <ThemedText
             style={styles.marginBottom}
@@ -231,22 +222,26 @@ export default function SettingsScreen() {
             darkColor={palette.support}
           >
             {isPro
-              ? "Canilendar Pro is active."
+              ? t("settings.pro.active")
               : subscriptionStatus === "unavailable"
-                ? "Purchases are not configured on this build yet."
-                : "You are on the free tier with 1 dog and 1 appointment included."}
+                ? t("settings.pro.unavailable")
+                : t("settings.pro.freeTier")}
           </ThemedText>
           {!isPro ? (
             <AppButton
               style={styles.marginBottom}
-              label="Upgrade to Pro"
+              label={t("settings.pro.upgrade")}
               onPress={() => presentPaywall("settings")}
               icon="crown.fill"
             />
           ) : null}
           <View style={styles.actions}>
             <AppButton
-              label={isRestoring ? "Restoring..." : "Restore purchases"}
+              label={
+                isRestoring
+                  ? t("settings.pro.restoring")
+                  : t("settings.pro.restore")
+              }
               onPress={handleRestorePurchases}
               disabled={
                 isRestoring ||
@@ -257,7 +252,7 @@ export default function SettingsScreen() {
             />
             {isPro ? (
               <AppButton
-                label="Open Customer Center"
+                label={t("settings.pro.customerCenter")}
                 onPress={handleCustomerCenter}
                 disabled={
                   !isRevenueCatReady ||
@@ -285,8 +280,10 @@ export default function SettingsScreen() {
               darkColor={palette.textMuted}
               type="caption"
             >
-              Current offering: {currentOffering.identifier} with{" "}
-              {currentOffering.availablePackages.length} package options.
+              {t("settings.pro.currentOffering", {
+                identifier: currentOffering.identifier,
+                count: currentOffering.availablePackages.length,
+              })}
             </ThemedText>
           ) : null}
           {isRevenueCatReady && !purchasesSupported ? (
@@ -294,9 +291,7 @@ export default function SettingsScreen() {
               lightColor={palette.textMuted}
               darkColor={palette.textMuted}
             >
-              This build is running in Expo Go preview mode. Use `npx expo
-              run:ios` to test real RevenueCat purchases, restores, and Customer
-              Center.
+              {t("settings.pro.expoGo")}
             </ThemedText>
           ) : null}
           {isRevenueCatReady && purchasesSupported && !hostedUiReady ? (
@@ -305,9 +300,7 @@ export default function SettingsScreen() {
               darkColor={palette.textMuted}
               type="caption"
             >
-              Hosted RevenueCat Paywall UI and Customer Center need an iOS
-              development build or production build. They are unavailable in
-              Expo Go.
+              {t("settings.pro.hostedUi")}
             </ThemedText>
           ) : null}
         </ThemedView>
@@ -358,6 +351,38 @@ export default function SettingsScreen() {
                 variant="secondary"
               />
             ) : null}
+          </View>
+        </ThemedView>
+
+        <ThemedView
+          style={[
+            styles.card,
+            {
+              backgroundColor: palette.surface,
+              borderColor: palette.border,
+            },
+          ]}
+        >
+          <ThemedText type="sectionTitle" style={styles.cardTitle}>
+            {t("settings.dailyAppointmentLimit")}
+          </ThemedText>
+          <ThemedText
+            lightColor={palette.textMuted}
+            darkColor={palette.textMuted}
+          >
+            {t("settings.dailyAppointmentLimitDescription", {
+              count: settings.dailyAppointmentLimit,
+            })}
+          </ThemedText>
+          <View style={styles.chips}>
+            {DAILY_APPOINTMENT_LIMIT_OPTIONS.map((limit) => (
+              <ChoiceChip
+                key={limit}
+                label={`${limit}`}
+                onPress={() => updateSettings({ dailyAppointmentLimit: limit })}
+                selected={settings.dailyAppointmentLimit === limit}
+              />
+            ))}
           </View>
         </ThemedView>
 
@@ -518,26 +543,6 @@ export default function SettingsScreen() {
           </View>
         </ThemedView>
 
-        <ThemedView
-          style={[
-            styles.card,
-            {
-              backgroundColor: palette.surface,
-              borderColor: palette.border,
-            },
-          ]}
-        >
-          <ThemedText type="sectionTitle" style={styles.cardTitle}>
-            {t("settings.storage")}
-          </ThemedText>
-          <ThemedText
-            lightColor={palette.textMuted}
-            darkColor={palette.textMuted}
-          >
-            {t("settings.storageDescription")}
-          </ThemedText>
-        </ThemedView>
-
         {__DEV__ ? (
           <ThemedView
             style={[
@@ -563,7 +568,7 @@ export default function SettingsScreen() {
               Clear all locally saved app data on this simulator or device.
             </ThemedText>
             <AppButton
-              label="Reset local data"
+              label={t("settings.devReset.button")}
               onPress={handleResetLocalData}
               variant="danger"
               icon="trash.fill"

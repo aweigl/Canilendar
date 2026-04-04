@@ -19,7 +19,13 @@ import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { getWeekdayTranslationKey } from "@/i18n/helpers";
-import { combineDateAndTimeParts, formatTimeInputValue } from "@/lib/date";
+import {
+  combineDateAndTimeParts,
+  formatShortDate,
+  formatTimeInputValue,
+  getDateOnlyStartAt,
+  getDefaultPickupTime,
+} from "@/lib/date";
 import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
 
 const EMPTY_DOG_FORM = {
@@ -45,6 +51,7 @@ export default function AppointmentScreen() {
     getDogById,
     saveAppointment,
     deleteAppointment,
+    validateAppointmentDailyLimit,
   } = useCanilendar();
   const appointment = params.appointmentId
     ? getAppointmentById(params.appointmentId)
@@ -74,7 +81,12 @@ export default function AppointmentScreen() {
     notes: appointmentDog?.notes ?? dogs[0]?.notes ?? EMPTY_DOG_FORM.notes,
   });
   const [appointmentDate, setAppointmentDate] = useState(initialStartAt);
-  const [appointmentTime, setAppointmentTime] = useState(initialStartAt);
+  const [hasPickupTime, setHasPickupTime] = useState(
+    appointment?.hasPickupTime ?? false,
+  );
+  const [appointmentTime, setAppointmentTime] = useState(
+    appointment?.hasPickupTime ? initialStartAt : getDefaultPickupTime(initialStartAt),
+  );
   const [notes, setNotes] = useState(appointment?.notes ?? "");
   const [isRecurring, setIsRecurring] = useState(
     appointment?.isRecurring ?? false,
@@ -103,7 +115,10 @@ export default function AppointmentScreen() {
         notes: appointmentDog.notes ?? "",
       });
       setAppointmentDate(startAt);
-      setAppointmentTime(startAt);
+      setHasPickupTime(appointment.hasPickupTime);
+      setAppointmentTime(
+        appointment.hasPickupTime ? startAt : getDefaultPickupTime(startAt),
+      );
       setNotes(appointment.notes ?? "");
       setIsRecurring(appointment.isRecurring);
       setRecurrenceWeekdays(
@@ -200,11 +215,56 @@ export default function AppointmentScreen() {
       appointmentDate,
       appointmentTime,
     );
+    const nextStartAt = hasPickupTime
+      ? combinedStartAt
+      : getDateOnlyStartAt(appointmentDate);
 
-    if (!appointment && combinedStartAt.getTime() < Date.now()) {
+    if (
+      !appointment &&
+      (hasPickupTime
+        ? nextStartAt.getTime() < Date.now()
+        : nextStartAt.getTime() < getDateOnlyStartAt(new Date()).getTime())
+    ) {
       Alert.alert(
         t("appointment.alerts.pastAppointmentTitle"),
         t("appointment.alerts.pastAppointmentBody"),
+      );
+      return;
+    }
+
+    const dailyLimitValidation = validateAppointmentDailyLimit({
+      id: appointment?.id,
+      dog: {
+        id: dogMode === "existing" ? (selectedDogId ?? undefined) : undefined,
+        name: dogForm.name,
+        address: dogForm.address,
+        ownerPhone: dogForm.ownerPhone,
+        notes: dogForm.notes,
+      },
+      startAt: nextStartAt.toISOString(),
+      hasPickupTime,
+      notes,
+      isRecurring,
+      recurrenceWeekdays,
+      reminderMinutesBefore,
+    });
+
+    if (!dailyLimitValidation.isValid) {
+      const previewDates = dailyLimitValidation.exceededDates
+        .slice(0, 3)
+        .map((date) => formatShortDate(date))
+        .join(", ");
+      const dateSummary =
+        dailyLimitValidation.exceededDates.length > 3
+          ? `${previewDates}, ...`
+          : previewDates;
+
+      Alert.alert(
+        t("appointment.alerts.dayLimitTitle"),
+        t("appointment.alerts.dayLimitBody", {
+          dates: dateSummary,
+          limit: dailyLimitValidation.limit,
+        }),
       );
       return;
     }
@@ -218,7 +278,8 @@ export default function AppointmentScreen() {
         ownerPhone: dogForm.ownerPhone,
         notes: dogForm.notes,
       },
-      startAt: combinedStartAt.toISOString(),
+      startAt: nextStartAt.toISOString(),
+      hasPickupTime,
       notes,
       isRecurring,
       recurrenceWeekdays,
@@ -412,17 +473,37 @@ export default function AppointmentScreen() {
             />
           </View>
 
-          <View style={styles.pickerGroup}>
-            <ThemedText style={styles.inputLabel}>
-              {t("common.pickupTime")}
-            </ThemedText>
-            <DateTimePicker
-              display={Platform.OS === "ios" ? "compact" : "default"}
-              mode="time"
-              onChange={handleTimeChange}
-              value={appointmentTime}
+          <View style={styles.row}>
+            <View style={styles.copy}>
+              <ThemedText style={styles.inputLabel}>
+                {t("common.pickupTime")}
+              </ThemedText>
+              <ThemedText
+                lightColor={palette.textMuted}
+                darkColor={palette.textMuted}
+                type="caption"
+              >
+                {hasPickupTime
+                  ? t("appointment.pickupTimeEnabled")
+                  : t("appointment.pickupTimeDisabled")}
+              </ThemedText>
+            </View>
+            <ToggleSwitch
+              checked={hasPickupTime}
+              onCheckedChange={setHasPickupTime}
             />
           </View>
+
+          {hasPickupTime ? (
+            <View style={styles.pickerGroup}>
+              <DateTimePicker
+                display={Platform.OS === "ios" ? "compact" : "default"}
+                mode="time"
+                onChange={handleTimeChange}
+                value={appointmentTime}
+              />
+            </View>
+          ) : null}
 
           <View style={styles.row}>
             <View style={styles.copy}>
@@ -460,21 +541,23 @@ export default function AppointmentScreen() {
             </View>
           ) : null}
 
-          <View style={styles.pickerGroup}>
-            <ThemedText style={styles.inputLabel}>
-              {t("appointment.reminderLeadTime")}
-            </ThemedText>
-            <View style={styles.chips}>
-              {REMINDER_OPTIONS.map((minutes) => (
-                <ChoiceChip
-                  key={minutes}
-                  label={`${minutes} min`}
-                  onPress={() => setReminderMinutesBefore(minutes)}
-                  selected={reminderMinutesBefore === minutes}
-                />
-              ))}
+          {hasPickupTime ? (
+            <View style={styles.pickerGroup}>
+              <ThemedText style={styles.inputLabel}>
+                {t("appointment.reminderLeadTime")}
+              </ThemedText>
+              <View style={styles.chips}>
+                {REMINDER_OPTIONS.map((minutes) => (
+                  <ChoiceChip
+                    key={minutes}
+                    label={`${minutes} min`}
+                    onPress={() => setReminderMinutesBefore(minutes)}
+                    selected={reminderMinutesBefore === minutes}
+                  />
+                ))}
+              </View>
             </View>
-          </View>
+          ) : null}
 
           <InputField
             label={t("appointment.appointmentNotes")}
@@ -489,10 +572,12 @@ export default function AppointmentScreen() {
             darkColor={palette.textMuted}
             type="caption"
           >
-            {t("appointment.reminderPreview", {
-              time: formatTimeInputValue(appointmentTime),
-              count: reminderMinutesBefore,
-            })}
+            {hasPickupTime
+              ? t("appointment.reminderPreview", {
+                  time: formatTimeInputValue(appointmentTime),
+                  count: reminderMinutesBefore,
+                })
+              : t("appointment.reminderDisabled")}
           </ThemedText>
         </ThemedView>
 

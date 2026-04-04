@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
+  DAILY_APPOINTMENT_LIMIT_MAX,
+  DAILY_APPOINTMENT_LIMIT_MIN,
   DEFAULT_ONBOARDING_CHECKLIST,
   DEFAULT_SETTINGS,
   type Appointment,
@@ -17,6 +19,17 @@ const FALLBACK_STATE: PersistedAppState = {
   settings: DEFAULT_SETTINGS,
   onboarding: DEFAULT_ONBOARDING_CHECKLIST,
 };
+
+function clampDailyAppointmentLimit(value: unknown) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return DEFAULT_SETTINGS.dailyAppointmentLimit;
+  }
+
+  return Math.min(
+    DAILY_APPOINTMENT_LIMIT_MAX,
+    Math.max(DAILY_APPOINTMENT_LIMIT_MIN, Math.round(value))
+  );
+}
 
 function normalizeAppointment(value: unknown): Appointment | null {
   if (!value || typeof value !== 'object') {
@@ -41,6 +54,8 @@ function normalizeAppointment(value: unknown): Appointment | null {
     id: candidate.id,
     dogId: candidate.dogId,
     startAt: candidate.startAt,
+    hasPickupTime:
+      typeof candidate.hasPickupTime === 'boolean' ? candidate.hasPickupTime : true,
     endAt: typeof candidate.endAt === 'string' || candidate.endAt === null ? candidate.endAt : null,
     notes: typeof candidate.notes === 'string' ? candidate.notes : '',
     metadata: typeof candidate.metadata === 'string' ? candidate.metadata : '',
@@ -74,6 +89,7 @@ function normalizePersistedState(parsed: Partial<PersistedAppState>): PersistedA
     settings: {
       ...DEFAULT_SETTINGS,
       ...(parsed.settings ?? {}),
+      dailyAppointmentLimit: clampDailyAppointmentLimit(parsed.settings?.dailyAppointmentLimit),
     },
     onboarding: {
       ...DEFAULT_ONBOARDING_CHECKLIST,

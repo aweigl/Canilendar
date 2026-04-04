@@ -80,35 +80,6 @@ export default function PaywallScreen() {
     router.back();
   }
 
-  async function handleRestore() {
-    setIsBusy(true);
-    const error = await restorePurchases();
-    setIsBusy(false);
-
-    if (error) {
-      Alert.alert("Restore failed", error);
-      return;
-    }
-
-    Alert.alert(
-      "Purchases restored",
-      "Your subscription status has been refreshed.",
-    );
-  }
-
-  async function handleHostedPaywall() {
-    setIsBusy(true);
-    const error = await presentHostedPaywall();
-    setIsBusy(false);
-
-    if (error) {
-      Alert.alert("RevenueCat Paywall", error);
-      return;
-    }
-
-    router.back();
-  }
-
   function handleClose() {
     clearPaywall();
     router.back();
