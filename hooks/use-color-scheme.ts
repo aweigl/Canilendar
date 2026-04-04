@@ -1,7 +1,10 @@
-import { useCanilendar } from '@/context/canilendar-context';
+import { useColorScheme as useSystemColorScheme } from 'react-native';
+
+import { useOptionalCanilendar } from '@/context/canilendar-context';
 
 export function useColorScheme() {
-  const { resolvedColorScheme } = useCanilendar();
+  const context = useOptionalCanilendar();
+  const systemColorScheme = useSystemColorScheme();
 
-  return resolvedColorScheme;
+  return context?.resolvedColorScheme ?? systemColorScheme ?? 'light';
 }

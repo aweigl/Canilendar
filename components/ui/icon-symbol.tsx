@@ -9,7 +9,18 @@ export type IconSymbolName =
   | 'chevron.right'
   | 'plus.circle.fill'
   | 'square.and.pencil'
-  | 'trash.fill';
+  | 'trash.fill'
+  | 'envelope.fill'
+  | 'apple.logo'
+  | 'arrow.right.circle.fill'
+  | 'person.crop.circle.badge.plus'
+  | 'paperplane.fill'
+  | 'calendar.badge.plus'
+  | 'pawprint.fill'
+  | 'bell.badge.fill'
+  | 'creditcard.fill'
+  | 'lock.fill'
+  | 'crown.fill';
 
 type IconMapping = Record<IconSymbolName, ComponentProps<typeof MaterialCommunityIcons>['name']>;
 const MAPPING = {
@@ -20,6 +31,17 @@ const MAPPING = {
   'plus.circle.fill': 'plus-circle',
   'square.and.pencil': 'square-edit-outline',
   'trash.fill': 'trash-can',
+  'envelope.fill': 'email',
+  'apple.logo': 'apple',
+  'arrow.right.circle.fill': 'arrow-right-circle',
+  'person.crop.circle.badge.plus': 'account-plus',
+  'paperplane.fill': 'send',
+  'calendar.badge.plus': 'calendar-plus',
+  'pawprint.fill': 'paw',
+  'bell.badge.fill': 'bell-badge',
+  'creditcard.fill': 'credit-card',
+  'lock.fill': 'lock',
+  'crown.fill': 'crown',
 } as IconMapping;
 
 export function IconSymbol({

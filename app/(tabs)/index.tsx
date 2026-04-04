@@ -1,8 +1,8 @@
 import { router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
 
 import { AgendaDogCard } from "@/components/agenda-dog-card";
 import { LoadingView } from "@/components/loading-view";
@@ -19,10 +19,19 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
-  const { isLoaded, getOccurrencesForDate, getMarkedDatesForMonth } =
-    useCanilendar();
+  const {
+    dismissHomeChecklist,
+    getMarkedDatesForMonth,
+    getOccurrencesForDate,
+    isLoaded,
+    onboardingChecklist,
+  } = useCanilendar();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [visibleMonth, setVisibleMonth] = useState(new Date());
+  const showChecklist =
+    !onboardingChecklist.dismissed &&
+    (!onboardingChecklist.hasVisitedDogs ||
+      !onboardingChecklist.hasVisitedSettings);
 
   if (!isLoaded) {
     return <LoadingView />;
@@ -134,13 +143,15 @@ export default function HomeScreen() {
                     backgroundColor: palette.surface,
                     borderColor: palette.border,
                   },
-                ]}>
+                ]}
+              >
                 <ThemedText type="sectionTitle" style={styles.emptyTitle}>
                   {t("home.emptyTitle")}
                 </ThemedText>
                 <ThemedText
                   lightColor={palette.textMuted}
-                  darkColor={palette.textMuted}>
+                  darkColor={palette.textMuted}
+                >
                   {t("home.emptyDescription")}
                 </ThemedText>
               </ThemedView>
@@ -205,6 +216,17 @@ const styles = StyleSheet.create({
   },
   list: {
     gap: Spacing.md,
+  },
+  checklistCard: {
+    borderRadius: Radius.card,
+    borderWidth: 1.5,
+    gap: Spacing.sm,
+    padding: 20,
+  },
+  checklistRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
   },
   emptyState: {
     borderRadius: Radius.card,

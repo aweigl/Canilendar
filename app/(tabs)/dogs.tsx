@@ -23,7 +23,14 @@ export default function DogsScreen() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
-  const { dogs, appointments, isLoaded, saveDog, deleteDog } = useCanilendar();
+  const {
+    appointments,
+    deleteDog,
+    dogs,
+    isLoaded,
+    markChecklistStepSeen,
+    saveDog,
+  } = useCanilendar();
   const [isEditing, setIsEditing] = useState(false);
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_DOG);
@@ -33,6 +40,12 @@ export default function DogsScreen() {
       setIsEditing(true);
     }
   }, [dogs.length, isLoaded]);
+
+  useEffect(() => {
+    if (isLoaded) {
+      markChecklistStepSeen("dogs");
+    }
+  }, [isLoaded, markChecklistStepSeen]);
 
   if (!isLoaded) {
     return <LoadingView />;
@@ -76,13 +89,17 @@ export default function DogsScreen() {
       return;
     }
 
-    saveDog({
+    const savedDog = saveDog({
       id: editingDogId ?? undefined,
       name: form.name,
       address: form.address,
       ownerPhone: form.ownerPhone,
       notes: form.notes,
     });
+
+    if (!savedDog) {
+      return;
+    }
 
     resetForm();
   }

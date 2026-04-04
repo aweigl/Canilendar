@@ -2,6 +2,14 @@ export type NotificationPermissionState = "granted" | "denied" | "undetermined";
 export type AppearanceMode = "system" | "light" | "dark";
 export type AppLanguage = "en" | "de" | "fr" | "es";
 export type LanguagePreference = "system" | AppLanguage;
+export type OnboardingStatus = "loading" | "incomplete" | "complete";
+export type SubscriptionStatus = "loading" | "inactive" | "active" | "unavailable";
+export type PaywallTrigger =
+  | "dog_limit"
+  | "appointment_limit"
+  | "settings"
+  | "onboarding";
+export type ChecklistTarget = "dogs" | "settings";
 
 export type RecurrenceRule = {
   frequency: "weekly";
@@ -41,10 +49,18 @@ export type ReminderSettings = {
   language: LanguagePreference;
 };
 
+export type OnboardingChecklistState = {
+  completedAt: string | null;
+  dismissed: boolean;
+  hasVisitedDogs: boolean;
+  hasVisitedSettings: boolean;
+};
+
 export type PersistedAppState = {
   dogs: DogProfile[];
   appointments: Appointment[];
   settings: ReminderSettings;
+  onboarding: OnboardingChecklistState;
 };
 
 export type AppointmentOccurrence = {
@@ -79,6 +95,11 @@ export type AppointmentInput = {
 
 export const REMINDER_OPTIONS = [15, 30, 60, 90];
 
+export const FREE_TIER_LIMITS = {
+  dogs: 1,
+  appointments: 1,
+} as const;
+
 export const WEEKDAY_OPTIONS = [
   { value: 1 },
   { value: 2 },
@@ -95,4 +116,11 @@ export const DEFAULT_SETTINGS: ReminderSettings = {
   defaultReminderMinutes: 60,
   appearanceMode: "system",
   language: "system",
+};
+
+export const DEFAULT_ONBOARDING_CHECKLIST: OnboardingChecklistState = {
+  completedAt: null,
+  dismissed: false,
+  hasVisitedDogs: false,
+  hasVisitedSettings: false,
 };

@@ -1,13 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { DEFAULT_SETTINGS, type Appointment, type PersistedAppState } from '@/types/domain';
+import {
+  DEFAULT_ONBOARDING_CHECKLIST,
+  DEFAULT_SETTINGS,
+  type Appointment,
+  type PersistedAppState,
+} from '@/types/domain';
 
-const STORAGE_KEY = '@canilendar/app-state-v1';
+const STORAGE_KEY = '@canilendar/app-state-v3';
+const STORAGE_KEY_PREFIX = '@canilendar/app-state-v2';
+const LEGACY_STORAGE_KEY = '@canilendar/app-state-v1';
 
 const FALLBACK_STATE: PersistedAppState = {
   dogs: [],
   appointments: [],
   settings: DEFAULT_SETTINGS,
+  onboarding: DEFAULT_ONBOARDING_CHECKLIST,
 };
 
 function normalizeAppointment(value: unknown): Appointment | null {
@@ -55,28 +63,57 @@ function normalizeAppointment(value: unknown): Appointment | null {
   };
 }
 
+function normalizePersistedState(parsed: Partial<PersistedAppState>): PersistedAppState {
+  return {
+    dogs: Array.isArray(parsed.dogs) ? parsed.dogs : [],
+    appointments: Array.isArray(parsed.appointments)
+      ? parsed.appointments
+          .map((appointment) => normalizeAppointment(appointment))
+          .filter((appointment): appointment is Appointment => appointment !== null)
+      : [],
+    settings: {
+      ...DEFAULT_SETTINGS,
+      ...(parsed.settings ?? {}),
+    },
+    onboarding: {
+      ...DEFAULT_ONBOARDING_CHECKLIST,
+      ...(parsed.onboarding ?? {}),
+    },
+  };
+}
+
 export async function loadPersistedState(): Promise<PersistedAppState> {
   try {
     const rawValue = await AsyncStorage.getItem(STORAGE_KEY);
 
-    if (!rawValue) {
+    if (rawValue) {
+      return normalizePersistedState(JSON.parse(rawValue) as Partial<PersistedAppState>);
+    }
+
+    const allKeys = await AsyncStorage.getAllKeys();
+    const migratedUserScopedKey = allKeys.find((key) => key.startsWith(`${STORAGE_KEY_PREFIX}:`));
+
+    if (migratedUserScopedKey) {
+      const migratedRawValue = await AsyncStorage.getItem(migratedUserScopedKey);
+
+      if (migratedRawValue) {
+        const migratedState = normalizePersistedState(
+          JSON.parse(migratedRawValue) as Partial<PersistedAppState>
+        );
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(migratedState));
+        return migratedState;
+      }
+    }
+
+    const legacyValue = await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+
+    if (!legacyValue) {
       return FALLBACK_STATE;
     }
 
-    const parsed = JSON.parse(rawValue) as Partial<PersistedAppState>;
-
-    return {
-      dogs: Array.isArray(parsed.dogs) ? parsed.dogs : [],
-      appointments: Array.isArray(parsed.appointments)
-        ? parsed.appointments
-            .map((appointment) => normalizeAppointment(appointment))
-            .filter((appointment): appointment is Appointment => appointment !== null)
-        : [],
-      settings: {
-        ...DEFAULT_SETTINGS,
-        ...(parsed.settings ?? {}),
-      },
-    };
+    const migrated = normalizePersistedState(JSON.parse(legacyValue) as Partial<PersistedAppState>);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+    return migrated;
   } catch {
     return FALLBACK_STATE;
   }

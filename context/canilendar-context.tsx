@@ -14,13 +14,19 @@ import {
 } from '@/lib/notifications';
 import { loadPersistedState, persistState } from '@/lib/storage';
 import {
+  DEFAULT_ONBOARDING_CHECKLIST,
   DEFAULT_SETTINGS,
+  FREE_TIER_LIMITS,
   type AppearanceMode,
   type Appointment,
   type AppointmentInput,
+  type ChecklistTarget,
   type DogInput,
   type DogProfile,
   type NotificationPermissionState,
+  type OnboardingChecklistState,
+  type OnboardingStatus,
+  type PaywallTrigger,
   type ReminderSettings,
 } from '@/types/domain';
 
@@ -28,19 +34,27 @@ type CanilendarContextValue = {
   dogs: DogProfile[];
   appointments: Appointment[];
   settings: ReminderSettings;
+  onboardingChecklist: OnboardingChecklistState;
+  onboardingStatus: OnboardingStatus;
   resolvedColorScheme: 'light' | 'dark';
   isLoaded: boolean;
   notificationPermission: NotificationPermissionState;
+  canCreateDog: boolean;
+  canCreateAppointment: boolean;
   getDogById: (dogId: string) => DogProfile | undefined;
   getAppointmentById: (appointmentId: string) => Appointment | undefined;
   getOccurrencesForDate: (date: Date) => ReturnType<typeof getOccurrencesForDate>;
   getMarkedDatesForMonth: (visibleMonth: Date) => Set<string>;
-  saveDog: (input: DogInput) => DogProfile;
+  saveDog: (input: DogInput) => DogProfile | null;
   deleteDog: (dogId: string) => boolean;
-  saveAppointment: (input: AppointmentInput) => Promise<Appointment>;
+  saveAppointment: (input: AppointmentInput) => Promise<Appointment | null>;
   deleteAppointment: (appointmentId: string) => void;
   updateSettings: (partial: Partial<ReminderSettings>) => void;
   updateAppearanceMode: (mode: AppearanceMode) => void;
+  markChecklistStepSeen: (target: ChecklistTarget) => void;
+  dismissHomeChecklist: () => void;
+  completeOnboarding: () => void;
+  resetLocalData: () => void;
   refreshNotificationPermission: () => Promise<NotificationPermissionState>;
   requestNotificationPermission: () => Promise<NotificationPermissionState>;
 };
@@ -66,11 +80,21 @@ function buildDogRecord(input: DogInput, currentDog?: DogProfile): DogProfile {
   };
 }
 
-export function CanilendarProvider({ children }: PropsWithChildren) {
+type CanilendarProviderProps = PropsWithChildren<{
+  isPro: boolean;
+  onRequireUpgrade: (trigger: PaywallTrigger) => void;
+}>;
+
+export function CanilendarProvider({
+  children,
+  isPro,
+  onRequireUpgrade,
+}: CanilendarProviderProps) {
   const systemColorScheme = useSystemColorScheme();
   const [dogs, setDogs] = useState<DogProfile[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [onboardingChecklist, setOnboardingChecklist] = useState(DEFAULT_ONBOARDING_CHECKLIST);
   const [notificationPermission, setNotificationPermission] =
     useState<NotificationPermissionState>('undetermined');
   const [isLoaded, setIsLoaded] = useState(false);
@@ -81,6 +105,11 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
         ? 'dark'
         : 'light'
       : settings.appearanceMode;
+  const onboardingStatus: OnboardingStatus = isLoaded
+    ? onboardingChecklist.completedAt
+      ? 'complete'
+      : 'incomplete'
+    : 'loading';
 
   useEffect(() => {
     let isMounted = true;
@@ -98,6 +127,10 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
       setDogs(persistedState.dogs);
       setAppointments(persistedState.appointments);
       setSettings(persistedState.settings);
+      setOnboardingChecklist({
+        ...DEFAULT_ONBOARDING_CHECKLIST,
+        ...(persistedState.onboarding ?? {}),
+      });
       setNotificationPermission(permissionState);
       setIsLoaded(true);
     }
@@ -130,8 +163,9 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
       dogs,
       appointments,
       settings,
+      onboarding: onboardingChecklist,
     });
-  }, [appointments, dogs, isLoaded, settings]);
+  }, [appointments, dogs, isLoaded, onboardingChecklist, settings]);
 
   useEffect(() => {
     if (!isLoaded || notificationPermission !== 'granted') {
@@ -142,8 +176,9 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
       dogs,
       appointments,
       settings,
+      onboarding: onboardingChecklist,
     });
-  }, [appointments, dogs, isLoaded, notificationPermission, settings]);
+  }, [appointments, dogs, isLoaded, notificationPermission, onboardingChecklist, settings]);
 
   function getDogById(dogId: string) {
     return dogs.find((dog) => dog.id === dogId);
@@ -161,8 +196,17 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
     return getMarkedDateKeys(appointments, dogs, visibleMonth);
   }
 
+  const canCreateDog = isPro || dogs.length < FREE_TIER_LIMITS.dogs;
+  const canCreateAppointment = isPro || appointments.length < FREE_TIER_LIMITS.appointments;
+
   function saveDog(input: DogInput) {
     const existingDog = input.id ? getDogById(input.id) : undefined;
+
+    if (!existingDog && !canCreateDog) {
+      onRequireUpgrade('dog_limit');
+      return null;
+    }
+
     const nextDog = buildDogRecord(input, existingDog);
 
     setDogs((currentDogs) => {
@@ -194,6 +238,7 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
         dogs,
         appointments,
         settings,
+        onboarding: onboardingChecklist,
       });
     }
 
@@ -208,8 +253,19 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
   }
 
   async function saveAppointment(input: AppointmentInput) {
-    const savedDog = saveDog(input.dog);
     const currentAppointment = input.id ? getAppointmentById(input.id) : undefined;
+
+    if (!currentAppointment && !canCreateAppointment) {
+      onRequireUpgrade('appointment_limit');
+      return null;
+    }
+
+    const savedDog = saveDog(input.dog);
+
+    if (!savedDog) {
+      return null;
+    }
+
     const timestamp = new Date().toISOString();
     const reminderMinutesBefore = input.reminderMinutesBefore ?? settings.defaultReminderMinutes;
     const weekdays = input.isRecurring
@@ -268,15 +324,58 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
     }));
   }
 
+  function markChecklistStepSeen(target: ChecklistTarget) {
+    setOnboardingChecklist((current) => {
+      if (target === 'dogs' && current.hasVisitedDogs) {
+        return current;
+      }
+
+      if (target === 'settings' && current.hasVisitedSettings) {
+        return current;
+      }
+
+      return {
+        ...current,
+        hasVisitedDogs: target === 'dogs' ? true : current.hasVisitedDogs,
+        hasVisitedSettings: target === 'settings' ? true : current.hasVisitedSettings,
+      };
+    });
+  }
+
+  function dismissHomeChecklist() {
+    setOnboardingChecklist((current) => ({
+      ...current,
+      dismissed: true,
+    }));
+  }
+
+  function completeOnboarding() {
+    setOnboardingChecklist((current) => ({
+      ...current,
+      completedAt: current.completedAt ?? new Date().toISOString(),
+    }));
+  }
+
+  function resetLocalData() {
+    setDogs([]);
+    setAppointments([]);
+    setSettings(DEFAULT_SETTINGS);
+    setOnboardingChecklist(DEFAULT_ONBOARDING_CHECKLIST);
+  }
+
   return (
     <CanilendarContext.Provider
       value={{
         dogs,
         appointments,
         settings,
+        onboardingChecklist,
+        onboardingStatus,
         resolvedColorScheme,
         isLoaded,
         notificationPermission,
+        canCreateDog,
+        canCreateAppointment,
         getDogById,
         getAppointmentById,
         getOccurrencesForDate: getOccurrencesByDate,
@@ -287,6 +386,10 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
         deleteAppointment,
         updateSettings,
         updateAppearanceMode: (mode) => updateSettings({ appearanceMode: mode }),
+        markChecklistStepSeen,
+        dismissHomeChecklist,
+        completeOnboarding,
+        resetLocalData,
         refreshNotificationPermission: refreshPermission,
         requestNotificationPermission: requestPermission,
       }}>
@@ -303,4 +406,8 @@ export function useCanilendar() {
   }
 
   return context;
+}
+
+export function useOptionalCanilendar() {
+  return useContext(CanilendarContext);
 }

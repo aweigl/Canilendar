@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -18,10 +18,15 @@ import { AppButton } from "@/components/ui/app-button";
 import { ChoiceChip } from "@/components/ui/choice-chip";
 import { ToggleSwitch } from "@/components/ui/toggle-switch";
 import { Colors, Radius, Spacing } from "@/constants/theme";
+import { useAppSession } from "@/context/app-session-context";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { detectSystemLanguage, resolveAppLanguage } from "@/i18n";
 import { formatTimeInputValue, parseTimeValue } from "@/lib/date";
+import {
+  revenueCatPurchasesAreSupported,
+  revenueCatUiIsReady,
+} from "@/lib/revenuecat";
 import {
   REMINDER_OPTIONS,
   type AppearanceMode,
@@ -33,15 +38,37 @@ export default function SettingsScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const {
+    currentOffering,
+    isPro,
+    isRevenueCatReady,
+    isRevenueCatPurchaseSupported,
+    openCustomerCenter,
+    presentPaywall,
+    presentHostedPaywall,
+    restorePurchases,
+    subscriptionStatus,
+  } = useAppSession();
+  const {
     isLoaded,
+    markChecklistStepSeen,
     notificationPermission,
     requestNotificationPermission,
+    resetLocalData,
     refreshNotificationPermission,
     settings,
     updateSettings,
     updateAppearanceMode,
   } = useCanilendar();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const purchasesSupported = revenueCatPurchasesAreSupported();
+  const hostedUiReady = revenueCatUiIsReady();
+
+  useEffect(() => {
+    if (isLoaded) {
+      markChecklistStepSeen("settings");
+    }
+  }, [isLoaded, markChecklistStepSeen]);
 
   if (!isLoaded) {
     return <LoadingView />;
@@ -99,6 +126,55 @@ export default function SettingsScreen() {
   const deviceLanguage = detectSystemLanguage();
   const currentLanguage = resolveAppLanguage(settings.language);
 
+  async function handleRestorePurchases() {
+    setIsRestoring(true);
+    const error = await restorePurchases();
+    setIsRestoring(false);
+
+    if (error) {
+      Alert.alert("Restore failed", error);
+      return;
+    }
+
+    Alert.alert(
+      "Restore complete",
+      "Your subscription status has been refreshed.",
+    );
+  }
+
+  async function handleHostedPaywall() {
+    const error = await presentHostedPaywall({ onlyIfNeeded: true });
+
+    if (error) {
+      Alert.alert("RevenueCat Paywall", error);
+    }
+  }
+
+  async function handleCustomerCenter() {
+    const error = await openCustomerCenter();
+
+    if (error) {
+      Alert.alert("Customer Center", error);
+    }
+  }
+
+  function handleResetLocalData() {
+    Alert.alert(
+      "Reset local data?",
+      "This DEV action removes all dogs, appointments, settings, and onboarding progress saved on this simulator.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: () => {
+            resetLocalData();
+          },
+        },
+      ],
+    );
+  }
+
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: palette.background }]}
@@ -125,6 +201,116 @@ export default function SettingsScreen() {
             {t("settings.description")}
           </ThemedText>
         </View>
+
+        <ThemedView
+          style={[
+            styles.card,
+            {
+              backgroundColor: palette.surface,
+              borderColor: palette.border,
+            },
+          ]}
+        >
+          <ThemedText
+            type="sectionTitle"
+            style={(styles.cardTitle, styles.marginBottom)}
+          >
+            Canilendar Pro
+          </ThemedText>
+          <ThemedText
+            style={styles.marginBottom}
+            lightColor={palette.textMuted}
+            darkColor={palette.textMuted}
+          >
+            Upgrade only when you need more than the first free dog and
+            appointment.
+          </ThemedText>
+          <ThemedText
+            style={styles.marginBottom}
+            lightColor={palette.support}
+            darkColor={palette.support}
+          >
+            {isPro
+              ? "Canilendar Pro is active."
+              : subscriptionStatus === "unavailable"
+                ? "Purchases are not configured on this build yet."
+                : "You are on the free tier with 1 dog and 1 appointment included."}
+          </ThemedText>
+          {!isPro ? (
+            <AppButton
+              style={styles.marginBottom}
+              label="Upgrade to Pro"
+              onPress={() => presentPaywall("settings")}
+              icon="crown.fill"
+            />
+          ) : null}
+          <View style={styles.actions}>
+            <AppButton
+              label={isRestoring ? "Restoring..." : "Restore purchases"}
+              onPress={handleRestorePurchases}
+              disabled={
+                isRestoring ||
+                !isRevenueCatReady ||
+                !isRevenueCatPurchaseSupported
+              }
+              variant="secondary"
+            />
+            {isPro ? (
+              <AppButton
+                label="Open Customer Center"
+                onPress={handleCustomerCenter}
+                disabled={
+                  !isRevenueCatReady ||
+                  !isRevenueCatPurchaseSupported ||
+                  !hostedUiReady
+                }
+                variant="secondary"
+              />
+            ) : null}
+            {/* {Platform.OS === "ios" ? (
+              <AppButton
+                label="Manage subscription"
+                onPress={() =>
+                  Linking.openURL(
+                    "https://apps.apple.com/account/subscriptions",
+                  )
+                }
+                variant="ghost"
+              />
+            ) : null} */}
+          </View>
+          {currentOffering && !isPro ? (
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+              type="caption"
+            >
+              Current offering: {currentOffering.identifier} with{" "}
+              {currentOffering.availablePackages.length} package options.
+            </ThemedText>
+          ) : null}
+          {isRevenueCatReady && !purchasesSupported ? (
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+            >
+              This build is running in Expo Go preview mode. Use `npx expo
+              run:ios` to test real RevenueCat purchases, restores, and Customer
+              Center.
+            </ThemedText>
+          ) : null}
+          {isRevenueCatReady && purchasesSupported && !hostedUiReady ? (
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+              type="caption"
+            >
+              Hosted RevenueCat Paywall UI and Customer Center need an iOS
+              development build or production build. They are unavailable in
+              Expo Go.
+            </ThemedText>
+          ) : null}
+        </ThemedView>
 
         <ThemedView
           style={[
@@ -351,6 +537,39 @@ export default function SettingsScreen() {
             {t("settings.storageDescription")}
           </ThemedText>
         </ThemedView>
+
+        {__DEV__ ? (
+          <ThemedView
+            style={[
+              styles.card,
+              {
+                backgroundColor: palette.dangerSoft,
+                borderColor: palette.danger,
+              },
+            ]}
+          >
+            <ThemedText
+              type="sectionTitle"
+              style={styles.cardTitle}
+              lightColor={palette.onDanger}
+              darkColor={palette.onDanger}
+            >
+              DEV Tools
+            </ThemedText>
+            <ThemedText
+              lightColor={palette.onDanger}
+              darkColor={palette.onDanger}
+            >
+              Clear all locally saved app data on this simulator or device.
+            </ThemedText>
+            <AppButton
+              label="Reset local data"
+              onPress={handleResetLocalData}
+              variant="danger"
+              icon="trash.fill"
+            />
+          </ThemedView>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -404,5 +623,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: Spacing.xs,
+  },
+  marginBottom: {
+    marginBottom: Spacing.sm,
   },
 });

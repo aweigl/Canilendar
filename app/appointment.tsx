@@ -209,7 +209,7 @@ export default function AppointmentScreen() {
       return;
     }
 
-    await saveAppointment({
+    const savedAppointment = await saveAppointment({
       id: appointment?.id,
       dog: {
         id: dogMode === "existing" ? (selectedDogId ?? undefined) : undefined,
@@ -224,6 +224,10 @@ export default function AppointmentScreen() {
       recurrenceWeekdays,
       reminderMinutesBefore,
     });
+
+    if (!savedAppointment) {
+      return;
+    }
 
     router.back();
   }

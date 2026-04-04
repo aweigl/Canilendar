@@ -220,7 +220,7 @@ const resources = {
         edit: "Bearbeiten",
         enabled: "Aktiv",
         system: "System",
-        useDevice: "Gerat verwenden",
+        useDevice: "Gerät verwenden",
         light: "Hell",
         dark: "Dunkel",
         pickerDate: "Datum",
@@ -354,12 +354,12 @@ const resources = {
         summaryTime: "Zeit der Zusammenfassung",
         language: "Sprache",
         languageDescription:
-          "Wahle eine feste Sprache oder nutze die Sprache deines Telefons. Nicht unterstutzte Geratesprachen fallen auf Englisch zuruck.",
+          "Wahle eine feste Sprache oder nutze die Sprache deines Telefons. Nicht unterstutzte Gerätesprachen fallen auf Englisch zuruck.",
         languageCurrent:
-          "Geratesprache: {{language}}. Aktuelle App-Sprache: {{currentLanguage}}.",
+          "Gerätesprache: {{language}}. Aktuelle App-Sprache: {{currentLanguage}}.",
         appearance: "Erscheinungsbild",
         appearanceSystem:
-          "Canilendar folgt der Darstellungseinstellung deines Gerats.",
+          "Canilendar folgt der Darstellungseinstellung deines Geräts.",
         appearanceLight: "Canilendar bleibt immer im hellen Modus.",
         appearanceDark: "Canilendar bleibt immer im dunklen Modus.",
         defaultReminder: "Standard-Erinnerung",
@@ -367,7 +367,7 @@ const resources = {
           "Neue Termine starten mit dieser Vorlaufzeit. Du kannst sie pro Termin uberschreiben.",
         storage: "Speicher",
         storageDescription:
-          "Termine, Hunde und Erinnerungs-Einstellungen werden in v1 nur auf diesem Gerat gespeichert.",
+          "Termine, Hunde und Erinnerungs-Einstellungen werden in v1 nur auf diesem Gerät gespeichert.",
         alerts: {
           notificationsOffTitle: "Benachrichtigungen sind aus",
           notificationsOffBody:
