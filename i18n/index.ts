@@ -207,6 +207,14 @@ const resources = {
           button: "Reset local data",
           confirm: "Reset",
         },
+        devTools: {
+          title: "DEV Tools",
+          description:
+            "Trigger a local test notification or clear locally saved app data on this simulator or device.",
+          showNotification: "Show notification",
+          showNotificationLoading: "Showing notification...",
+          showSplash: "Show splash screen",
+        },
         storage: "Storage",
         storageDescription:
           "Appointments, dogs, and reminder preferences are stored only on this device in v1.",
@@ -259,6 +267,10 @@ const resources = {
         reminderPrefix: "Reminder {{offset}}",
         todayTitle: "Today in Canilendar",
         noAppointmentsToday: "You have no dog appointments scheduled today.",
+        devTestTitle: "Milo",
+        devTestSubtitle: "Appointment at 9:00 AM",
+        devTestBody:
+          "12 Bark Street • Reminder 30 minutes before • Meet owner at side entrance.",
         summarySubtitle_one: "{{date}} • {{count}} appointment",
         summarySubtitle_other: "{{date}} • {{count}} appointments",
         summaryMore_one: "{{headline}} • +{{count}} more",
@@ -500,6 +512,14 @@ const resources = {
           button: "Lokale Daten zurucksetzen",
           confirm: "Zurucksetzen",
         },
+        devTools: {
+          title: "DEV-Werkzeuge",
+          description:
+            "Los eine lokale Test-Benachrichtigung aus oder losche lokal gespeicherte App-Daten auf diesem Simulator oder Gerat.",
+          showNotification: "Benachrichtigung zeigen",
+          showNotificationLoading: "Benachrichtigung wird gezeigt...",
+          showSplash: "Splash Screen zeigen",
+        },
         storage: "Speicher",
         storageDescription:
           "Termine, Hunde und Erinnerungs-Einstellungen werden in v1 nur auf diesem Gerät gespeichert.",
@@ -554,6 +574,10 @@ const resources = {
         reminderPrefix: "Erinnerung {{offset}}",
         todayTitle: "Heute in Canilendar",
         noAppointmentsToday: "Heute sind keine Hundetermine geplant.",
+        devTestTitle: "Milo",
+        devTestSubtitle: "Termin um 09:00",
+        devTestBody:
+          "Bellenweg 12 • Erinnerung 30 Minuten vorher • Besitzer am Seiteneingang treffen.",
         summarySubtitle_one: "{{date}} • {{count}} Termin",
         summarySubtitle_other: "{{date}} • {{count}} Termine",
         summaryMore_one: "{{headline}} • +{{count}} weiterer",
@@ -796,6 +820,14 @@ const resources = {
           button: "Reinitialiser les donnees locales",
           confirm: "Reinitialiser",
         },
+        devTools: {
+          title: "Outils DEV",
+          description:
+            "Declenchez une notification locale de test ou effacez les donnees enregistrees localement sur ce simulateur ou appareil.",
+          showNotification: "Afficher la notification",
+          showNotificationLoading: "Affichage de la notification...",
+          showSplash: "Afficher l'ecran de lancement",
+        },
         storage: "Stockage",
         storageDescription:
           "Les rendez-vous, chiens et preferences de rappel sont stockes uniquement sur cet appareil dans v1.",
@@ -852,6 +884,10 @@ const resources = {
         todayTitle: "Aujourd'hui dans Canilendar",
         noAppointmentsToday:
           "Vous n'avez aucun rendez-vous canin prevu aujourd'hui.",
+        devTestTitle: "Milo",
+        devTestSubtitle: "Rendez-vous a 09:00",
+        devTestBody:
+          "12 rue des Abois • Rappel 30 minutes avant • Retrouver le proprietaire a l'entree laterale.",
         summarySubtitle_one: "{{date}} • {{count}} rendez-vous",
         summarySubtitle_other: "{{date}} • {{count}} rendez-vous",
         summaryMore_one: "{{headline}} • +{{count}} autre",
@@ -1093,6 +1129,14 @@ const resources = {
           button: "Reiniciar datos locales",
           confirm: "Reiniciar",
         },
+        devTools: {
+          title: "Herramientas DEV",
+          description:
+            "Lanza una notificacion local de prueba o borra los datos guardados localmente en este simulador o dispositivo.",
+          showNotification: "Mostrar notificacion",
+          showNotificationLoading: "Mostrando notificacion...",
+          showSplash: "Mostrar pantalla de inicio",
+        },
         storage: "Almacenamiento",
         storageDescription:
           "Las citas, los perros y las preferencias de recordatorio se guardan solo en este dispositivo en v1.",
@@ -1148,6 +1192,10 @@ const resources = {
         reminderPrefix: "Recordatorio {{offset}}",
         todayTitle: "Hoy en Canilendar",
         noAppointmentsToday: "No tienes citas de perros programadas para hoy.",
+        devTestTitle: "Milo",
+        devTestSubtitle: "Cita a las 09:00",
+        devTestBody:
+          "Calle Ladrido 12 • Recordatorio 30 minutos antes • Encontrarse con el propietario en la entrada lateral.",
         summarySubtitle_one: "{{date}} • {{count}} cita",
         summarySubtitle_other: "{{date}} • {{count}} citas",
         summaryMore_one: "{{headline}} • +{{count}} mas",

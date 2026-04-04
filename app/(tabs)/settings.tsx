@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
+  Image,
   Linking,
+  Modal,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   View,
@@ -23,6 +26,7 @@ import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { detectSystemLanguage, resolveAppLanguage } from "@/i18n";
 import { formatTimeInputValue, parseTimeValue } from "@/lib/date";
+import { showDevNotification } from "@/lib/notifications";
 import {
   revenueCatPurchasesAreSupported,
   revenueCatUiIsReady,
@@ -61,6 +65,8 @@ export default function SettingsScreen() {
   } = useCanilendar();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isShowingDevNotification, setIsShowingDevNotification] = useState(false);
+  const [isShowingSplashPreview, setIsShowingSplashPreview] = useState(false);
   const purchasesSupported = revenueCatPurchasesAreSupported();
   const hostedUiReady = revenueCatUiIsReady();
 
@@ -89,6 +95,30 @@ export default function SettingsScreen() {
     setIsRefreshing(true);
     await refreshNotificationPermission();
     setIsRefreshing(false);
+  }
+
+  async function handleShowDevNotification() {
+    setIsShowingDevNotification(true);
+    const status = await requestNotificationPermission();
+
+    if (status !== "granted") {
+      setIsShowingDevNotification(false);
+
+      if (status === "denied") {
+        Alert.alert(
+          t("settings.alerts.notificationsOffTitle"),
+          t("settings.alerts.notificationsOffBody"),
+        );
+      }
+
+      return;
+    }
+
+    try {
+      await showDevNotification(resolveAppLanguage(settings.language));
+    } finally {
+      setIsShowingDevNotification(false);
+    }
   }
 
   function permissionCopy() {
@@ -559,14 +589,31 @@ export default function SettingsScreen() {
               lightColor={palette.onDanger}
               darkColor={palette.onDanger}
             >
-              DEV Tools
+              {t("settings.devTools.title")}
             </ThemedText>
             <ThemedText
               lightColor={palette.onDanger}
               darkColor={palette.onDanger}
             >
-              Clear all locally saved app data on this simulator or device.
+              {t("settings.devTools.description")}
             </ThemedText>
+            <AppButton
+              label={
+                isShowingDevNotification
+                  ? t("settings.devTools.showNotificationLoading")
+                  : t("settings.devTools.showNotification")
+              }
+              onPress={handleShowDevNotification}
+              variant="secondary"
+              disabled={isShowingDevNotification}
+              icon="bell.badge.fill"
+            />
+            <AppButton
+              label={t("settings.devTools.showSplash")}
+              onPress={() => setIsShowingSplashPreview(true)}
+              variant="secondary"
+              icon="apple.logo"
+            />
             <AppButton
               label={t("settings.devReset.button")}
               onPress={handleResetLocalData}
@@ -576,6 +623,30 @@ export default function SettingsScreen() {
           </ThemedView>
         ) : null}
       </ScrollView>
+
+      <Modal
+        animationType="fade"
+        onRequestClose={() => setIsShowingSplashPreview(false)}
+        statusBarTranslucent
+        transparent={false}
+        visible={isShowingSplashPreview}
+      >
+        <Pressable
+          onPress={() => setIsShowingSplashPreview(false)}
+          style={[
+            styles.splashPreview,
+            {
+              backgroundColor: colorScheme === "dark" ? "#000000" : "#ffffff",
+            },
+          ]}
+        >
+          <Image
+            resizeMode="contain"
+            source={require("../../assets/images/splash-screen.png")}
+            style={styles.splashImage}
+          />
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -619,6 +690,15 @@ const styles = StyleSheet.create({
   },
   timePickerWrap: {
     gap: Spacing.xs,
+  },
+  splashPreview: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
+  splashImage: {
+    height: 200,
+    width: 200,
   },
   inputLabel: {
     fontSize: 15,

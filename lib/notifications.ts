@@ -95,6 +95,21 @@ async function registerNotificationCategories() {
   ]);
 }
 
+async function ensureNotificationPresentation(language: AppLanguage) {
+  if (Platform.OS === 'android') {
+    const t = getFixedT(language);
+    await Notifications.setNotificationChannelAsync('appointments', {
+      name: t('notifications.channelName'),
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'default',
+    });
+  }
+
+  if (Platform.OS === 'ios') {
+    await registerNotificationCategories();
+  }
+}
+
 export async function getNotificationPermissionState(): Promise<NotificationPermissionState> {
   const permissions = await Notifications.getPermissionsAsync();
 
@@ -137,18 +152,7 @@ export async function syncScheduledNotifications(state: PersistedAppState) {
     return;
   }
 
-  if (Platform.OS === 'android') {
-    const t = getFixedT(language);
-    await Notifications.setNotificationChannelAsync('appointments', {
-      name: t('notifications.channelName'),
-      importance: Notifications.AndroidImportance.HIGH,
-      sound: 'default',
-    });
-  }
-
-  if (Platform.OS === 'ios') {
-    await registerNotificationCategories();
-  }
+  await ensureNotificationPresentation(language);
 
   await Notifications.cancelAllScheduledNotificationsAsync();
 
@@ -223,4 +227,25 @@ export async function syncScheduledNotifications(state: PersistedAppState) {
       },
     });
   }
+}
+
+export async function showDevNotification(language: AppLanguage) {
+  await ensureNotificationPresentation(language);
+
+  const t = getFixedT(language);
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: t('notifications.devTestTitle'),
+      subtitle: t('notifications.devTestSubtitle'),
+      body: t('notifications.devTestBody'),
+      sound: 'default',
+      data: {
+        type: 'dev-test',
+        url: '/',
+      },
+      ...(Platform.OS === 'ios' ? { interruptionLevel: 'active' as const } : null),
+    },
+    trigger: null,
+  });
 }
