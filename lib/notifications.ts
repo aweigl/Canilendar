@@ -1,6 +1,8 @@
 import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
+import i18n, { resolveAppLanguage } from '@/i18n';
+import { getFixedT } from '@/i18n/helpers';
 import {
   buildDailySummaryBody,
   describeReminder,
@@ -9,7 +11,12 @@ import {
   getNextNotificationTime,
   getUpcomingOccurrences,
 } from '@/lib/date';
-import type { AppointmentOccurrence, NotificationPermissionState, PersistedAppState } from '@/types/domain';
+import type {
+  AppointmentOccurrence,
+  AppLanguage,
+  NotificationPermissionState,
+  PersistedAppState,
+} from '@/types/domain';
 
 const NOTIFICATION_WINDOW_DAYS = 14;
 const MAX_APPOINTMENT_NOTIFICATIONS = 50;
@@ -18,14 +25,20 @@ const DAILY_SUMMARY_CATEGORY_ID = 'dailySummary';
 export const OPEN_APPOINTMENT_ACTION_ID = 'openAppointment';
 export const OPEN_AGENDA_ACTION_ID = 'openAgenda';
 
-function buildAppointmentSubtitle(occurrence: AppointmentOccurrence) {
-  return `Appointment at ${formatTimeLabel(occurrence.startAt)}`;
+function buildAppointmentSubtitle(occurrence: AppointmentOccurrence, language: AppLanguage) {
+  const t = getFixedT(language);
+  return t('notifications.appointmentSubtitle', {
+    time: formatTimeLabel(occurrence.startAt, language),
+  });
 }
 
-function buildAppointmentBody(occurrence: AppointmentOccurrence) {
+function buildAppointmentBody(occurrence: AppointmentOccurrence, language: AppLanguage) {
+  const t = getFixedT(language);
   const detailParts = [
     occurrence.dog.address,
-    `Reminder ${describeReminder(occurrence.appointment.reminderMinutesBefore)}`,
+    t('notifications.reminderPrefix', {
+      offset: describeReminder(occurrence.appointment.reminderMinutesBefore, language),
+    }),
   ];
 
   if (occurrence.dog.notes) {
@@ -35,9 +48,12 @@ function buildAppointmentBody(occurrence: AppointmentOccurrence) {
   return detailParts.join(' • ');
 }
 
-function buildSummarySubtitle(targetDate: Date, occurrenceCount: number) {
-  const appointmentLabel = occurrenceCount === 1 ? 'appointment' : 'appointments';
-  return `${formatLongDate(targetDate)} • ${occurrenceCount} ${appointmentLabel}`;
+function buildSummarySubtitle(targetDate: Date, occurrenceCount: number, language: AppLanguage) {
+  const t = getFixedT(language);
+  return t('notifications.summarySubtitle', {
+    date: formatLongDate(targetDate, language),
+    count: occurrenceCount,
+  });
 }
 
 export function configureNotificationHandling() {
@@ -56,9 +72,11 @@ export function configureNotificationHandling() {
 }
 
 async function registerNotificationCategories() {
+  const t = getFixedT();
+
   await Notifications.setNotificationCategoryAsync(APPOINTMENT_CATEGORY_ID, [
     {
-      buttonTitle: 'Open appointment',
+      buttonTitle: t('notifications.openAppointment'),
       identifier: OPEN_APPOINTMENT_ACTION_ID,
       options: {
         opensAppToForeground: true,
@@ -68,7 +86,7 @@ async function registerNotificationCategories() {
 
   await Notifications.setNotificationCategoryAsync(DAILY_SUMMARY_CATEGORY_ID, [
     {
-      buttonTitle: 'Open agenda',
+      buttonTitle: t('notifications.openAgenda'),
       identifier: OPEN_AGENDA_ACTION_ID,
       options: {
         opensAppToForeground: true,
@@ -109,17 +127,27 @@ export async function requestNotificationAccess(): Promise<NotificationPermissio
 
 export async function syncScheduledNotifications(state: PersistedAppState) {
   const permissionState = await getNotificationPermissionState();
+  const language = resolveAppLanguage(state.settings.language);
+
+  if (i18n.resolvedLanguage !== language) {
+    await i18n.changeLanguage(language);
+  }
 
   if (permissionState !== 'granted') {
     return;
   }
 
   if (Platform.OS === 'android') {
+    const t = getFixedT(language);
     await Notifications.setNotificationChannelAsync('appointments', {
-      name: 'Appointments',
+      name: t('notifications.channelName'),
       importance: Notifications.AndroidImportance.HIGH,
       sound: 'default',
     });
+  }
+
+  if (Platform.OS === 'ios') {
+    await registerNotificationCategories();
   }
 
   await Notifications.cancelAllScheduledNotificationsAsync();
@@ -143,8 +171,8 @@ export async function syncScheduledNotifications(state: PersistedAppState) {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: occurrence.dog.name,
-        subtitle: buildAppointmentSubtitle(occurrence),
-        body: buildAppointmentBody(occurrence),
+        subtitle: buildAppointmentSubtitle(occurrence, language),
+        body: buildAppointmentBody(occurrence, language),
         sound: 'default',
         categoryIdentifier: Platform.OS === 'ios' ? APPOINTMENT_CATEGORY_ID : undefined,
         data: {
@@ -177,9 +205,9 @@ export async function syncScheduledNotifications(state: PersistedAppState) {
 
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Today in Canilendar',
-        subtitle: buildSummarySubtitle(targetDate, occurrences.length),
-        body: buildDailySummaryBody(occurrences),
+        title: getFixedT(language)('notifications.todayTitle'),
+        subtitle: buildSummarySubtitle(targetDate, occurrences.length, language),
+        body: buildDailySummaryBody(occurrences, language),
         sound: 'default',
         categoryIdentifier: Platform.OS === 'ios' ? DAILY_SUMMARY_CATEGORY_ID : undefined,
         data: {

@@ -2,6 +2,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AgendaDogCard } from "@/components/agenda-dog-card";
 import { LoadingView } from "@/components/loading-view";
@@ -15,6 +16,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatLongDate } from "@/lib/date";
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { isLoaded, getOccurrencesForDate, getMarkedDatesForMonth } =
@@ -66,15 +68,14 @@ export default function HomeScreen() {
                   darkColor={palette.support}
                   type="eyebrow"
                 >
-                  Daily dog-walk planner
+                  {t("home.badge")}
                 </ThemedText>
               </ThemedView>
               <ThemedText
                 lightColor={palette.textMuted}
                 darkColor={palette.textMuted}
               >
-                Stay on top of pickups, repeat walks, and today&apos;s route
-                without leaving your phone calendar half-finished.
+                {t("home.description")}
               </ThemedText>
             </View>
           </ThemedView>
@@ -97,7 +98,7 @@ export default function HomeScreen() {
           <View style={{ width: "100%" }}>
             <AppButton
               icon="plus.circle.fill"
-              label="New appointment"
+              label={t("home.newAppointment")}
               onPress={() =>
                 router.push({
                   pathname: "/appointment",
@@ -113,7 +114,7 @@ export default function HomeScreen() {
           <View style={styles.sectionHeader}>
             <View>
               <ThemedText type="sectionTitle" style={styles.sectionTitle}>
-                Agenda
+                {t("home.agenda")}
               </ThemedText>
               <ThemedText
                 lightColor={palette.textMuted}
@@ -135,12 +136,12 @@ export default function HomeScreen() {
                   },
                 ]}>
                 <ThemedText type="sectionTitle" style={styles.emptyTitle}>
-                  No agenda entries for this day
+                  {t("home.emptyTitle")}
                 </ThemedText>
                 <ThemedText
                   lightColor={palette.textMuted}
                   darkColor={palette.textMuted}>
-                  Add an appointment for this date and it will show up here as a dog card.
+                  {t("home.emptyDescription")}
                 </ThemedText>
               </ThemedView>
             ) : (

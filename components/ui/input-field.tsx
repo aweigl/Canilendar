@@ -1,29 +1,35 @@
-import { useState } from 'react';
-import { StyleSheet, type StyleProp, type TextInputProps, type TextStyle } from 'react-native';
-import { Input, Label, TextArea, YStack } from 'tamagui';
+import { useState } from "react";
+import {
+  StyleSheet,
+  TextInput,
+  type StyleProp,
+  type TextInputProps,
+  type TextStyle,
+} from "react-native";
+import { Input, Label, YStack } from "tamagui";
 
-import { ThemedText } from '@/components/themed-text';
-import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ThemedText } from "@/components/themed-text";
+import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 type SupportedInputProps = Pick<
   TextInputProps,
-  | 'autoCapitalize'
-  | 'autoComplete'
-  | 'autoCorrect'
-  | 'editable'
-  | 'inputMode'
-  | 'keyboardType'
-  | 'maxLength'
-  | 'numberOfLines'
-  | 'onBlur'
-  | 'onChangeText'
-  | 'onFocus'
-  | 'placeholder'
-  | 'returnKeyType'
-  | 'secureTextEntry'
-  | 'textContentType'
-  | 'value'
+  | "autoCapitalize"
+  | "autoComplete"
+  | "autoCorrect"
+  | "editable"
+  | "inputMode"
+  | "keyboardType"
+  | "maxLength"
+  | "numberOfLines"
+  | "onBlur"
+  | "onChangeText"
+  | "onFocus"
+  | "placeholder"
+  | "returnKeyType"
+  | "secureTextEntry"
+  | "textContentType"
+  | "value"
 >;
 
 type InputFieldProps = SupportedInputProps & {
@@ -44,7 +50,7 @@ export function InputField({
   style,
   ...rest
 }: InputFieldProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const [isFocused, setIsFocused] = useState(false);
   const helperText = error ?? hint;
@@ -54,13 +60,25 @@ export function InputField({
     styles.input,
     {
       backgroundColor: palette.surface,
-      borderColor: error ? palette.danger : isFocused ? palette.accent : palette.border,
+      borderColor: error
+        ? palette.danger
+        : isFocused
+          ? palette.accent
+          : palette.border,
       color: palette.text,
       minHeight,
-      textAlignVertical: multiline ? 'top' : 'center',
+      textAlignVertical: multiline ? "top" : "center",
     },
     style as any,
   ] as const;
+  const handleBlur = (event: any) => {
+    setIsFocused(false);
+    onBlur?.(event as never);
+  };
+  const handleFocus = (event: any) => {
+    setIsFocused(true);
+    onFocus?.(event as never);
+  };
 
   return (
     <YStack gap={Spacing.sm}>
@@ -68,39 +86,31 @@ export function InputField({
         {label}
       </Label>
       {helperText ? (
-        <ThemedText lightColor={helperColor} darkColor={helperColor} type="caption">
+        <ThemedText
+          lightColor={helperColor}
+          darkColor={helperColor}
+          type="caption"
+        >
           {helperText}
         </ThemedText>
       ) : null}
       {multiline ? (
-        <TextArea
+        <TextInput
           accessibilityState={{ disabled: rest.editable === false }}
-          focusStyle={{ borderColor: palette.accent } as never}
-          onBlur={(event) => {
-            setIsFocused(false);
-            onBlur?.(event as never);
-          }}
-          onFocus={(event) => {
-            setIsFocused(true);
-            onFocus?.(event as never);
-          }}
+          multiline
+          onBlur={handleBlur}
+          onFocus={handleFocus}
           placeholderTextColor={palette.textSubtle as any}
+          selectionColor={palette.accent}
           style={fieldStyle as any}
-          unstyled
           {...rest}
         />
       ) : (
         <Input
           accessibilityState={{ disabled: rest.editable === false }}
           focusStyle={{ borderColor: palette.accent } as never}
-          onBlur={(event) => {
-            setIsFocused(false);
-            onBlur?.(event as never);
-          }}
-          onFocus={(event) => {
-            setIsFocused(true);
-            onFocus?.(event as never);
-          }}
+          onBlur={handleBlur}
+          onFocus={handleFocus}
           placeholderTextColor={palette.textSubtle as any}
           style={fieldStyle as any}
           unstyled
@@ -124,7 +134,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 22,
     paddingBottom: 16,
-    width: '100%',
+    width: "100%",
     paddingHorizontal: Spacing.md,
     paddingTop: 16,
   },

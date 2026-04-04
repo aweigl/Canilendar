@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { LoadingView } from "@/components/loading-view";
 import { ThemedText } from "@/components/themed-text";
@@ -19,6 +20,7 @@ const EMPTY_DOG = {
 };
 
 export default function DogsScreen() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { dogs, appointments, isLoaded, saveDog, deleteDog } = useCanilendar();
@@ -68,8 +70,8 @@ export default function DogsScreen() {
   function handleSave() {
     if (!form.name.trim() || !form.address.trim() || !form.ownerPhone.trim()) {
       Alert.alert(
-        "Missing dog details",
-        "Please add a name, address, and owner phone number.",
+        t("dogs.alerts.missingDogDetailsTitle"),
+        t("dogs.alerts.missingDogDetailsBody"),
       );
       return;
     }
@@ -93,20 +95,20 @@ export default function DogsScreen() {
     }
 
     Alert.alert(
-      `Delete ${dog.name}?`,
-      "This only works when the dog has no scheduled appointments.",
+      t("dogs.alerts.deleteTitle", { name: dog.name }),
+      t("dogs.alerts.deleteBody"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("common.delete"),
           style: "destructive",
           onPress: () => {
             const didDelete = deleteDog(dogId);
 
             if (!didDelete) {
               Alert.alert(
-                "Dog still scheduled",
-                "Remove or reassign this dog's appointments before deleting the profile.",
+                t("dogs.alerts.stillScheduledTitle"),
+                t("dogs.alerts.stillScheduledBody"),
               );
             }
           },
@@ -130,21 +132,20 @@ export default function DogsScreen() {
               lightColor={palette.support}
               darkColor={palette.support}
             >
-              Saved dog profiles
+              {t("dogs.eyebrow")}
             </ThemedText>
             <ThemedText type="title" style={styles.title}>
-              Dogs
+              {t("dogs.title")}
             </ThemedText>
             <ThemedText
               lightColor={palette.textMuted}
               darkColor={palette.textMuted}
             >
-              Keep client details reusable so appointments can be added in
-              seconds.
+              {t("dogs.description")}
             </ThemedText>
           </View>
           <AppButton
-            label={isEditing ? "Cancel" : "Add dog"}
+            label={isEditing ? t("common.cancel") : t("dogs.addDog")}
             onPress={isEditing ? resetForm : beginCreateDog}
             variant={isEditing ? "secondary" : "primary"}
             icon={isEditing ? "square.and.pencil" : "plus.circle.fill"}
@@ -162,44 +163,44 @@ export default function DogsScreen() {
             ]}
           >
             <ThemedText type="sectionTitle" style={styles.editorTitle}>
-              {editingDogId ? "Edit dog profile" : "Add a dog profile"}
+              {editingDogId ? t("dogs.editorEditTitle") : t("dogs.editorAddTitle")}
             </ThemedText>
             <InputField
-              label="Dog name"
+              label={t("appointment.dogName")}
               onChangeText={(value) =>
                 setForm((current) => ({ ...current, name: value }))
               }
-              placeholder="Milo"
+              placeholder={t("dogs.placeholders.dogName")}
               value={form.name}
             />
             <InputField
-              label="Pickup address"
+              label={t("appointment.pickupAddress")}
               onChangeText={(value) =>
                 setForm((current) => ({ ...current, address: value }))
               }
-              placeholder="12 Bark Street"
+              placeholder={t("dogs.placeholders.pickupAddress")}
               value={form.address}
             />
             <InputField
               keyboardType="phone-pad"
-              label="Owner phone"
+              label={t("appointment.ownerPhone")}
               onChangeText={(value) =>
                 setForm((current) => ({ ...current, ownerPhone: value }))
               }
-              placeholder="+49 123 456 789"
+              placeholder={t("dogs.placeholders.ownerPhone")}
               value={form.ownerPhone}
             />
             <InputField
-              label="Notes"
+              label={t("dogs.notes")}
               multiline
               onChangeText={(value) =>
                 setForm((current) => ({ ...current, notes: value }))
               }
-              placeholder="Gate code, feeding note, leash routine..."
+              placeholder={t("dogs.placeholders.notes")}
               value={form.notes}
             />
             <AppButton
-              label={editingDogId ? "Save changes" : "Create dog"}
+              label={editingDogId ? t("dogs.saveChanges") : t("dogs.createDog")}
               onPress={handleSave}
               icon={editingDogId ? "square.and.pencil" : "plus.circle.fill"}
             />
@@ -218,14 +219,13 @@ export default function DogsScreen() {
               ]}
             >
               <ThemedText type="sectionTitle" style={styles.emptyTitle}>
-                No dogs saved yet
+                {t("dogs.emptyTitle")}
               </ThemedText>
               <ThemedText
                 lightColor={palette.textMuted}
                 darkColor={palette.textMuted}
               >
-                Add your first dog so future appointments can be scheduled from
-                a saved profile.
+                {t("dogs.emptyDescription")}
               </ThemedText>
             </ThemedView>
           ) : (
@@ -278,8 +278,7 @@ export default function DogsScreen() {
                         darkColor={palette.onSupport}
                         style={styles.countText}
                       >
-                        {appointmentCount} upcoming appoinmtnent
-                        {appointmentCount !== 1 ? "s" : ""}
+                        {t("dogs.upcomingAppointments", { count: appointmentCount })}
                       </ThemedText>
                     </View>
                   </View>
@@ -295,13 +294,13 @@ export default function DogsScreen() {
 
                   <View style={styles.actions}>
                     <AppButton
-                      label="Edit"
+                      label={t("common.edit")}
                       onPress={() => beginEditDog(dog.id)}
                       variant="secondary"
                       icon="square.and.pencil"
                     />
                     <AppButton
-                      label="Delete"
+                      label={t("common.delete")}
                       onPress={() => handleDelete(dog.id)}
                       variant="ghost"
                       icon="trash.fill"

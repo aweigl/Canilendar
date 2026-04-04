@@ -1,4 +1,5 @@
 import { Button, XStack, YStack } from 'tamagui';
+import { useTranslation } from 'react-i18next';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Radius, Spacing } from '@/constants/theme';
@@ -12,6 +13,7 @@ type DogOptionCardProps = {
 };
 
 export function DogOptionCard({ dog, selected, onPress }: DogOptionCardProps) {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? 'light';
   const palette = Colors[colorScheme];
 
@@ -38,23 +40,23 @@ export function DogOptionCard({ dog, selected, onPress }: DogOptionCardProps) {
             lightColor={selected ? palette.support : palette.textSubtle}
             darkColor={selected ? palette.support : palette.textSubtle}
             type="eyebrow">
-            {selected ? 'Selected' : 'Saved dog'}
+            {selected ? t('dogCard.selected') : t('dogCard.savedDog')}
           </ThemedText>
         </XStack>
 
         <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-          Pickup: {dog.address}
+          {t('dogCard.pickup', { value: dog.address })}
         </ThemedText>
         <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-          Owner: {dog.ownerPhone}
+          {t('dogCard.owner', { value: dog.ownerPhone })}
         </ThemedText>
         {dog.notes ? (
           <ThemedText lightColor={palette.textSubtle} darkColor={palette.textSubtle} type="meta">
-            Notes: {dog.notes}
+            {t('dogCard.notes', { value: dog.notes })}
           </ThemedText>
         ) : (
           <ThemedText lightColor={palette.textSubtle} darkColor={palette.textSubtle} type="meta">
-            No extra notes saved for this dog.
+            {t('dogCard.noNotes')}
           </ThemedText>
         )}
       </YStack>

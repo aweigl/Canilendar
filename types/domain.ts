@@ -1,5 +1,7 @@
 export type NotificationPermissionState = "granted" | "denied" | "undetermined";
 export type AppearanceMode = "system" | "light" | "dark";
+export type AppLanguage = "en" | "de" | "fr" | "es";
+export type LanguagePreference = "system" | AppLanguage;
 
 export type RecurrenceRule = {
   frequency: "weekly";
@@ -36,6 +38,7 @@ export type ReminderSettings = {
   dailySummaryTime: string;
   defaultReminderMinutes: number;
   appearanceMode: AppearanceMode;
+  language: LanguagePreference;
 };
 
 export type PersistedAppState = {
@@ -77,13 +80,13 @@ export type AppointmentInput = {
 export const REMINDER_OPTIONS = [15, 30, 60, 90];
 
 export const WEEKDAY_OPTIONS = [
-  { value: 1, label: "Mon" },
-  { value: 2, label: "Tue" },
-  { value: 3, label: "Wed" },
-  { value: 4, label: "Thu" },
-  { value: 5, label: "Fri" },
-  { value: 6, label: "Sat" },
-  { value: 0, label: "Sun" },
+  { value: 1 },
+  { value: 2 },
+  { value: 3 },
+  { value: 4 },
+  { value: 5 },
+  { value: 6 },
+  { value: 0 },
 ] as const;
 
 export const DEFAULT_SETTINGS: ReminderSettings = {
@@ -91,4 +94,5 @@ export const DEFAULT_SETTINGS: ReminderSettings = {
   dailySummaryTime: "07:00",
   defaultReminderMinutes: 60,
   appearanceMode: "system",
+  language: "system",
 };

@@ -12,12 +12,14 @@ import * as SplashScreen from 'expo-splash-screen';
 import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import 'react-native-reanimated';
 import { TamaguiProvider } from 'tamagui';
 
 import { CanilendarProvider } from '@/context/canilendar-context';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import '@/i18n';
 import { configureNotificationHandling } from '@/lib/notifications';
 import tamaguiConfig from '@/tamagui.config';
 
@@ -29,6 +31,7 @@ configureNotificationHandling();
 void SplashScreen.preventAutoHideAsync();
 
 function RootNavigation() {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const [fontsLoaded, fontError] = useFonts({
     Inter_400Regular,
@@ -95,7 +98,7 @@ function RootNavigation() {
             options={{
               presentation: 'modal',
               headerLargeTitle: false,
-              title: 'Appointment',
+              title: t('appointment.screenTitleNew'),
             }}
           />
         </Stack>

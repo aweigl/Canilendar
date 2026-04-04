@@ -1,10 +1,12 @@
 import { addMonths, subMonths } from 'date-fns';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 import {
   formatDayNumber,
   formatMonthLabel,
+  getWeekdayShortLabels,
   getMonthGrid,
   isCurrentMonthDay,
   toDateKey,
@@ -12,8 +14,6 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 type MonthCalendarProps = {
   selectedDate: Date;
@@ -30,9 +30,11 @@ export function MonthCalendar({
   onSelectDate,
   onChangeMonth,
 }: MonthCalendarProps) {
+  useTranslation();
   const colorScheme = useColorScheme() ?? 'light';
   const palette = Colors[colorScheme];
   const weeks = getMonthGrid(visibleMonth);
+  const weekdayLabels = getWeekdayShortLabels();
 
   return (
     <ThemedView style={[styles.container, { borderColor: palette.border, backgroundColor: palette.surface }]}>
@@ -67,7 +69,7 @@ export function MonthCalendar({
       </View>
 
       <View style={styles.weekdayRow}>
-        {WEEKDAY_LABELS.map((label) => (
+        {weekdayLabels.map((label) => (
           <View key={label} style={styles.weekdayCell}>
             <ThemedText lightColor={palette.textSubtle} darkColor={palette.textSubtle} style={styles.weekdayLabel}>
               {label}

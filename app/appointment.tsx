@@ -3,13 +3,8 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-  Alert,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { useTranslation } from "react-i18next";
+import { Alert, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LoadingView } from "@/components/loading-view";
@@ -23,11 +18,9 @@ import { ToggleSwitch } from "@/components/ui/toggle-switch";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { getWeekdayTranslationKey } from "@/i18n/helpers";
 import { combineDateAndTimeParts, formatTimeInputValue } from "@/lib/date";
-import {
-  REMINDER_OPTIONS,
-  WEEKDAY_OPTIONS,
-} from "@/types/domain";
+import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
 
 const EMPTY_DOG_FORM = {
   name: "",
@@ -37,6 +30,7 @@ const EMPTY_DOG_FORM = {
 };
 
 export default function AppointmentScreen() {
+  const { t } = useTranslation();
   const params = useLocalSearchParams<{
     appointmentId?: string;
     date?: string;
@@ -62,7 +56,7 @@ export default function AppointmentScreen() {
     ? new Date(appointment.startAt)
     : params.date
       ? new Date(params.date)
-      : new Date();
+      : new Date(Date.now() + 60 * 60 * 1000); // Default to 1 hour from now
   const [dogMode, setDogMode] = useState<"existing" | "new">(
     appointmentDog || dogs.length > 0 ? "existing" : "new",
   );
@@ -180,24 +174,24 @@ export default function AppointmentScreen() {
       !dogForm.ownerPhone.trim()
     ) {
       Alert.alert(
-        "Missing dog details",
-        "Add the dog name, address, and owner phone number first.",
+        t("appointment.alerts.missingDogDetailsTitle"),
+        t("appointment.alerts.missingDogDetailsBody"),
       );
       return;
     }
 
     if (dogMode === "existing" && !selectedDogId) {
       Alert.alert(
-        "Choose a dog",
-        "Select an existing dog or switch to a new dog profile.",
+        t("appointment.alerts.chooseDogTitle"),
+        t("appointment.alerts.chooseDogBody"),
       );
       return;
     }
 
     if (isRecurring && recurrenceWeekdays.length === 0) {
       Alert.alert(
-        "Pick repeat days",
-        "Choose at least one weekday for the recurring walk.",
+        t("appointment.alerts.repeatDaysTitle"),
+        t("appointment.alerts.repeatDaysBody"),
       );
       return;
     }
@@ -209,8 +203,8 @@ export default function AppointmentScreen() {
 
     if (!appointment && combinedStartAt.getTime() < Date.now()) {
       Alert.alert(
-        "Past appointment",
-        "New appointments need to be scheduled in the future.",
+        t("appointment.alerts.pastAppointmentTitle"),
+        t("appointment.alerts.pastAppointmentBody"),
       );
       return;
     }
@@ -240,12 +234,12 @@ export default function AppointmentScreen() {
     }
 
     Alert.alert(
-      "Delete appointment?",
-      "This removes the appointment and its scheduled reminders.",
+      t("appointment.alerts.deleteTitle"),
+      t("appointment.alerts.deleteBody"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("common.delete"),
           style: "destructive",
           onPress: () => {
             deleteAppointment(appointment.id);
@@ -262,7 +256,9 @@ export default function AppointmentScreen() {
     >
       <Stack.Screen
         options={{
-          title: appointment ? "Edit Appointment" : "New Appointment",
+          title: appointment
+            ? t("appointment.screenTitleEdit")
+            : t("appointment.screenTitleNew"),
         }}
       />
       <ScrollView
@@ -278,15 +274,23 @@ export default function AppointmentScreen() {
             },
           ]}
         >
-          <ThemedText type="eyebrow" lightColor={palette.accent} darkColor={palette.accent}>
-            Scheduler details
+          <ThemedText
+            type="eyebrow"
+            lightColor={palette.accent}
+            darkColor={palette.accent}
+          >
+            {t("appointment.eyebrow")}
           </ThemedText>
           <ThemedText type="title" style={styles.title}>
-            {appointment ? "Edit appointment" : "New appointment"}
+            {appointment
+              ? t("appointment.titleEdit")
+              : t("appointment.titleNew")}
           </ThemedText>
-          <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-            Capture the dog, pickup details, time, repeat pattern, and reminder
-            in one place.
+          <ThemedText
+            lightColor={palette.textMuted}
+            darkColor={palette.textMuted}
+          >
+            {t("appointment.description")}
           </ThemedText>
         </ThemedView>
 
@@ -299,15 +303,17 @@ export default function AppointmentScreen() {
             },
           ]}
         >
-          <ThemedText type="sectionTitle" style={styles.sectionTitle}>Dog details</ThemedText>
+          <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+            {t("appointment.dogDetails")}
+          </ThemedText>
           <View style={styles.toggleRow}>
             <ChoiceChip
-              label="Saved dog"
+              label={t("appointment.savedDog")}
               onPress={() => setDogMode("existing")}
               selected={dogMode === "existing"}
             />
             <ChoiceChip
-              label="New dog"
+              label={t("appointment.newDog")}
               onPress={() => setDogMode("new")}
               selected={dogMode === "new"}
             />
@@ -320,8 +326,7 @@ export default function AppointmentScreen() {
                   lightColor={palette.textMuted}
                   darkColor={palette.textMuted}
                 >
-                  No dogs saved yet. Switch to &quot;New dog&quot; to create the
-                  first profile.
+                  {t("appointment.noSavedDogs")}
                 </ThemedText>
               ) : (
                 <>
@@ -330,8 +335,7 @@ export default function AppointmentScreen() {
                     darkColor={palette.textMuted}
                     type="caption"
                   >
-                    Choose a saved dog. The address, owner phone, and notes
-                    shown in each card belong to that dog profile.
+                    {t("appointment.savedDogsHelp")}
                   </ThemedText>
                   {dogs.map((dog) => (
                     <DogOptionCard
@@ -347,37 +351,37 @@ export default function AppointmentScreen() {
           ) : null}
 
           <InputField
-            label="Dog name"
+            label={t("appointment.dogName")}
             onChangeText={(value) =>
               setDogForm((current) => ({ ...current, name: value }))
             }
-            placeholder="Milo"
+            placeholder={t("appointment.placeholders.dogName")}
             value={dogForm.name}
           />
           <InputField
-            label="Pickup address"
+            label={t("appointment.pickupAddress")}
             onChangeText={(value) =>
               setDogForm((current) => ({ ...current, address: value }))
             }
-            placeholder="12 Bark Street"
+            placeholder={t("appointment.placeholders.pickupAddress")}
             value={dogForm.address}
           />
           <InputField
             keyboardType="phone-pad"
-            label="Owner phone"
+            label={t("appointment.ownerPhone")}
             onChangeText={(value) =>
               setDogForm((current) => ({ ...current, ownerPhone: value }))
             }
-            placeholder="+49 123 456 789"
+            placeholder={t("appointment.placeholders.ownerPhone")}
             value={dogForm.ownerPhone}
           />
           <InputField
-            label="Dog notes"
+            label={t("appointment.dogNotes")}
             multiline
             onChangeText={(value) =>
               setDogForm((current) => ({ ...current, notes: value }))
             }
-            placeholder="Gate code, collar note, feeding reminder..."
+            placeholder={t("appointment.placeholders.dogNotes")}
             value={dogForm.notes}
           />
         </ThemedView>
@@ -392,7 +396,9 @@ export default function AppointmentScreen() {
           ]}
         >
           <View style={styles.pickerGroup}>
-            <ThemedText style={styles.inputLabel}>Date</ThemedText>
+            <ThemedText style={styles.inputLabel}>
+              {t("common.pickerDate")}
+            </ThemedText>
             <DateTimePicker
               display={Platform.OS === "ios" ? "compact" : "default"}
               mode="date"
@@ -403,7 +409,9 @@ export default function AppointmentScreen() {
           </View>
 
           <View style={styles.pickerGroup}>
-            <ThemedText style={styles.inputLabel}>Pickup time</ThemedText>
+            <ThemedText style={styles.inputLabel}>
+              {t("common.pickupTime")}
+            </ThemedText>
             <DateTimePicker
               display={Platform.OS === "ios" ? "compact" : "default"}
               mode="time"
@@ -414,18 +422,23 @@ export default function AppointmentScreen() {
 
           <View style={styles.row}>
             <View style={styles.copy}>
-              <ThemedText style={styles.inputLabel}>Repeat weekly</ThemedText>
+              <ThemedText style={styles.inputLabel}>
+                {t("appointment.repeatWeekly")}
+              </ThemedText>
               <ThemedText
                 lightColor={palette.textMuted}
                 darkColor={palette.textMuted}
                 type="caption"
               >
                 {isRecurring
-                  ? "Shows on every selected weekday."
-                  : "Keeps this as a one-time appointment."}
+                  ? t("appointment.recurringOn")
+                  : t("appointment.oneTime")}
               </ThemedText>
             </View>
-            <ToggleSwitch checked={isRecurring} onCheckedChange={setIsRecurring} />
+            <ToggleSwitch
+              checked={isRecurring}
+              onCheckedChange={setIsRecurring}
+            />
           </View>
 
           {isRecurring ? (
@@ -433,7 +446,9 @@ export default function AppointmentScreen() {
               {WEEKDAY_OPTIONS.map((option) => (
                 <ChoiceChip
                   key={option.value}
-                  label={option.label}
+                  label={t(
+                    `common.weekdayShort.${getWeekdayTranslationKey(option.value)}`,
+                  )}
                   onPress={() => toggleWeekday(option.value)}
                   selected={recurrenceWeekdays.includes(option.value)}
                 />
@@ -443,7 +458,7 @@ export default function AppointmentScreen() {
 
           <View style={styles.pickerGroup}>
             <ThemedText style={styles.inputLabel}>
-              Reminder lead time
+              {t("appointment.reminderLeadTime")}
             </ThemedText>
             <View style={styles.chips}>
               {REMINDER_OPTIONS.map((minutes) => (
@@ -458,10 +473,10 @@ export default function AppointmentScreen() {
           </View>
 
           <InputField
-            label="Appointment notes"
+            label={t("appointment.appointmentNotes")}
             multiline
             onChangeText={setNotes}
-            placeholder="Meet owner at side entrance, bring extra towel..."
+            placeholder={t("appointment.placeholders.appointmentNotes")}
             value={notes}
           />
 
@@ -470,21 +485,27 @@ export default function AppointmentScreen() {
             darkColor={palette.textMuted}
             type="caption"
           >
-            Reminder time: {formatTimeInputValue(appointmentTime)} with a{" "}
-            {reminderMinutesBefore}-minute heads-up.
+            {t("appointment.reminderPreview", {
+              time: formatTimeInputValue(appointmentTime),
+              count: reminderMinutesBefore,
+            })}
           </ThemedText>
         </ThemedView>
 
         <View style={styles.footerActions}>
           <AppButton
             icon={appointment ? "square.and.pencil" : "plus.circle.fill"}
-            label={appointment ? "Save changes" : "Create appointment"}
+            label={
+              appointment
+                ? t("appointment.saveChanges")
+                : t("appointment.createAppointment")
+            }
             onPress={handleSave}
           />
           {appointment ? (
             <AppButton
               icon="trash.fill"
-              label="Delete appointment"
+              label={t("appointment.deleteAppointment")}
               onPress={handleDelete}
               variant="danger"
             />

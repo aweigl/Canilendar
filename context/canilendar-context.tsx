@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
 import { useColorScheme as useSystemColorScheme } from 'react-native';
 
+import i18n, { resolveAppLanguage } from '@/i18n';
 import {
   getMarkedDateKeys,
   getOccurrencesForDate,
@@ -107,6 +108,18 @@ export function CanilendarProvider({ children }: PropsWithChildren) {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    const language = resolveAppLanguage(settings.language);
+
+    if (i18n.resolvedLanguage !== language) {
+      void i18n.changeLanguage(language);
+    }
+  }, [isLoaded, settings.language]);
 
   useEffect(() => {
     if (!isLoaded) {

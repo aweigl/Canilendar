@@ -16,10 +16,30 @@ import {
   startOfWeek,
   subMinutes,
 } from 'date-fns';
+import { de, enUS, es, fr } from 'date-fns/locale';
 
+import { getCurrentLanguage, getFixedT, getWeekdayTranslationKey } from '@/i18n/helpers';
 import type { Appointment, AppointmentOccurrence, DogProfile } from '@/types/domain';
+import type { AppLanguage } from '@/types/domain';
 
 const WEEK_STARTS_ON = 1;
+
+function getDateFnsLocale(language: AppLanguage) {
+  switch (language) {
+    case 'de':
+      return de;
+    case 'fr':
+      return fr;
+    case 'es':
+      return es;
+    default:
+      return enUS;
+  }
+}
+
+function getLanguage(language?: AppLanguage) {
+  return language ?? getCurrentLanguage();
+}
 
 export function getMonthGrid(visibleMonth: Date) {
   const firstDay = startOfWeek(startOfMonth(visibleMonth), { weekStartsOn: WEEK_STARTS_ON });
@@ -42,20 +62,20 @@ export function toDateKey(date: Date) {
   return format(date, 'yyyy-MM-dd');
 }
 
-export function formatMonthLabel(date: Date) {
-  return format(date, 'MMMM yyyy');
+export function formatMonthLabel(date: Date, language?: AppLanguage) {
+  return format(date, 'MMMM yyyy', { locale: getDateFnsLocale(getLanguage(language)) });
 }
 
-export function formatLongDate(date: Date) {
-  return format(date, 'EEEE, MMMM d');
+export function formatLongDate(date: Date, language?: AppLanguage) {
+  return format(date, 'EEEE, MMMM d', { locale: getDateFnsLocale(getLanguage(language)) });
 }
 
-export function formatShortDate(date: Date) {
-  return format(date, 'MMM d');
+export function formatShortDate(date: Date, language?: AppLanguage) {
+  return format(date, 'MMM d', { locale: getDateFnsLocale(getLanguage(language)) });
 }
 
-export function formatTimeLabel(date: Date) {
-  return format(date, 'p');
+export function formatTimeLabel(date: Date, language?: AppLanguage) {
+  return format(date, 'p', { locale: getDateFnsLocale(getLanguage(language)) });
 }
 
 export function formatTimeInputValue(date: Date) {
@@ -64,6 +84,15 @@ export function formatTimeInputValue(date: Date) {
 
 export function formatDayNumber(date: Date) {
   return format(date, 'd');
+}
+
+export function getWeekdayShortLabel(weekday: number, language?: AppLanguage) {
+  const t = getFixedT(language);
+  return t(`common.weekdayShort.${getWeekdayTranslationKey(weekday)}`);
+}
+
+export function getWeekdayShortLabels(language?: AppLanguage) {
+  return [1, 2, 3, 4, 5, 6, 0].map((weekday) => getWeekdayShortLabel(weekday, language));
 }
 
 export function combineDateAndTimeParts(date: Date, time: Date) {
@@ -192,21 +221,23 @@ export function getUpcomingOccurrences(
   return days.flatMap((date) => getOccurrencesForDate(appointments, dogs, date));
 }
 
-export function buildDailySummaryBody(occurrences: AppointmentOccurrence[]) {
+export function buildDailySummaryBody(occurrences: AppointmentOccurrence[], language?: AppLanguage) {
+  const t = getFixedT(language);
+
   if (occurrences.length === 0) {
-    return 'You have no dog appointments scheduled today.';
+    return t('notifications.noAppointmentsToday');
   }
 
   const headline = occurrences
     .slice(0, 3)
-    .map((occurrence) => `${formatTimeLabel(occurrence.startAt)} ${occurrence.dog.name}`)
-    .join(' - ');
+    .map((occurrence) => `${formatTimeLabel(occurrence.startAt, language)} ${occurrence.dog.name}`)
+    .join(' • ');
 
   if (occurrences.length <= 3) {
     return headline;
   }
 
-  return `${headline} - +${occurrences.length - 3} more`;
+  return t('notifications.summaryMore', { headline, count: occurrences.length - 3 });
 }
 
 export function getNextNotificationTime(date: Date, timeValue: string) {
@@ -220,31 +251,36 @@ export function getNextNotificationTime(date: Date, timeValue: string) {
   });
 }
 
-export function describeRecurrence(appointment: Appointment) {
+export function describeRecurrence(appointment: Appointment, language?: AppLanguage) {
+  const t = getFixedT(language);
+
   if (!appointment.isRecurring) {
-    return 'One-time';
+    return t('recurrence.oneTime');
   }
 
-  const labels = getRecurrenceWeekdays(appointment).map((weekday) => {
-    const index = weekday === 0 ? 6 : weekday - 1;
-    const options = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return options[index];
-  });
+  const labels = [...getRecurrenceWeekdays(appointment)]
+    .sort((left, right) => (left === 0 ? 7 : left) - (right === 0 ? 7 : right))
+    .map((weekday) => getWeekdayShortLabel(weekday, language));
 
-  return `Every ${labels.join(', ')}`;
+  return t('recurrence.every', { days: labels.join(', ') });
 }
 
-export function describeReminder(minutes: number) {
+export function describeReminder(minutes: number, language?: AppLanguage) {
+  const t = getFixedT(language);
+
   if (minutes < 60) {
-    return `${minutes} minutes before`;
+    return t('reminder.beforeMinutes', { count: minutes });
   }
 
   if (minutes % 60 === 0) {
     const hours = minutes / 60;
-    return `${hours} hour${hours === 1 ? '' : 's'} before`;
+    return t('reminder.beforeHours', { count: hours });
   }
 
-  return `${Math.floor(minutes / 60)}h ${minutes % 60}m before`;
+  return t('reminder.beforeHoursMinutes', {
+    hours: Math.floor(minutes / 60),
+    minutes: minutes % 60,
+  });
 }
 
 export function withReminderOffset(date: Date, minutes: number) {

@@ -4,7 +4,7 @@
     "slug": "canilendar",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/favicon.png",
     "scheme": "canilendar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -12,7 +12,8 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSUserNotificationsUsageDescription": "Canilendar uses notifications to remind you about your dog walking appointments and daily schedule."
-      }
+      },
+      "bundleIdentifier": "com.anonymous.canilendar"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,7 +35,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/splash-screen.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
