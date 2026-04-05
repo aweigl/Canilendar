@@ -1,5 +1,6 @@
 import { router } from "expo-router";
 import { StyleSheet, View } from "react-native";
+import { usePostHog } from "posthog-react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedText } from "@/components/themed-text";
@@ -11,6 +12,12 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 export default function OnboardingWelcomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
+  const posthog = usePostHog();
+
+  function handleStartSetup() {
+    posthog.capture("onboarding_started");
+    router.push("/onboarding/dog" as never);
+  }
 
   return (
     <OnboardingShell
@@ -42,7 +49,7 @@ export default function OnboardingWelcomeScreen() {
 
       <AppButton
         label="Start setup"
-        onPress={() => router.push("/onboarding/dog" as never)}
+        onPress={handleStartSetup}
         icon="arrow.right.circle.fill"
       />
     </OnboardingShell>

@@ -1,4 +1,3 @@
-import { DarkTheme, DefaultTheme, ThemeProvider, type Theme } from "@react-navigation/native";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -7,19 +6,40 @@ import {
   useFonts,
 } from "@expo-google-fonts/inter";
 import { Manrope_700Bold } from "@expo-google-fonts/manrope";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+  type Theme,
+} from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
+import {
+  router,
+  Stack,
+  useGlobalSearchParams,
+  usePathname,
+  useSegments,
+} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { router, Stack, usePathname, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { PostHogProvider } from "posthog-react-native";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "react-native-reanimated";
 import { TamaguiProvider } from "tamagui";
 
+import { posthog } from "@/lib/posthog";
+
 import { LoadingView } from "@/components/loading-view";
-import { AppSessionProvider, useAppSession } from "@/context/app-session-context";
-import { CanilendarProvider, useCanilendar } from "@/context/canilendar-context";
 import { Colors } from "@/constants/theme";
+import {
+  AppSessionProvider,
+  useAppSession,
+} from "@/context/app-session-context";
+import {
+  CanilendarProvider,
+  useCanilendar,
+} from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import "@/i18n";
 import { configureNotificationHandling } from "@/lib/notifications";
@@ -42,9 +62,18 @@ function AppStack() {
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
       <Stack.Screen name="onboarding/dog" options={{ headerShown: false }} />
-      <Stack.Screen name="onboarding/appointment" options={{ headerShown: false }} />
-      <Stack.Screen name="onboarding/reminders" options={{ headerShown: false }} />
-      <Stack.Screen name="onboarding/success" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="onboarding/appointment"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="onboarding/reminders"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="onboarding/success"
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
         name="appointment"
@@ -102,8 +131,19 @@ function RootNavigation() {
   const { isAuthenticated, isReady, pendingPaywallTrigger } = useAppSession();
   const { isLoaded, onboardingStatus } = useCanilendar();
   const pathname = usePathname();
+  const params = useGlobalSearchParams();
   const segments = useSegments();
   const topSegment = (segments[0] ?? "") as string;
+  const previousPathname = useRef<string | undefined>(undefined);
+
+  useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      posthog.screen(pathname, {
+        previous_screen: previousPathname.current ?? null,
+      });
+      previousPathname.current = pathname;
+    }
+  }, [pathname, params]);
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -114,7 +154,9 @@ function RootNavigation() {
   }, [fontError, fontsLoaded]);
 
   useEffect(() => {
-    function redirectFromNotification(notification: Notifications.Notification) {
+    function redirectFromNotification(
+      notification: Notifications.Notification,
+    ) {
       const url = notification.request.content.data?.url;
 
       if (typeof url === "string" && url.length > 0) {
@@ -128,9 +170,11 @@ function RootNavigation() {
       void Notifications.clearLastNotificationResponseAsync();
     }
 
-    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
-      redirectFromNotification(response.notification);
-    });
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        redirectFromNotification(response.notification);
+      },
+    );
 
     return () => {
       subscription.remove();
@@ -169,7 +213,14 @@ function RootNavigation() {
       router.replace("/(tabs)" as never);
       return;
     }
-  }, [isAuthenticated, isLoaded, isReady, onboardingStatus, pendingPaywallTrigger, topSegment]);
+  }, [
+    isAuthenticated,
+    isLoaded,
+    isReady,
+    onboardingStatus,
+    pendingPaywallTrigger,
+    topSegment,
+  ]);
 
   useEffect(() => {
     if (
@@ -187,7 +238,14 @@ function RootNavigation() {
       pathname: "/paywall",
       params: { trigger: pendingPaywallTrigger },
     } as never);
-  }, [isAuthenticated, isLoaded, isReady, onboardingStatus, pathname, pendingPaywallTrigger]);
+  }, [
+    isAuthenticated,
+    isLoaded,
+    isReady,
+    onboardingStatus,
+    pathname,
+    pendingPaywallTrigger,
+  ]);
 
   if (!fontsLoaded && !fontError) {
     return null;
@@ -195,7 +253,10 @@ function RootNavigation() {
 
   if (!isReady || !isLoaded) {
     return (
-      <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme ?? "light"}>
+      <TamaguiProvider
+        config={tamaguiConfig}
+        defaultTheme={colorScheme ?? "light"}
+      >
         <ThemeProvider value={navigationTheme}>
           <LoadingView />
           <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
@@ -205,7 +266,10 @@ function RootNavigation() {
   }
 
   return (
-    <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme ?? "light"}>
+    <TamaguiProvider
+      config={tamaguiConfig}
+      defaultTheme={colorScheme ?? "light"}
+    >
       <ThemeProvider value={navigationTheme}>
         <AppStack />
         <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
@@ -233,8 +297,18 @@ function AppProviders() {
 
 export default function RootLayout() {
   return (
-    <AppSessionProvider>
-      <AppProviders />
-    </AppSessionProvider>
+    <PostHogProvider
+      client={posthog}
+      autocapture={{
+        captureScreens: false,
+        captureTouches: true,
+        propsToCapture: ["testID"],
+        maxElementsCaptured: 20,
+      }}
+    >
+      <AppSessionProvider>
+        <AppProviders />
+      </AppSessionProvider>
+    </PostHogProvider>
   );
 }

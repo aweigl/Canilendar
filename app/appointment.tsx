@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 
 import { LoadingView } from "@/components/loading-view";
 import { ThemedText } from "@/components/themed-text";
@@ -39,6 +40,7 @@ const EMPTY_DOG_FORM = {
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
+  const posthog = usePostHog();
   const params = useLocalSearchParams<{
     appointmentId?: string;
     date?: string;
@@ -292,6 +294,13 @@ export default function AppointmentScreen() {
       return;
     }
 
+    posthog.capture(appointment ? "appointment_updated" : "appointment_created", {
+      is_recurring: isRecurring,
+      has_pickup_time: hasPickupTime,
+      reminder_minutes_before: reminderMinutesBefore,
+      dog_mode: dogMode,
+    });
+
     await triggerNotification(Haptics.NotificationFeedbackType.Success);
     router.back();
   }
@@ -310,6 +319,7 @@ export default function AppointmentScreen() {
           text: t("common.delete"),
           style: "destructive",
           onPress: () => {
+            posthog.capture("appointment_deleted");
             void triggerNotification(Haptics.NotificationFeedbackType.Warning);
             deleteAppointment(appointment.id);
             router.back();

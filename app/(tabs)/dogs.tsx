@@ -1,7 +1,8 @@
+import { usePostHog } from "posthog-react-native";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTranslation } from "react-i18next";
 
 import { LoadingView } from "@/components/loading-view";
 import { ThemedText } from "@/components/themed-text";
@@ -21,6 +22,7 @@ const EMPTY_DOG = {
 
 export default function DogsScreen() {
   const { t } = useTranslation();
+  const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const {
@@ -101,6 +103,10 @@ export default function DogsScreen() {
       return;
     }
 
+    posthog.capture("dog_saved", {
+      is_edit: Boolean(editingDogId),
+    });
+
     resetForm();
   }
 
@@ -122,7 +128,9 @@ export default function DogsScreen() {
           onPress: () => {
             const didDelete = deleteDog(dogId);
 
-            if (!didDelete) {
+            if (didDelete) {
+              posthog.capture("dog_deleted");
+            } else {
               Alert.alert(
                 t("dogs.alerts.stillScheduledTitle"),
                 t("dogs.alerts.stillScheduledBody"),
@@ -180,7 +188,9 @@ export default function DogsScreen() {
             ]}
           >
             <ThemedText type="sectionTitle" style={styles.editorTitle}>
-              {editingDogId ? t("dogs.editorEditTitle") : t("dogs.editorAddTitle")}
+              {editingDogId
+                ? t("dogs.editorEditTitle")
+                : t("dogs.editorAddTitle")}
             </ThemedText>
             <InputField
               label={t("appointment.dogName")}
@@ -295,7 +305,9 @@ export default function DogsScreen() {
                         darkColor={palette.onSupport}
                         style={styles.countText}
                       >
-                        {t("dogs.upcomingAppointments", { count: appointmentCount })}
+                        {t("dogs.upcomingAppointments", {
+                          count: appointmentCount,
+                        })}
                       </ThemedText>
                     </View>
                   </View>

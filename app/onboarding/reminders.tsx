@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, StyleSheet, View } from "react-native";
+import { usePostHog } from "posthog-react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedText } from "@/components/themed-text";
@@ -12,12 +13,18 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function OnboardingRemindersScreen() {
   const { t } = useTranslation();
+  const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { requestNotificationPermission } = useCanilendar();
 
   async function handleEnableReminders() {
     const permission = await requestNotificationPermission();
+
+    posthog.capture("notification_permission_requested", {
+      result: permission,
+      source: "onboarding",
+    });
 
     if (permission === "denied") {
       Alert.alert(

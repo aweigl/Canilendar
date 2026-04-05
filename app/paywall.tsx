@@ -1,7 +1,8 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 
 import { SubscriptionOptionCard } from "@/components/paywall/subscription-option-card";
 import { ThemedText } from "@/components/themed-text";
@@ -30,6 +31,7 @@ const DEFAULT_COPY: Record<PaywallTrigger, string> = {
 
 export default function PaywallScreen() {
   const { trigger } = useLocalSearchParams<{ trigger?: PaywallTrigger }>();
+  const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const {
@@ -46,6 +48,10 @@ export default function PaywallScreen() {
   );
   const [isBusy, setIsBusy] = useState(false);
   const activeTrigger = trigger ?? "settings";
+
+  useEffect(() => {
+    posthog.capture("paywall_viewed", { trigger: activeTrigger });
+  }, [posthog, activeTrigger]);
   const purchasesSupported = revenueCatPurchasesAreSupported();
   const hostedUiReady = revenueCatUiIsReady();
   const packages = useMemo(
@@ -77,10 +83,19 @@ export default function PaywallScreen() {
       return;
     }
 
+    posthog.capture("subscription_purchased", {
+      package_identifier: pkg.identifier,
+      product_identifier: pkg.product.identifier,
+      price: pkg.product.price,
+      currency_code: pkg.product.currencyCode,
+      trigger: activeTrigger,
+    });
+
     router.back();
   }
 
   function handleClose() {
+    posthog.capture("paywall_dismissed", { trigger: activeTrigger });
     clearPaywall();
     router.back();
   }

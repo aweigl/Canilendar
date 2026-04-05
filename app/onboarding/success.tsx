@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { AppButton } from "@/components/ui/app-button";
@@ -6,8 +7,10 @@ import { useCanilendar } from "@/context/canilendar-context";
 
 export default function OnboardingSuccessScreen() {
   const { completeOnboarding } = useCanilendar();
+  const posthog = usePostHog();
 
   function handleFinish() {
+    posthog.capture("onboarding_completed");
     completeOnboarding();
     router.replace("/(tabs)" as never);
   }

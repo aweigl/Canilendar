@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
+import { usePostHog } from "posthog-react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedView } from "@/components/themed-view";
@@ -11,6 +12,7 @@ import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function OnboardingDogScreen() {
+  const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { dogs, saveDog } = useCanilendar();
@@ -38,6 +40,10 @@ export default function OnboardingDogScreen() {
     if (!savedDog) {
       return;
     }
+
+    posthog.capture("onboarding_dog_step_completed", {
+      is_edit: isEditing,
+    });
 
     router.push("/onboarding/appointment" as never);
   }

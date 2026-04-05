@@ -5,6 +5,7 @@ import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Platform, StyleSheet, View } from "react-native";
+import { usePostHog } from "posthog-react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedText } from "@/components/themed-text";
@@ -27,6 +28,7 @@ import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
 
 export default function OnboardingAppointmentScreen() {
   const { t } = useTranslation();
+  const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const { dogs, settings, saveAppointment, validateAppointmentDailyLimit } =
@@ -143,6 +145,11 @@ export default function OnboardingAppointmentScreen() {
     if (!savedAppointment) {
       return;
     }
+
+    posthog.capture("onboarding_appointment_step_completed", {
+      is_recurring: isRecurring,
+      has_pickup_time: hasPickupTime,
+    });
 
     router.push("/onboarding/reminders" as never);
   }

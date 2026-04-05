@@ -1,4 +1,4 @@
-import appleAuth from "@invertase/react-native-apple-authentication";
+import { appleAuth } from "@invertase/react-native-apple-authentication";
 import {
   createContext,
   useCallback,
@@ -15,6 +15,7 @@ import Purchases from "react-native-purchases";
 
 import { isAppleAuthEnabled, isRevenueCatConfigured } from "@/lib/env";
 import { clearScheduledNotifications } from "@/lib/notifications";
+import { posthog } from "@/lib/posthog";
 import {
   CANILENDAR_PRO_ENTITLEMENT_ID,
   configureRevenueCat,
@@ -35,8 +36,8 @@ import {
   type RevenueCatOffering,
 } from "@/lib/revenuecat";
 import {
-  clearScopedPersistedState,
   clearAuthSession,
+  clearScopedPersistedState,
   loadAuthSession,
   persistAuthSession,
 } from "@/lib/storage";
@@ -306,6 +307,19 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       };
 
       await persistAuthSession(nextAuthUser);
+
+      posthog.identify(nextAuthUser.appleUserId, {
+        $set: {
+          email: nextAuthUser.email ?? "__UNKNOWN_email__",
+          given_name: nextAuthUser.givenName ?? "__UNKNOWN_given_name__",
+          family_name: nextAuthUser.familyName ?? "__UNKNOWN_family_name__",
+        },
+        $set_once: { first_sign_in_date: new Date().toISOString() },
+      });
+      posthog.capture("user_signed_in", {
+        provider: "apple",
+      });
+
       setPendingPaywallTrigger(null);
       setAuthUser(nextAuthUser);
       return null;
@@ -314,9 +328,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
         return null;
       }
 
-      return error instanceof Error
-        ? error.message
-        : "Apple sign-in failed.";
+      return error instanceof Error ? error.message : "Apple sign-in failed.";
     } finally {
       setIsAuthenticating(false);
     }
@@ -326,6 +338,9 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
     if (!appleAuthEnabled) {
       return;
     }
+
+    posthog.capture("user_signed_out");
+    posthog.reset();
 
     await clearAuthSession();
     if (isRevenueCatReady) {
@@ -351,6 +366,9 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       if (isRevenueCatReady) {
         await logOutRevenueCat();
       }
+
+      posthog.capture("account_deleted");
+      posthog.reset();
 
       setPendingPaywallTrigger(null);
       setCurrentOffering(null);

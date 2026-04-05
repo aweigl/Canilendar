@@ -2,6 +2,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePostHog } from "posthog-react-native";
 import {
   Alert,
   Image,
@@ -45,6 +46,7 @@ import {
 
 export default function SettingsScreen() {
   const { t } = useTranslation();
+  const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const {
@@ -169,6 +171,7 @@ export default function SettingsScreen() {
   const signedInLabel = authUser?.email || authUser?.appleUserId || "";
 
   async function handleRestorePurchases() {
+    posthog.capture("subscription_restore_attempted");
     setIsRestoring(true);
     const error = await restorePurchases();
     setIsRestoring(false);
@@ -177,6 +180,8 @@ export default function SettingsScreen() {
       Alert.alert(t("settings.pro.restoreFailedTitle"), error);
       return;
     }
+
+    posthog.capture("subscription_restored");
 
     Alert.alert(
       t("settings.pro.restoreSuccessTitle"),
