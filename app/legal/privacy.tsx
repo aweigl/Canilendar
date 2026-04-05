@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Linking } from "react-native";
+import { Alert, Linking } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { LegalDocumentScreen } from "@/components/legal/legal-document-screen";
@@ -177,9 +177,7 @@ export default function PrivacyScreen() {
     {
       label: t("legal.emailAction"),
       onPress: () => {
-        void Linking.openURL(
-          getLegalMailToUrl("Canilendar privacy request"),
-        );
+        void handleEmailPress();
       },
       icon: "envelope.fill" as const,
     },
@@ -206,6 +204,33 @@ export default function PrivacyScreen() {
         ]
       : []),
   ];
+
+  async function handleEmailPress() {
+    const url = getLegalMailToUrl("Canilendar privacy request");
+
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+
+      if (!canOpen) {
+        Alert.alert(
+          t("legal.emailUnavailableTitle"),
+          t("legal.emailUnavailableBody", {
+            email: legalProfile.email,
+          }),
+        );
+        return;
+      }
+
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert(
+        t("legal.emailUnavailableTitle"),
+        t("legal.emailUnavailableBody", {
+          email: legalProfile.email,
+        }),
+      );
+    }
+  }
 
   return (
     <LegalDocumentScreen

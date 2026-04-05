@@ -72,20 +72,6 @@ export default function HomeScreen() {
               >
                 Canilendar
               </ThemedText>
-              <ThemedView
-                style={[
-                  styles.heroBadge,
-                  { backgroundColor: palette.supportSoft },
-                ]}
-              >
-                <ThemedText
-                  lightColor={palette.support}
-                  darkColor={palette.support}
-                  type="eyebrow"
-                >
-                  {t("home.badge")}
-                </ThemedText>
-              </ThemedView>
               <ThemedText
                 lightColor={palette.textMuted}
                 darkColor={palette.textMuted}
@@ -193,7 +179,8 @@ export default function HomeScreen() {
                 backgroundColor: palette.surfaceRaised,
                 borderColor: palette.border,
               },
-            ]}>
+            ]}
+          >
             <View style={styles.list}>
               {occurrences.length === 0 ? (
                 <ThemedView

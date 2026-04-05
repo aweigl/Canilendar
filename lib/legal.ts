@@ -6,21 +6,19 @@ const PLACEHOLDER_PREFIX = "YOUR_";
 
 export const legalProfile = {
   appName: "Canilendar",
-  controllerName: "YOUR_FULL_LEGAL_NAME",
-  businessName: "YOUR_COMPANY_NAME",
-  streetAddress: "YOUR_STREET_AND_NUMBER",
-  postalCode: "YOUR_POSTAL_CODE",
-  city: "YOUR_CITY",
-  country: "Germany",
-  email: "YOUR_PRIVACY_EMAIL@example.com",
-  phone: "YOUR_PUBLIC_PHONE_NUMBER",
+  controllerName: "Aaron Weigl",
+  streetAddress: "Am Schmidtgrund 112",
+  postalCode: "50765",
+  city: "Köln",
+  country: "Deutschland",
+  email: "info@aaron-weigl.de",
   website: "YOUR_PUBLIC_WEBSITE",
   managingDirector: "",
   commercialRegister: "",
   vatId: "",
   profession: "",
   supervisoryAuthority:
-    "YOUR_COMPETENT_DATA_PROTECTION_AUTHORITY",
+    "BFDI - Bundesbeauftragte für den Datenschutz und die Informationsfreiheit",
   lastUpdated: "2026-04-05",
 } as const;
 
@@ -31,12 +29,10 @@ function hasPlaceholder(value: string) {
 export function legalProfileNeedsAttention() {
   return [
     legalProfile.controllerName,
-    legalProfile.businessName,
     legalProfile.streetAddress,
     legalProfile.postalCode,
     legalProfile.city,
     legalProfile.email,
-    legalProfile.phone,
     legalProfile.website,
     legalProfile.supervisoryAuthority,
   ].some(hasPlaceholder);

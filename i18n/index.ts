@@ -276,6 +276,9 @@ const resources = {
         openHostedAction: "Open hosted version",
         privacyChoicesAction: "Privacy choices",
         emailAction: "Email legal contact",
+        emailUnavailableTitle: "Could not open email",
+        emailUnavailableBody:
+          "No mail app is configured on this device. Please email us at {{email}}.",
         cookieBannerNote:
           "The current native iOS build does not use a generic cookie banner because no optional analytics or marketing trackers are active.",
       },
@@ -637,6 +640,9 @@ const resources = {
         openHostedAction: "Gehostete Version offnen",
         privacyChoicesAction: "Datenschutz-Einstellungen",
         emailAction: "Rechtliche Stelle mailen",
+        emailUnavailableTitle: "E-Mail konnte nicht geoffnet werden",
+        emailUnavailableBody:
+          "Auf diesem Gerat ist keine Mail-App eingerichtet. Schreib uns bitte an {{email}}.",
         cookieBannerNote:
           "Der aktuelle native iOS-Build zeigt kein generisches Cookie-Banner, weil keine optionalen Analyse- oder Marketing-Tracker aktiv sind.",
       },
@@ -927,6 +933,16 @@ const resources = {
           signOutTitle: "Se deconnecter ?",
           signOutBody:
             "Vous pourrez vous reconnecter avec Apple a tout moment. Vos donnees locales restent associees a ce compte Apple sur cet appareil.",
+          deleteAction: "Supprimer le compte",
+          deleteTitle: "Supprimer le compte ?",
+          deleteBody:
+            "Cela supprime vos donnees locales, efface la session Apple sur cet appareil et annule les rappels planifies. Apple et RevenueCat peuvent toutefois conserver des justificatifs d'achat pour la facturation, la prevention de la fraude ou des obligations legales.",
+          deletingAccount: "Suppression du compte...",
+          deleteFailedTitle: "Echec de la suppression du compte",
+          deleteSuccessTitle: "Compte supprime",
+          deleteSuccessBody:
+            "Canilendar a supprime les donnees locales du compte sur cet appareil. Si un abonnement est encore actif, gerez-le ou annulez-le dans les reglages d'abonnement Apple.",
+          manageSubscription: "Gerer l'abonnement",
         },
         pro: {
           title: "Canilendar Pro",
@@ -975,6 +991,27 @@ const resources = {
           notificationsOffBody:
             "Ouvrez les reglages systeme de Canilendar si vous voulez des bannieres de rappel et des resumes quotidiens.",
         },
+      },
+      legal: {
+        sectionTitle: "Mentions legales",
+        sectionDescription:
+          "Gardez les mentions legales, la politique de confidentialite et la suppression du compte accessibles a tout moment.",
+        imprintEyebrow: "Mentions legales",
+        imprintTitle: "Mentions legales",
+        imprintDescription:
+          "Informations sur l'editeur et les moyens de contact de Canilendar.",
+        privacyEyebrow: "Confidentialite",
+        privacyTitle: "Politique de confidentialite",
+        privacyDescription:
+          "Comment Canilendar traite les donnees de compte, d'abonnement, de rappel et d'agenda.",
+        openHostedAction: "Ouvrir la version hebergee",
+        privacyChoicesAction: "Choix de confidentialite",
+        emailAction: "Contacter le service legal",
+        emailUnavailableTitle: "Impossible d'ouvrir l'e-mail",
+        emailUnavailableBody:
+          "Aucune application e-mail n'est configuree sur cet appareil. Ecrivez-nous a {{email}}.",
+        cookieBannerNote:
+          "La version native iOS actuelle n'affiche pas de banniere cookies generique car aucun tracker marketing ou analytique optionnel n'est actif.",
       },
       onboarding: {
         appointment: {
@@ -1265,6 +1302,16 @@ const resources = {
           signOutTitle: "Cerrar sesion?",
           signOutBody:
             "Puedes volver a iniciar sesion con Apple cuando quieras. Tus datos locales siguen asociados a esta cuenta de Apple en este dispositivo.",
+          deleteAction: "Eliminar cuenta",
+          deleteTitle: "Eliminar cuenta?",
+          deleteBody:
+            "Esto elimina tus datos locales, borra la sesion de Apple en este dispositivo y cancela los recordatorios programados. Apple y RevenueCat pueden conservar registros de compra cuando sea necesario para facturacion, prevencion del fraude u obligaciones legales.",
+          deletingAccount: "Eliminando cuenta...",
+          deleteFailedTitle: "No se pudo eliminar la cuenta",
+          deleteSuccessTitle: "Cuenta eliminada",
+          deleteSuccessBody:
+            "Canilendar elimino los datos locales de la cuenta en este dispositivo. Si todavia tienes una suscripcion activa, gestionala o cancelala en los ajustes de suscripciones de Apple.",
+          manageSubscription: "Gestionar suscripcion",
         },
         pro: {
           title: "Canilendar Pro",
@@ -1310,8 +1357,29 @@ const resources = {
         alerts: {
           notificationsOffTitle: "Las notificaciones estan desactivadas",
           notificationsOffBody:
-            "Abre los ajustes del sistema de Canilendar si quieres banners y resúmenes diarios.",
+            "Abre los ajustes del sistema de Canilendar si quieres banners y resumenes diarios.",
         },
+      },
+      legal: {
+        sectionTitle: "Legal",
+        sectionDescription:
+          "Mantén el aviso legal, la politica de privacidad y la eliminacion de cuenta accesibles en todo momento.",
+        imprintEyebrow: "Aviso legal",
+        imprintTitle: "Aviso legal",
+        imprintDescription:
+          "Informacion sobre el editor y las vias de contacto de Canilendar.",
+        privacyEyebrow: "Privacidad",
+        privacyTitle: "Politica de privacidad",
+        privacyDescription:
+          "Como procesa Canilendar los datos de cuenta, suscripcion, recordatorios y agenda.",
+        openHostedAction: "Abrir version alojada",
+        privacyChoicesAction: "Opciones de privacidad",
+        emailAction: "Contactar al equipo legal",
+        emailUnavailableTitle: "No se pudo abrir el correo",
+        emailUnavailableBody:
+          "No hay ninguna app de correo configurada en este dispositivo. Escribenos a {{email}}.",
+        cookieBannerNote:
+          "La build nativa actual de iOS no muestra un banner generico de cookies porque no hay rastreadores opcionales de analitica o marketing activos.",
       },
       onboarding: {
         appointment: {

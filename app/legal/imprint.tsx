@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Linking } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Alert, Linking } from "react-native";
 
 import { LegalDocumentScreen } from "@/components/legal/legal-document-screen";
 import { ThemedText } from "@/components/themed-text";
@@ -28,7 +28,6 @@ export default function ImprintScreen() {
             {
               title: "Anbieterkennzeichnung",
               paragraphs: [
-                `${legalProfile.businessName}`,
                 `${legalProfile.controllerName}`,
                 `${legalProfile.streetAddress}`,
                 `${legalProfile.postalCode} ${legalProfile.city}`,
@@ -39,31 +38,19 @@ export default function ImprintScreen() {
               title: "Kontakt",
               paragraphs: [
                 `E-Mail: ${legalProfile.email}`,
-                `Telefon: ${legalProfile.phone}`,
                 `Webseite: ${legalProfile.website}`,
               ],
             },
             {
-              title: "Vertretungsberechtigte Person",
+              title: "Plattform der EU-Kommission zur Online-Streitbeilegung",
               paragraphs: [
-                legalProfile.managingDirector ||
-                  "Falls du als GmbH, UG oder andere juristische Person auftrittst, trage hier die vertretungsberechtigte Person ein.",
+                "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://consumer-redress.ec.europa.eu.",
               ],
             },
             {
-              title: "Register und Umsatzsteuer",
+              title: "Haftung für Inhalte",
               paragraphs: [
-                legalProfile.commercialRegister ||
-                  "Handelsregister: nur eintragen, wenn dein Unternehmen registrierungspflichtig ist.",
-                legalProfile.vatId ||
-                  "Umsatzsteuer-ID: nur eintragen, wenn vorhanden.",
-              ],
-            },
-            {
-              title: "Berufsrechtliche Angaben",
-              paragraphs: [
-                legalProfile.profession ||
-                  "Nur erforderlich, wenn fur deinen Beruf besondere Zulassungs-, Kammer- oder Aufsichtspflichten gelten.",
+                "Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen App nach den allgemeinen Gesetzen verantwortlich.",
               ],
             },
           ]
@@ -71,7 +58,6 @@ export default function ImprintScreen() {
             {
               title: "Provider Identification",
               paragraphs: [
-                `${legalProfile.businessName}`,
                 `${legalProfile.controllerName}`,
                 `${legalProfile.streetAddress}`,
                 `${legalProfile.postalCode} ${legalProfile.city}`,
@@ -82,36 +68,39 @@ export default function ImprintScreen() {
               title: "Contact",
               paragraphs: [
                 `Email: ${legalProfile.email}`,
-                `Phone: ${legalProfile.phone}`,
                 `Website: ${legalProfile.website}`,
-              ],
-            },
-            {
-              title: "Authorized Representative",
-              paragraphs: [
-                legalProfile.managingDirector ||
-                  "If you publish this app through a company, add the managing director or other authorized representative here before release.",
-              ],
-            },
-            {
-              title: "Commercial Register and VAT",
-              paragraphs: [
-                legalProfile.commercialRegister ||
-                  "Commercial register: only add this if your business is registered.",
-                legalProfile.vatId ||
-                  "VAT ID: only add this if you have one.",
-              ],
-            },
-            {
-              title: "Regulated Profession Details",
-              paragraphs: [
-                legalProfile.profession ||
-                  "Only required if your profession is subject to chamber, licensing, or supervisory disclosure duties.",
               ],
             },
           ],
     [isGerman],
   );
+
+  async function handleEmailPress() {
+    const url = getLegalMailToUrl("Canilendar Impressum");
+
+    try {
+      const canOpen = await Linking.canOpenURL(url);
+
+      if (!canOpen) {
+        Alert.alert(
+          t("legal.emailUnavailableTitle"),
+          t("legal.emailUnavailableBody", {
+            email: legalProfile.email,
+          }),
+        );
+        return;
+      }
+
+      await Linking.openURL(url);
+    } catch {
+      Alert.alert(
+        t("legal.emailUnavailableTitle"),
+        t("legal.emailUnavailableBody", {
+          email: legalProfile.email,
+        }),
+      );
+    }
+  }
 
   return (
     <LegalDocumentScreen
@@ -125,7 +114,7 @@ export default function ImprintScreen() {
         {
           label: t("legal.emailAction"),
           onPress: () => {
-            void Linking.openURL(getLegalMailToUrl("Canilendar Impressum"));
+            void handleEmailPress();
           },
           icon: "envelope.fill" as const,
         },
