@@ -2,9 +2,10 @@ import {
   AppleButton,
   appleAuth,
 } from "@invertase/react-native-apple-authentication";
+import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Platform, StyleSheet, View } from "react-native";
+import { Alert, Platform, Pressable, StyleSheet, View } from "react-native";
 
 import { AuthShell } from "@/components/auth/auth-shell";
 import { ThemedText } from "@/components/themed-text";
@@ -46,13 +47,23 @@ export default function WelcomeScreen() {
       title={t("welcome.title")}
       description={t("welcome.description")}
       footer={
-        <ThemedText
-          lightColor={palette.textSubtle}
-          darkColor={palette.textSubtle}
-          type="caption"
-        >
-          {t("welcome.footer")}
-        </ThemedText>
+        <View style={styles.footer}>
+          <ThemedText
+            lightColor={palette.textSubtle}
+            darkColor={palette.textSubtle}
+            type="caption"
+          >
+            {t("welcome.footer")}
+          </ThemedText>
+          <View style={styles.legalLinks}>
+            <Pressable onPress={() => router.push("/legal/imprint")}>
+              <ThemedText type="caption">{t("legal.imprintTitle")}</ThemedText>
+            </Pressable>
+            <Pressable onPress={() => router.push("/legal/privacy")}>
+              <ThemedText type="caption">{t("legal.privacyTitle")}</ThemedText>
+            </Pressable>
+          </View>
+        </View>
       }
     >
       <ThemedView
@@ -145,5 +156,13 @@ const styles = StyleSheet.create({
     borderRadius: Radius.card,
     borderWidth: 1.5,
     padding: Spacing.md,
+  },
+  footer: {
+    gap: Spacing.sm,
+  },
+  legalLinks: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.md,
   },
 });

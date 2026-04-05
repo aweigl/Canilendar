@@ -61,6 +61,18 @@ function AppStack() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="legal/imprint"
+        options={{
+          title: t("legal.imprintTitle"),
+        }}
+      />
+      <Stack.Screen
+        name="legal/privacy"
+        options={{
+          title: t("legal.privacyTitle"),
+        }}
+      />
     </Stack>
   );
 }
@@ -133,16 +145,17 @@ function RootNavigation() {
     const isWelcomeRoute = topSegment === "welcome";
     const isOnboardingRoute = topSegment === "onboarding";
     const isPaywallRoute = topSegment === "paywall";
+    const isLegalRoute = topSegment === "legal";
 
     if (!isAuthenticated) {
-      if (!isWelcomeRoute) {
+      if (!isWelcomeRoute && !isLegalRoute) {
         router.replace("/welcome" as never);
       }
       return;
     }
 
     if (onboardingStatus !== "complete") {
-      if (!isOnboardingRoute) {
+      if (!isOnboardingRoute && !isLegalRoute) {
         router.replace("/onboarding" as never);
       }
       return;

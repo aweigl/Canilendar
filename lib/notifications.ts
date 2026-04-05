@@ -249,3 +249,7 @@ export async function showDevNotification(language: AppLanguage) {
     trigger: null,
   });
 }
+
+export async function clearScheduledNotifications() {
+  await Notifications.cancelAllScheduledNotificationsAsync();
+}

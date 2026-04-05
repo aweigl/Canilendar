@@ -1,6 +1,7 @@
-# Welcome to your Expo app 👋
+# Canilendar
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Canilendar is an Expo / React Native planner for dog-walking appointments with
+Sign in with Apple, local reminders, and RevenueCat subscriptions.
 
 ## Get started
 
@@ -24,6 +25,23 @@ In the output, you'll find options to open the app in a
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Legal setup
+
+Before shipping a public iOS build in Germany, replace the placeholder legal
+data in [`lib/legal.ts`](./lib/legal.ts).
+
+Optional public URLs can be configured with Expo public env vars:
+
+```bash
+EXPO_PUBLIC_IMPRINT_URL=https://example.com/imprint
+EXPO_PUBLIC_PRIVACY_POLICY_URL=https://example.com/privacy
+EXPO_PUBLIC_PRIVACY_CHOICES_URL=https://example.com/privacy-choices
+```
+
+If the hosted URLs are not configured yet, the app still shows the in-app legal
+screens. For App Store release, you should still provide a public privacy-policy
+URL in App Store Connect.
 
 ## Get a fresh project
 

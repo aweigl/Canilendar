@@ -14,6 +14,7 @@ import type { CustomerInfo, PurchasesPackage } from "react-native-purchases";
 import Purchases from "react-native-purchases";
 
 import { isAppleAuthEnabled, isRevenueCatConfigured } from "@/lib/env";
+import { clearScheduledNotifications } from "@/lib/notifications";
 import {
   CANILENDAR_PRO_ENTITLEMENT_ID,
   configureRevenueCat,
@@ -34,6 +35,7 @@ import {
   type RevenueCatOffering,
 } from "@/lib/revenuecat";
 import {
+  clearScopedPersistedState,
   clearAuthSession,
   loadAuthSession,
   persistAuthSession,
@@ -64,6 +66,7 @@ type AppSessionContextValue = {
   pendingPaywallTrigger: PaywallTrigger | null;
   signInWithApple: () => Promise<string | null>;
   signOut: () => Promise<void>;
+  deleteAccount: () => Promise<string | null>;
   refreshSubscriptionState: (
     options?: RefreshSubscriptionStateOptions,
   ) => Promise<void>;
@@ -295,7 +298,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       const nextAuthUser: AuthSession = {
         provider: "apple",
         appleUserId: response.user,
-        revenueCatAppUserId: nextEmail || response.user,
+        revenueCatAppUserId: response.user,
         email: nextEmail,
         givenName: response.fullName?.givenName ?? authUser?.givenName ?? null,
         familyName:
@@ -334,6 +337,33 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
     setSubscriptionStatus("inactive");
     setAuthUser(null);
   }, [appleAuthEnabled, isRevenueCatReady]);
+
+  const deleteAccount = useCallback(async () => {
+    if (appleAuthEnabled && !authUser) {
+      return "Sign in with Apple first.";
+    }
+
+    try {
+      await clearScheduledNotifications();
+      await clearScopedPersistedState(authUser?.appleUserId);
+      await clearAuthSession();
+
+      if (isRevenueCatReady) {
+        await logOutRevenueCat();
+      }
+
+      setPendingPaywallTrigger(null);
+      setCurrentOffering(null);
+      setCustomerInfo(null);
+      setSubscriptionStatus("inactive");
+      setAuthUser(null);
+      return null;
+    } catch (error) {
+      return error instanceof Error
+        ? error.message
+        : "Account deletion failed.";
+    }
+  }, [appleAuthEnabled, authUser, isRevenueCatReady]);
 
   const refreshSubscriptionState = useCallback(
     async (options?: RefreshSubscriptionStateOptions) => {
@@ -556,6 +586,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       pendingPaywallTrigger,
       signInWithApple,
       signOut,
+      deleteAccount,
       refreshSubscriptionState,
       purchasePackage,
       restorePurchases,
@@ -581,6 +612,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       purchasePackage,
       refreshSubscriptionState,
       restorePurchases,
+      deleteAccount,
       signInWithApple,
       signOut,
       subscriptionStatus,

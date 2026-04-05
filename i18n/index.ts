@@ -203,6 +203,16 @@ const resources = {
           signOutTitle: "Sign out?",
           signOutBody:
             "You can sign back in with Apple anytime. Your local planner data stays attached to this Apple account on this device.",
+          deleteAction: "Delete account",
+          deleteTitle: "Delete account?",
+          deleteBody:
+            "This removes your local planner data, clears the Apple sign-in session on this device, and cancels scheduled reminders. Apple and RevenueCat may still keep purchase records where required for billing, fraud prevention, or legal retention duties.",
+          deletingAccount: "Deleting account...",
+          deleteFailedTitle: "Account deletion failed",
+          deleteSuccessTitle: "Account deleted",
+          deleteSuccessBody:
+            "Canilendar removed the local account data from this device. If you still have an active subscription, manage or cancel it in Apple's subscription settings.",
+          manageSubscription: "Manage subscription",
         },
         pro: {
           title: "Canilendar Pro",
@@ -250,6 +260,24 @@ const resources = {
           notificationsOffBody:
             "Open system settings for Canilendar if you want reminder banners and daily summaries.",
         },
+      },
+      legal: {
+        sectionTitle: "Legal",
+        sectionDescription:
+          "Keep the imprint, privacy policy, and account deletion flow reachable at any time.",
+        imprintEyebrow: "Legal notice",
+        imprintTitle: "Imprint",
+        imprintDescription:
+          "Publisher and contact information for Canilendar.",
+        privacyEyebrow: "Privacy",
+        privacyTitle: "Privacy Policy",
+        privacyDescription:
+          "How Canilendar processes account, subscription, reminder, and planner data.",
+        openHostedAction: "Open hosted version",
+        privacyChoicesAction: "Privacy choices",
+        emailAction: "Email legal contact",
+        cookieBannerNote:
+          "The current native iOS build does not use a generic cookie banner because no optional analytics or marketing trackers are active.",
       },
       onboarding: {
         appointment: {
@@ -536,6 +564,16 @@ const resources = {
           signOutTitle: "Abmelden?",
           signOutBody:
             "Du kannst dich jederzeit wieder mit Apple anmelden. Deine lokalen Planerdaten bleiben auf diesem Gerat an dieses Apple-Konto gebunden.",
+          deleteAction: "Konto loschen",
+          deleteTitle: "Konto loschen?",
+          deleteBody:
+            "Dadurch werden deine lokalen Planerdaten entfernt, die Apple-Anmeldung auf diesem Gerat geloscht und geplante Erinnerungen aufgehoben. Apple und RevenueCat konnen Kaufnachweise weiter speichern, soweit das fur Abrechnung, Betrugspravention oder gesetzliche Aufbewahrungspflichten erforderlich ist.",
+          deletingAccount: "Konto wird geloscht...",
+          deleteFailedTitle: "Konto-Loschung fehlgeschlagen",
+          deleteSuccessTitle: "Konto geloscht",
+          deleteSuccessBody:
+            "Canilendar hat die lokalen Kontodaten auf diesem Gerat entfernt. Wenn noch ein aktives Abo besteht, verwalte oder kundige es in den Apple-Aboeinstellungen.",
+          manageSubscription: "Abo verwalten",
         },
         pro: {
           title: "Canilendar Pro",
@@ -583,6 +621,24 @@ const resources = {
           notificationsOffBody:
             "Offne die Systemeinstellungen fur Canilendar, wenn du Banner und Tageszusammenfassungen erhalten mochtest.",
         },
+      },
+      legal: {
+        sectionTitle: "Rechtliches",
+        sectionDescription:
+          "Impressum, Datenschutzerklarung und die Konto-Loschung sollen jederzeit erreichbar sein.",
+        imprintEyebrow: "Impressum",
+        imprintTitle: "Impressum",
+        imprintDescription:
+          "Angaben zum Anbieter und zu den Kontaktwegen von Canilendar.",
+        privacyEyebrow: "Datenschutz",
+        privacyTitle: "Datenschutz",
+        privacyDescription:
+          "Wie Canilendar Konto-, Abo-, Erinnerungs- und Planerdaten verarbeitet.",
+        openHostedAction: "Gehostete Version offnen",
+        privacyChoicesAction: "Datenschutz-Einstellungen",
+        emailAction: "Rechtliche Stelle mailen",
+        cookieBannerNote:
+          "Der aktuelle native iOS-Build zeigt kein generisches Cookie-Banner, weil keine optionalen Analyse- oder Marketing-Tracker aktiv sind.",
       },
       onboarding: {
         appointment: {

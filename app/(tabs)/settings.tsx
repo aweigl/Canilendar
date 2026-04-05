@@ -1,4 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -28,6 +29,10 @@ import { detectSystemLanguage, resolveAppLanguage } from "@/i18n";
 import { formatTimeInputValue, parseTimeValue } from "@/lib/date";
 import { showDevNotification } from "@/lib/notifications";
 import {
+  APPLE_SUBSCRIPTIONS_URL,
+  getPrivacyChoicesUrl,
+} from "@/lib/legal";
+import {
   revenueCatPurchasesAreSupported,
   revenueCatUiIsReady,
 } from "@/lib/revenuecat";
@@ -50,6 +55,7 @@ export default function SettingsScreen() {
     isRevenueCatReady,
     isRevenueCatPurchaseSupported,
     openCustomerCenter,
+    deleteAccount,
     presentPaywall,
     restorePurchases,
     signOut,
@@ -68,10 +74,12 @@ export default function SettingsScreen() {
   } = useCanilendar();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [isShowingDevNotification, setIsShowingDevNotification] = useState(false);
   const [isShowingSplashPreview, setIsShowingSplashPreview] = useState(false);
   const purchasesSupported = revenueCatPurchasesAreSupported();
   const hostedUiReady = revenueCatUiIsReady();
+  const privacyChoicesUrl = getPrivacyChoicesUrl();
 
   useEffect(() => {
     if (isLoaded) {
@@ -214,6 +222,52 @@ export default function SettingsScreen() {
             void signOut();
           },
         },
+      ],
+    );
+  }
+
+  function handleDeleteAccount() {
+    Alert.alert(
+      t("settings.account.deleteTitle"),
+      t("settings.account.deleteBody"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("settings.account.deleteAction"),
+          style: "destructive",
+          onPress: () => {
+            void confirmDeleteAccount();
+          },
+        },
+      ],
+    );
+  }
+
+  async function confirmDeleteAccount() {
+    if (isDeletingAccount) {
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    const error = await deleteAccount();
+    setIsDeletingAccount(false);
+
+    if (error) {
+      Alert.alert(t("settings.account.deleteFailedTitle"), error);
+      return;
+    }
+
+    Alert.alert(
+      t("settings.account.deleteSuccessTitle"),
+      t("settings.account.deleteSuccessBody"),
+      [
+        {
+          text: t("settings.account.manageSubscription"),
+          onPress: () => {
+            void Linking.openURL(APPLE_SUBSCRIPTIONS_URL);
+          },
+        },
+        { text: t("common.cancel"), style: "cancel" },
       ],
     );
   }
@@ -447,6 +501,67 @@ export default function SettingsScreen() {
               />
             ) : null}
           </View>
+        </ThemedView>
+
+        <ThemedView
+          style={[
+            styles.card,
+            {
+              backgroundColor: palette.surface,
+              borderColor: palette.border,
+            },
+          ]}
+        >
+          <ThemedText type="sectionTitle" style={styles.cardTitle}>
+            {t("legal.sectionTitle")}
+          </ThemedText>
+          <ThemedText
+            lightColor={palette.textMuted}
+            darkColor={palette.textMuted}
+          >
+            {t("legal.sectionDescription")}
+          </ThemedText>
+          <View style={styles.actions}>
+            <AppButton
+              label={t("legal.imprintTitle")}
+              onPress={() => router.push("/legal/imprint")}
+              variant="secondary"
+            />
+            <AppButton
+              label={t("legal.privacyTitle")}
+              onPress={() => router.push("/legal/privacy")}
+              variant="secondary"
+            />
+            {privacyChoicesUrl ? (
+              <AppButton
+                label={t("legal.privacyChoicesAction")}
+                onPress={() => {
+                  void Linking.openURL(privacyChoicesUrl);
+                }}
+                variant="ghost"
+              />
+            ) : null}
+            {isAppleAuthEnabled && authUser ? (
+              <AppButton
+                label={
+                  isDeletingAccount
+                    ? t("settings.account.deletingAccount")
+                    : t("settings.account.deleteAction")
+                }
+                onPress={handleDeleteAccount}
+                variant="danger"
+                disabled={isDeletingAccount}
+                icon="trash.fill"
+              />
+            ) : null}
+          </View>
+          <ThemedText
+            lightColor={palette.support}
+            darkColor={palette.support}
+            type="caption"
+          >
+            {t("legal.cookieBannerNote")}
+          </ThemedText>
         </ThemedView>
 
         <ThemedView

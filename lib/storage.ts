@@ -102,7 +102,9 @@ function normalizeAuthSession(value: unknown): AuthSession | null {
   return {
     provider: 'apple',
     appleUserId: candidate.appleUserId,
-    revenueCatAppUserId: candidate.revenueCatAppUserId,
+    revenueCatAppUserId: candidate.revenueCatAppUserId.includes('@')
+      ? candidate.appleUserId
+      : candidate.revenueCatAppUserId,
     email: typeof candidate.email === 'string' ? candidate.email : null,
     givenName: typeof candidate.givenName === 'string' ? candidate.givenName : null,
     familyName: typeof candidate.familyName === 'string' ? candidate.familyName : null,
@@ -226,6 +228,18 @@ export async function persistState(
 ) {
   const storageKey = scopeKey ? getScopedStorageKey(scopeKey) : STORAGE_KEY;
   await AsyncStorage.setItem(storageKey, JSON.stringify(state));
+}
+
+export async function clearScopedPersistedState(
+  scopeKey: string | null | undefined,
+) {
+  const keysToRemove = [STORAGE_KEY, LEGACY_STORAGE_KEY];
+
+  if (scopeKey) {
+    keysToRemove.unshift(getScopedStorageKey(scopeKey));
+  }
+
+  await AsyncStorage.multiRemove(keysToRemove);
 }
 
 export async function loadAuthSession(): Promise<AuthSession | null> {
