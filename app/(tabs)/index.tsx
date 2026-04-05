@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +15,7 @@ import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { formatLongDate } from "@/lib/date";
+import { CalendarDays, CalendarRange } from "lucide-react-native";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -70,7 +71,7 @@ export default function HomeScreen() {
                 darkColor={palette.text}
                 type="title"
               >
-                Canilendar
+                {t("tabs.calendar")}
               </ThemedText>
               <ThemedText
                 lightColor={palette.textMuted}
@@ -82,38 +83,40 @@ export default function HomeScreen() {
           </ThemedView>
         </View>
 
-        <View style={styles.screenSection}>
-          <ThemedView
-            style={[
-              styles.viewToggle,
-              {
-                backgroundColor: palette.surface,
-                borderColor: palette.border,
-              },
-            ]}
-          >
-            {[
-              { key: "calendar" as const, label: t("home.monthView") },
-              { key: "week" as const, label: t("home.weekView") },
-            ].map((option) => {
-              const isActive = option.key === viewMode;
+        <ThemedView
+          style={[
+            styles.viewToggle,
+            {
+              backgroundColor: palette.surface,
+              borderColor: palette.border,
+            },
+          ]}
+        >
+          {[
+            { key: "calendar" as const, label: t("home.monthView") },
+            { key: "week" as const, label: t("home.weekView") },
+          ].map((option) => {
+            const isActive = option.key === viewMode;
 
-              return (
-                <Pressable
-                  key={option.key}
-                  accessibilityRole="button"
-                  onPress={() => handleChangeViewMode(option.key)}
-                  style={({ pressed }) => [
-                    styles.viewToggleButton,
-                    {
-                      backgroundColor: isActive
-                        ? palette.accentMuted
-                        : pressed
-                          ? palette.surfaceAccent
-                          : "transparent",
-                      borderColor: isActive ? palette.accent : "transparent",
-                    },
-                  ]}
+            return (
+              <Pressable
+                key={option.key}
+                accessibilityRole="button"
+                onPress={() => handleChangeViewMode(option.key)}
+                style={({ pressed }) => [
+                  styles.viewToggleButton,
+                  {
+                    backgroundColor: isActive
+                      ? palette.accentMuted
+                      : pressed
+                        ? palette.surfaceAccent
+                        : "transparent",
+                    borderColor: isActive ? palette.accent : "transparent",
+                  },
+                ]}
+              >
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
                 >
                   <ThemedText
                     lightColor={isActive ? palette.accentPressed : palette.text}
@@ -123,11 +126,26 @@ export default function HomeScreen() {
                   >
                     {option.label}
                   </ThemedText>
-                </Pressable>
-              );
-            })}
-          </ThemedView>
+                  {option.key === "calendar" ? (
+                    <CalendarDays
+                      style={{ marginRight: 16 }}
+                      size={16}
+                      color={isActive ? palette.accentPressed : palette.text}
+                    />
+                  ) : (
+                    <CalendarRange
+                      style={{ marginRight: 8 }}
+                      size={16}
+                      color={isActive ? palette.accentPressed : palette.text}
+                    />
+                  )}
+                </View>
+              </Pressable>
+            );
+          })}
+        </ThemedView>
 
+        <View style={styles.screenSection}>
           {viewMode === "calendar" ? (
             <MonthCalendar
               selectedDate={selectedDate}

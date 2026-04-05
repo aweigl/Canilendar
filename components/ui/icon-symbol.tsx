@@ -1,6 +1,24 @@
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { ComponentProps } from "react";
-import { OpaqueColorValue, type StyleProp, type TextStyle } from "react-native";
+import {
+  Apple,
+  ArrowRightCircle,
+  BellRing,
+  CalendarDays,
+  CalendarPlus,
+  ChevronRight,
+  CirclePlus,
+  CreditCard,
+  Crown,
+  Lock,
+  Mail,
+  PawPrint,
+  Send,
+  Settings,
+  SquarePen,
+  Trash2,
+  UserRoundPlus,
+  type LucideIcon,
+} from "lucide-react-native";
+import { type OpaqueColorValue, type StyleProp, type ViewStyle } from "react-native";
 
 export type IconSymbolName =
   | "calendar.circle.fill"
@@ -22,49 +40,60 @@ export type IconSymbolName =
   | "lock.fill"
   | "crown.fill";
 
-type IconMapping = Record<
-  IconSymbolName,
-  ComponentProps<typeof MaterialCommunityIcons>["name"]
->;
+type IconWeight = "regular" | "medium" | "semibold" | "bold";
+
+type IconMapping = Record<IconSymbolName, LucideIcon>;
+
 const MAPPING = {
-  "calendar.circle.fill": "calendar-month",
-  "pawprint.circle.fill": "paw",
-  "gearshape.fill": "cog",
-  "chevron.right": "chevron-right",
-  "plus.circle.fill": "plus-circle",
-  "square.and.pencil": "square-edit-outline",
-  "trash.fill": "trash-can",
-  "envelope.fill": "email",
-  "apple.logo": "apple",
-  "arrow.right.circle.fill": "arrow-right-circle",
-  "person.crop.circle.badge.plus": "account-plus",
-  "paperplane.fill": "send",
-  "calendar.badge.plus": "calendar-plus",
-  "pawprint.fill": "paw",
-  "bell.badge.fill": "bell-badge",
-  "creditcard.fill": "credit-card",
-  "lock.fill": "lock",
-  "crown.fill": "crown",
+  "calendar.circle.fill": CalendarDays,
+  "pawprint.circle.fill": PawPrint,
+  "gearshape.fill": Settings,
+  "chevron.right": ChevronRight,
+  "plus.circle.fill": CirclePlus,
+  "square.and.pencil": SquarePen,
+  "trash.fill": Trash2,
+  "envelope.fill": Mail,
+  "apple.logo": Apple,
+  "arrow.right.circle.fill": ArrowRightCircle,
+  "person.crop.circle.badge.plus": UserRoundPlus,
+  "paperplane.fill": Send,
+  "calendar.badge.plus": CalendarPlus,
+  "pawprint.fill": PawPrint,
+  "bell.badge.fill": BellRing,
+  "creditcard.fill": CreditCard,
+  "lock.fill": Lock,
+  "crown.fill": Crown,
 } as IconMapping;
+
+const STROKE_WIDTH_BY_WEIGHT: Record<IconWeight, number> = {
+  regular: 1.9,
+  medium: 2.1,
+  semibold: 2.35,
+  bold: 2.6,
+};
 
 export function IconSymbol({
   name,
   size = 24,
   color,
   style,
+  weight = "medium",
 }: {
   name: IconSymbolName;
   size?: number;
   color: string | OpaqueColorValue;
-  style?: StyleProp<TextStyle>;
-  weight?: "regular" | "medium" | "semibold" | "bold";
+  style?: StyleProp<ViewStyle>;
+  weight?: IconWeight;
 }) {
+  const Icon = MAPPING[name];
+
   return (
-    <MaterialCommunityIcons
-      color={color}
+    <Icon
+      absoluteStrokeWidth
+      color={String(color)}
       size={size}
-      name={MAPPING[name]}
       style={style}
+      strokeWidth={STROKE_WIDTH_BY_WEIGHT[weight]}
     />
   );
 }
