@@ -15,8 +15,8 @@ const Avatar = ({ name, index }: { name: string; index: number }) => {
   return (
     <View
       style={{
-        width: 42,
-        height: 42,
+        width: 46,
+        height: 46,
         borderRadius: 99,
         backgroundColor: DAY_ACCENTS[index].soft,
         alignItems: "center",
@@ -101,6 +101,8 @@ export function DogTable({
                 type="defaultSemiBold"
                 lightColor={palette.textMuted}
                 darkColor={palette.textMuted}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {dog.name}
               </ThemedText>
@@ -108,6 +110,8 @@ export function DogTable({
                 lightColor={palette.textMuted}
                 darkColor={palette.textMuted}
                 style={{ opacity: 0.8 }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {dog.address}
               </ThemedText>
@@ -115,42 +119,37 @@ export function DogTable({
                 lightColor={palette.textMuted}
                 darkColor={palette.textMuted}
                 style={{ opacity: 0.7 }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
               >
                 {dog.ownerPhone}
               </ThemedText>
             </YStack>
-            <YStack
-              style={{
-                alignItems: "flex-end",
-                gap: Spacing.xs,
-              }}
-            >
-              <View style={{ flexDirection: "row", gap: Spacing.xs }}>
-                <Pressable>
-                  <IconButton
-                    onPress={() => editDog(dog.id)}
-                    icon={
-                      <IconSymbol
-                        name="square.and.pencil"
-                        size={24}
-                        color={palette.accent}
-                      />
-                    }
-                  />
-                </Pressable>
-                <Pressable>
-                  <IconButton
-                    onPress={() => deleteDog(dog.id)}
-                    icon={
-                      <IconSymbol
-                        name="trash.fill"
-                        size={24}
-                        color={palette.danger}
-                      />
-                    }
-                  />
-                </Pressable>
-              </View>
+            <YStack>
+              <Pressable>
+                <IconButton
+                  onPress={() => editDog(dog.id)}
+                  icon={
+                    <IconSymbol
+                      name="square.and.pencil"
+                      size={20}
+                      color={palette.accent}
+                    />
+                  }
+                />
+              </Pressable>
+              <Pressable>
+                <IconButton
+                  onPress={() => deleteDog(dog.id)}
+                  icon={
+                    <IconSymbol
+                      name="trash.fill"
+                      size={20}
+                      color={palette.danger}
+                    />
+                  }
+                />
+              </Pressable>
             </YStack>
           </XStack>
         ))}
