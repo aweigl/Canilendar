@@ -24,13 +24,9 @@ import {
   hasActiveProEntitlement,
   logInRevenueCat,
   logOutRevenueCat,
-  PAYWALL_RESULT,
   presentRevenueCatCustomerCenter,
-  presentRevenueCatPaywall,
-  presentRevenueCatPaywallIfNeeded,
   purchaseRevenueCatPackage,
   refreshRevenueCatCustomerInfo,
-  restoreRevenueCatPurchases,
   revenueCatPurchasesAreSupported,
   revenueCatUiIsReady,
   type RevenueCatOffering,
@@ -72,10 +68,6 @@ type AppSessionContextValue = {
     options?: RefreshSubscriptionStateOptions,
   ) => Promise<void>;
   purchasePackage: (pkg: PurchasesPackage) => Promise<string | null>;
-  restorePurchases: () => Promise<string | null>;
-  presentHostedPaywall: (options?: {
-    onlyIfNeeded?: boolean;
-  }) => Promise<string | null>;
   openCustomerCenter: () => Promise<string | null>;
   presentPaywall: (trigger: PaywallTrigger) => void;
   clearPaywall: () => void;
@@ -217,7 +209,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
           await logOutRevenueCat();
         }
 
-        const [nextCustomerInfo, nextOffering] = await Promise.all([
+        const [customerInfo, offering] = await Promise.all([
           getRevenueCatCustomerInfo(),
           getRevenueCatOfferings(),
         ]);
@@ -226,7 +218,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
           return;
         }
 
-        applySubscriptionState(nextCustomerInfo, nextOffering);
+        applySubscriptionState(customerInfo, offering);
       } catch (error) {
         console.warn("Unable to load RevenueCat state", error);
         if (!isMounted) {
@@ -462,97 +454,6 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
     ],
   );
 
-  const restorePurchases = useCallback(async () => {
-    if (appleAuthEnabled && !authUser) {
-      return "Sign in with Apple first.";
-    }
-
-    if (!isRevenueCatReady) {
-      return "RevenueCat is not configured yet. Add the iOS API key first.";
-    }
-
-    if (!isRevenueCatPurchaseSupported) {
-      return "Restore is not supported in Expo Go preview mode. Use an iOS development build with `npx expo run:ios` to test real purchases.";
-    }
-
-    try {
-      const restored = await restoreRevenueCatPurchases();
-
-      if (!restored) {
-        return "Purchases are unavailable on this build.";
-      }
-
-      const nextCustomerInfo =
-        (await refreshRevenueCatCustomerInfo()) ?? restored;
-
-      applySubscriptionState(nextCustomerInfo);
-      setPendingPaywallTrigger(null);
-      return null;
-    } catch (error) {
-      return error instanceof Error ? error.message : "Restore failed.";
-    }
-  }, [
-    applySubscriptionState,
-    appleAuthEnabled,
-    authUser,
-    isRevenueCatPurchaseSupported,
-    isRevenueCatReady,
-  ]);
-
-  const presentHostedPaywall = useCallback(
-    async (options?: { onlyIfNeeded?: boolean }) => {
-      if (appleAuthEnabled && !authUser) {
-        return "Sign in with Apple first.";
-      }
-
-      if (!isRevenueCatReady) {
-        return "RevenueCat is not configured yet. Add the iOS API key first.";
-      }
-
-      if (!isRevenueCatUiReady) {
-        return "Hosted RevenueCat Paywalls require an iOS development build or production build with the native RevenueCat UI module. They will not work in Expo Go.";
-      }
-
-      try {
-        const result = options?.onlyIfNeeded
-          ? await presentRevenueCatPaywallIfNeeded(currentOffering)
-          : await presentRevenueCatPaywall(currentOffering);
-
-        if (!result) {
-          return "RevenueCat Paywalls are unavailable on this build.";
-        }
-
-        if (
-          result === PAYWALL_RESULT.PURCHASED ||
-          result === PAYWALL_RESULT.RESTORED
-        ) {
-          await refreshSubscriptionState({
-            forceCustomerInfo: true,
-            requiredEntitlementId:
-              result === PAYWALL_RESULT.PURCHASED
-                ? CANILENDAR_PRO_ENTITLEMENT_ID
-                : undefined,
-          });
-          setPendingPaywallTrigger(null);
-        }
-
-        return null;
-      } catch (error) {
-        return error instanceof Error
-          ? error.message
-          : "Could not present the RevenueCat Paywall.";
-      }
-    },
-    [
-      appleAuthEnabled,
-      authUser,
-      currentOffering,
-      isRevenueCatReady,
-      isRevenueCatUiReady,
-      refreshSubscriptionState,
-    ],
-  );
-
   const openCustomerCenter = useCallback(async () => {
     if (appleAuthEnabled && !authUser) {
       return "Sign in with Apple first.";
@@ -607,8 +508,6 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       deleteAccount,
       refreshSubscriptionState,
       purchasePackage,
-      restorePurchases,
-      presentHostedPaywall,
       openCustomerCenter,
       presentPaywall: setPendingPaywallTrigger,
       clearPaywall: () => setPendingPaywallTrigger(null),
@@ -626,10 +525,8 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       isRevenueCatReady,
       openCustomerCenter,
       pendingPaywallTrigger,
-      presentHostedPaywall,
       purchasePackage,
       refreshSubscriptionState,
-      restorePurchases,
       deleteAccount,
       signInWithApple,
       signOut,

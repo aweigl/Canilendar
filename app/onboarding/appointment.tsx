@@ -2,10 +2,10 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Platform, StyleSheet, View } from "react-native";
-import { usePostHog } from "posthog-react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedText } from "@/components/themed-text";
@@ -25,16 +25,26 @@ import {
   getDefaultPickupTime,
 } from "@/lib/date";
 import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
+import { set } from "date-fns/set";
 
 export default function OnboardingAppointmentScreen() {
   const { t } = useTranslation();
   const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
+
   const { dogs, settings, saveAppointment, validateAppointmentDailyLimit } =
     useCanilendar();
+
   const dog = useMemo(() => dogs[0], [dogs]);
-  const initialStartAt = new Date(Date.now() + 60 * 60 * 1000);
+
+  const initialStartAt = set(new Date(), {
+    hours: 9,
+    minutes: 0,
+    seconds: 0,
+    milliseconds: 0,
+    date: new Date().getDate() + 1,
+  });
   const [appointmentDate, setAppointmentDate] = useState(initialStartAt);
   const [hasPickupTime, setHasPickupTime] = useState(false);
   const [appointmentTime, setAppointmentTime] = useState(
@@ -64,7 +74,7 @@ export default function OnboardingAppointmentScreen() {
         t("onboarding.appointment.missingDogTitle"),
         t("onboarding.appointment.missingDogBody"),
       );
-      router.replace("/onboarding/dog" as never);
+      router.replace("/onboarding/dog");
       return;
     }
 
@@ -112,6 +122,7 @@ export default function OnboardingAppointmentScreen() {
         .slice(0, 3)
         .map((date) => formatShortDate(date))
         .join(", ");
+
       const dateSummary =
         dailyLimitValidation.exceededDates.length > 3
           ? `${previewDates}, ...`
@@ -143,6 +154,10 @@ export default function OnboardingAppointmentScreen() {
     });
 
     if (!savedAppointment) {
+      Alert.alert(
+        t("appointment.alerts.saveFailedTitle"),
+        t("appointment.alerts.saveFailedBody"),
+      );
       return;
     }
 
@@ -153,6 +168,12 @@ export default function OnboardingAppointmentScreen() {
 
     router.push("/onboarding/reminders" as never);
   }
+
+  const handleDatePickerChange = (_: DateTimePickerEvent, value?: Date) =>
+    value ? setAppointmentDate(value) : null;
+
+  const handleAppointmentTimeChange = (_: DateTimePickerEvent, value?: Date) =>
+    value ? setAppointmentTime(value) : null;
 
   return (
     <OnboardingShell
@@ -172,22 +193,24 @@ export default function OnboardingAppointmentScreen() {
           { backgroundColor: palette.surface, borderColor: palette.border },
         ]}
       >
-        <View style={styles.pickerGroup}>
-          <ThemedText type="sectionTitle">{t("common.pickerDate")}</ThemedText>
+        <View style={(styles.pickerGroup, { marginBottom: Spacing.md })}>
+          <ThemedText type="sectionTitle" style={{ marginBottom: Spacing.sm }}>
+            {t("common.pickerDate")}
+          </ThemedText>
           <DateTimePicker
             display={Platform.OS === "ios" ? "compact" : "default"}
             mode="date"
-            minimumDate={new Date()}
-            onChange={(_: DateTimePickerEvent, value?: Date) =>
-              value ? setAppointmentDate(value) : null
-            }
+            minimumDate={new Date(Date.now() + 24 * 60 * 60 * 1000)}
+            onChange={handleDatePickerChange}
             value={appointmentDate}
           />
         </View>
 
         <View style={styles.switchRow}>
           <View style={styles.switchCopy}>
-            <ThemedText type="sectionTitle">{t("common.pickupTime")}</ThemedText>
+            <ThemedText type="sectionTitle">
+              {t("common.pickupTime")}
+            </ThemedText>
             <ThemedText
               lightColor={palette.textMuted}
               darkColor={palette.textMuted}
@@ -205,21 +228,37 @@ export default function OnboardingAppointmentScreen() {
         </View>
 
         {hasPickupTime ? (
-          <View style={styles.pickerGroup}>
+          <View style={(styles.pickerGroup, { marginBottom: Spacing.sm })}>
             <DateTimePicker
+              style={{ marginBottom: Spacing.sm }}
               display={Platform.OS === "ios" ? "compact" : "default"}
               mode="time"
-              onChange={(_: DateTimePickerEvent, value?: Date) =>
-                value ? setAppointmentTime(value) : null
-              }
+              onChange={handleAppointmentTimeChange}
               value={appointmentTime}
             />
+            <View>
+              <ThemedText style={{ marginBottom: Spacing.sm }} type="eyebrow">
+                {t("appointment.reminderLeadTime")}
+              </ThemedText>
+              <View style={styles.chips}>
+                {REMINDER_OPTIONS.map((minutes) => (
+                  <ChoiceChip
+                    key={minutes}
+                    label={`${minutes} min`}
+                    onPress={() => setReminderMinutesBefore(minutes)}
+                    selected={reminderMinutesBefore === minutes}
+                  />
+                ))}
+              </View>
+            </View>
           </View>
         ) : null}
 
         <View style={styles.switchRow}>
           <View style={styles.switchCopy}>
-            <ThemedText type="sectionTitle">{t("appointment.repeatWeekly")}</ThemedText>
+            <ThemedText type="sectionTitle">
+              {t("appointment.repeatWeekly")}
+            </ThemedText>
             <ThemedText
               lightColor={palette.textMuted}
               darkColor={palette.textMuted}
@@ -250,27 +289,11 @@ export default function OnboardingAppointmentScreen() {
             ))}
           </View>
         ) : null}
-
-        {hasPickupTime ? (
-          <View style={styles.pickerGroup}>
-            <ThemedText type="sectionTitle">{t("appointment.reminderLeadTime")}</ThemedText>
-            <View style={styles.chips}>
-              {REMINDER_OPTIONS.map((minutes) => (
-                <ChoiceChip
-                  key={minutes}
-                  label={`${minutes} min`}
-                  onPress={() => setReminderMinutesBefore(minutes)}
-                  selected={reminderMinutesBefore === minutes}
-                />
-              ))}
-            </View>
-          </View>
-        ) : null}
-
         <ThemedText
-          lightColor={palette.textMuted}
-          darkColor={palette.textMuted}
+          lightColor={palette.support}
+          darkColor={palette.support}
           type="caption"
+          style={{ marginTop: Spacing.sm }}
         >
           {hasPickupTime
             ? t("appointment.reminderPreview", {
@@ -304,9 +327,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
+    flexWrap: "nowrap",
+    marginBottom: Spacing.md,
   },
   switchCopy: {
     flex: 1,
+    flexWrap: "nowrap",
     gap: Spacing.xs,
     paddingRight: Spacing.md,
   },

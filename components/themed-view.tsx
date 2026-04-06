@@ -1,15 +1,23 @@
-import { type ComponentProps } from 'react';
-import { View } from 'tamagui';
+import { type ComponentProps } from "react";
+import { View } from "tamagui";
 
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { useThemeColor } from "@/hooks/use-theme-color";
 
 export type ThemedViewProps = ComponentProps<typeof View> & {
   lightColor?: string;
   darkColor?: string;
 };
 
-export function ThemedView({ style, lightColor, darkColor, ...otherProps }: ThemedViewProps) {
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+export function ThemedView({
+  style,
+  lightColor,
+  darkColor,
+  ...otherProps
+}: ThemedViewProps) {
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    "background",
+  );
 
   return <View style={[{ backgroundColor }, style]} {...otherProps} />;
 }

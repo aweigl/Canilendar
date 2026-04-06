@@ -305,6 +305,25 @@ export default function RootLayout() {
         propsToCapture: ["testID"],
         maxElementsCaptured: 20,
       }}
+      debug={__DEV__}
+      options={{
+        customAppProperties: {
+          $app_build: process.env.EXPO_PUBLIC_APP_BUILD_NUMBER,
+          $app_name: process.env.EXPO_PUBLIC_APP_NAME,
+          $app_namespace: process.env.EXPO_PUBLIC_APP_NAMESPACE,
+          $app_version: process.env.EXPO_PUBLIC_APP_VERSION,
+          $device_manufacturer: process.env.EXPO_PUBLIC_DEVICE_MANUFACTURER,
+          $device_name: process.env.EXPO_PUBLIC_DEVICE_NAME,
+          $device_model: process.env.EXPO_PUBLIC_DEVICE_MODEL,
+          $device_type: process.env.EXPO_PUBLIC_DEVICE_TYPE,
+          $os_name: process.env.EXPO_PUBLIC_OS_NAME,
+          $os_version: process.env.EXPO_PUBLIC_OS_VERSION,
+          $locale: process.env.EXPO_PUBLIC_LOCALE,
+          $timezone: process.env.EXPO_PUBLIC_TIMEZONE,
+          $is_emulator:
+            process.env.EXPO_PUBLIC_IS_EMULATOR === "true" ? true : false,
+        },
+      }}
     >
       <AppSessionProvider>
         <AppProviders />

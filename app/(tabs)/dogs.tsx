@@ -1,14 +1,14 @@
 import { usePostHog } from "posthog-react-native";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LoadingView } from "@/components/loading-view";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
-import { AppButton } from "@/components/ui/app-button";
-import { InputField } from "@/components/ui/input-field";
+import { DogEditForm } from "@/components/ui/dog-edit-form";
+import { DogTable } from "@/components/ui/dog-table";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -25,14 +25,8 @@ export default function DogsScreen() {
   const posthog = usePostHog();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
-  const {
-    appointments,
-    deleteDog,
-    dogs,
-    isLoaded,
-    markChecklistStepSeen,
-    saveDog,
-  } = useCanilendar();
+  const { deleteDog, dogs, isLoaded, markChecklistStepSeen, saveDog } =
+    useCanilendar();
   const [isEditing, setIsEditing] = useState(false);
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_DOG);
@@ -142,205 +136,68 @@ export default function DogsScreen() {
     );
   }
 
+  const cancelEdit = () => setIsEditing(false);
+
   return (
     <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: palette.background }]}
+      edges={["top", "left", "right"]}
+      style={[
+        styles.safeArea,
+        {
+          backgroundColor: palette.background,
+        },
+      ]}
     >
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <View style={styles.headerCopy}>
-            <ThemedText
-              type="eyebrow"
-              lightColor={palette.support}
-              darkColor={palette.support}
-            >
-              {t("dogs.eyebrow")}
-            </ThemedText>
-            <ThemedText type="title" style={styles.title}>
-              {t("dogs.title")}
-            </ThemedText>
-            <ThemedText
-              lightColor={palette.textMuted}
-              darkColor={palette.textMuted}
-            >
-              {t("dogs.description")}
-            </ThemedText>
-          </View>
-          <AppButton
-            label={isEditing ? t("common.cancel") : t("dogs.addDog")}
-            onPress={isEditing ? resetForm : beginCreateDog}
-            variant={isEditing ? "secondary" : "primary"}
-            icon={isEditing ? "square.and.pencil" : "plus.circle.fill"}
-          />
+      <View style={(styles.header, { padding: Spacing.md })}>
+        <View style={styles.headerCopy}>
+          <ThemedText type="title" style={styles.title}>
+            {t("dogs.title")}
+          </ThemedText>
+          <ThemedText
+            lightColor={palette.textMuted}
+            darkColor={palette.textMuted}
+          >
+            {t("dogs.description")}
+          </ThemedText>
         </View>
-
-        {isEditing ? (
-          <ThemedView
-            style={[
-              styles.editor,
+      </View>
+      {isEditing ? (
+        <DogEditForm
+          editingDogId={editingDogId}
+          form={form}
+          setForm={setForm}
+          cancelEdit={cancelEdit}
+          handleSave={handleSave}
+        />
+      ) : (
+        <>
+          <DogTable
+            dogs={dogs}
+            editDog={beginEditDog}
+            deleteDog={handleDelete}
+          />
+          <Pressable
+            accessibilityLabel={t("home.newAppointment")}
+            accessibilityRole="button"
+            onPress={beginCreateDog}
+            style={({ pressed }) => [
+              styles.fab,
               {
-                backgroundColor: palette.surface,
-                borderColor: palette.border,
+                backgroundColor: pressed
+                  ? palette.accentPressed
+                  : palette.accent,
+                bottom: Spacing.md,
+                borderColor: palette.accentPressed,
+                shadowColor: palette.shadow,
+                transform: [{ scale: pressed ? 0.96 : 1 }],
               },
             ]}
           >
-            <ThemedText type="sectionTitle" style={styles.editorTitle}>
-              {editingDogId
-                ? t("dogs.editorEditTitle")
-                : t("dogs.editorAddTitle")}
-            </ThemedText>
-            <InputField
-              label={t("appointment.dogName")}
-              onChangeText={(value) =>
-                setForm((current) => ({ ...current, name: value }))
-              }
-              placeholder={t("dogs.placeholders.dogName")}
-              value={form.name}
-            />
-            <InputField
-              label={t("appointment.pickupAddress")}
-              onChangeText={(value) =>
-                setForm((current) => ({ ...current, address: value }))
-              }
-              placeholder={t("dogs.placeholders.pickupAddress")}
-              value={form.address}
-            />
-            <InputField
-              keyboardType="phone-pad"
-              label={t("appointment.ownerPhone")}
-              onChangeText={(value) =>
-                setForm((current) => ({ ...current, ownerPhone: value }))
-              }
-              placeholder={t("dogs.placeholders.ownerPhone")}
-              value={form.ownerPhone}
-            />
-            <InputField
-              label={t("dogs.notes")}
-              multiline
-              onChangeText={(value) =>
-                setForm((current) => ({ ...current, notes: value }))
-              }
-              placeholder={t("dogs.placeholders.notes")}
-              value={form.notes}
-            />
-            <AppButton
-              label={editingDogId ? t("dogs.saveChanges") : t("dogs.createDog")}
-              onPress={handleSave}
-              icon={editingDogId ? "square.and.pencil" : "plus.circle.fill"}
-            />
-          </ThemedView>
-        ) : null}
-
-        <View style={styles.list}>
-          {dogs.length === 0 ? (
-            <ThemedView
-              style={[
-                styles.emptyState,
-                {
-                  backgroundColor: palette.surface,
-                  borderColor: palette.border,
-                },
-              ]}
-            >
-              <ThemedText type="sectionTitle" style={styles.emptyTitle}>
-                {t("dogs.emptyTitle")}
-              </ThemedText>
-              <ThemedText
-                lightColor={palette.textMuted}
-                darkColor={palette.textMuted}
-              >
-                {t("dogs.emptyDescription")}
-              </ThemedText>
-            </ThemedView>
-          ) : (
-            dogs.map((dog) => {
-              const appointmentCount = appointments.filter(
-                (appointment) => appointment.dogId === dog.id,
-              ).length;
-
-              return (
-                <View
-                  key={dog.id}
-                  style={[
-                    styles.card,
-                    {
-                      backgroundColor: palette.surface,
-                      borderColor: palette.border,
-                      shadowColor: palette.shadow,
-                    },
-                  ]}
-                >
-                  <View style={styles.cardHeader}>
-                    <View style={styles.cardCopy}>
-                      <ThemedText type="sectionTitle" style={styles.cardTitle}>
-                        {dog.name}
-                      </ThemedText>
-                      <ThemedText
-                        lightColor={palette.textMuted}
-                        darkColor={palette.textMuted}
-                      >
-                        {dog.address}
-                      </ThemedText>
-                      <ThemedText
-                        lightColor={palette.textMuted}
-                        darkColor={palette.textMuted}
-                      >
-                        {dog.ownerPhone}
-                      </ThemedText>
-                    </View>
-                    <View
-                      style={[
-                        styles.countPill,
-                        {
-                          backgroundColor: palette.supportSoft,
-                          borderColor: palette.support,
-                        },
-                      ]}
-                    >
-                      <ThemedText
-                        lightColor={palette.onSupport}
-                        darkColor={palette.onSupport}
-                        style={styles.countText}
-                      >
-                        {t("dogs.upcomingAppointments", {
-                          count: appointmentCount,
-                        })}
-                      </ThemedText>
-                    </View>
-                  </View>
-
-                  {dog.notes ? (
-                    <ThemedText
-                      lightColor={palette.textMuted}
-                      darkColor={palette.textMuted}
-                    >
-                      {dog.notes}
-                    </ThemedText>
-                  ) : null}
-
-                  <View style={styles.actions}>
-                    <AppButton
-                      label={t("common.edit")}
-                      onPress={() => beginEditDog(dog.id)}
-                      variant="secondary"
-                      icon="square.and.pencil"
-                    />
-                    <AppButton
-                      label={t("common.delete")}
-                      onPress={() => handleDelete(dog.id)}
-                      variant="ghost"
-                      icon="trash.fill"
-                    />
-                  </View>
-                </View>
-              );
-            })
-          )}
-        </View>
-      </ScrollView>
+            {/* <IconSymbol name="dog.plus" size={30} color={palette.onAccent} /> */}
+            <IconSymbol name="user.plus" size={28} color={palette.onAccent} />
+          </Pressable>
+        </>
+      )}
     </SafeAreaView>
   );
 }
@@ -352,7 +209,6 @@ const styles = StyleSheet.create({
   content: {
     gap: Spacing.xl,
     padding: 24,
-    paddingBottom: 156,
   },
   header: {
     gap: Spacing.lg,
@@ -423,5 +279,22 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: Spacing.sm,
     marginTop: Spacing.xs,
+  },
+  fab: {
+    alignItems: "center",
+    borderRadius: Radius.pill,
+    borderWidth: 1,
+    height: 62,
+    justifyContent: "center",
+    position: "absolute",
+    right: 20,
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
+    shadowOpacity: 0.14,
+    shadowRadius: 24,
+    width: 62,
+    elevation: 5,
   },
 });

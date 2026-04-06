@@ -49,10 +49,11 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView
+      edges={["top", "left", "right"]}
       style={[styles.safeArea, { backgroundColor: palette.background }]}
     >
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { paddingBottom: 32 }]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.screenSection}>
@@ -252,6 +253,7 @@ export default function HomeScreen() {
           styles.fab,
           {
             backgroundColor: pressed ? palette.accentPressed : palette.accent,
+            bottom: Spacing.md,
             borderColor: palette.accentPressed,
             shadowColor: palette.shadow,
             transform: [{ scale: pressed ? 0.96 : 1 }],
@@ -275,7 +277,6 @@ const styles = StyleSheet.create({
   content: {
     gap: Spacing.xl,
     padding: 24,
-    paddingBottom: 156,
   },
   screenSection: {
     gap: Spacing.lg,
@@ -299,7 +300,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: Radius.pill,
     borderWidth: 1,
-    bottom: 32,
     height: 62,
     justifyContent: "center",
     position: "absolute",

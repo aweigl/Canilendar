@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { usePostHog } from "posthog-react-native";
 
 import { SubscriptionOptionCard } from "@/components/paywall/subscription-option-card";
 import { ThemedText } from "@/components/themed-text";
@@ -11,10 +11,7 @@ import { AppButton } from "@/components/ui/app-button";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useAppSession } from "@/context/app-session-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import {
-  revenueCatPurchasesAreSupported,
-  revenueCatUiIsReady,
-} from "@/lib/revenuecat";
+import { revenueCatPurchasesAreSupported } from "@/lib/revenuecat";
 import type { PaywallTrigger } from "@/types/domain";
 import type { PurchasesPackage } from "react-native-purchases";
 
@@ -39,9 +36,7 @@ export default function PaywallScreen() {
     currentOffering,
     isRevenueCatReady,
     isRevenueCatPurchaseSupported,
-    presentHostedPaywall,
     purchasePackage,
-    restorePurchases,
   } = useAppSession();
   const [selectedId, setSelectedId] = useState<string | null>(
     currentOffering?.availablePackages[0]?.identifier ?? null,
@@ -53,7 +48,6 @@ export default function PaywallScreen() {
     posthog.capture("paywall_viewed", { trigger: activeTrigger });
   }, [posthog, activeTrigger]);
   const purchasesSupported = revenueCatPurchasesAreSupported();
-  const hostedUiReady = revenueCatUiIsReady();
   const packages = useMemo(
     () => currentOffering?.availablePackages ?? [],
     [currentOffering],
@@ -121,20 +115,27 @@ export default function PaywallScreen() {
             type="eyebrow"
             lightColor={palette.accent}
             darkColor={palette.accent}
+            style={styles.marginTopBottom}
           >
             Canilendar Pro
           </ThemedText>
-          <ThemedText type="title">Unlock unlimited planning</ThemedText>
+          <ThemedText type="title" style={styles.marginTopBottom}>
+            Unlock unlimited planning
+          </ThemedText>
           <ThemedText
             lightColor={palette.textMuted}
             darkColor={palette.textMuted}
+            style={styles.marginTopBottom}
           >
             {DEFAULT_COPY[activeTrigger]}
           </ThemedText>
         </ThemedView>
 
         {sortedPackages.map((pkg) => {
-          const isAnnual = pkg.product.identifier.includes("annual");
+          const isAnnual = pkg.packageType === "ANNUAL";
+
+          console.log(pkg.packageType, pkg);
+
           return (
             <SubscriptionOptionCard
               key={pkg.identifier}
@@ -206,31 +207,6 @@ export default function PaywallScreen() {
           </ThemedView>
         ) : null}
 
-        {isRevenueCatReady && purchasesSupported && !hostedUiReady ? (
-          <ThemedView
-            style={[
-              styles.noteCard,
-              {
-                backgroundColor: palette.infoSoft,
-                borderColor: palette.info,
-              },
-            ]}
-          >
-            <ThemedText
-              type="sectionTitle"
-              lightColor={palette.onInfo}
-              darkColor={palette.onInfo}
-            >
-              Hosted RevenueCat UI unavailable in this build
-            </ThemedText>
-            <ThemedText lightColor={palette.onInfo} darkColor={palette.onInfo}>
-              Use the custom paywall below, or rebuild the app as an iOS
-              development build to test RevenueCat Paywall UI and Customer
-              Center.
-            </ThemedText>
-          </ThemedView>
-        ) : null}
-
         <AppButton
           label={
             isBusy
@@ -283,5 +259,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     gap: Spacing.sm,
     padding: Spacing.md,
+  },
+  marginTopBottom: {
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.sm,
   },
 });

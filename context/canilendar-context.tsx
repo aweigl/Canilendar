@@ -1,22 +1,28 @@
-import { addDays, getDay, parseISO, startOfDay } from 'date-fns';
-import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
-import { useColorScheme as useSystemColorScheme } from 'react-native';
-
-import i18n, { resolveAppLanguage } from '@/i18n';
+import { addDays, getDay, parseISO, startOfDay } from "date-fns";
 import {
-  occursOnDate,
-  getRecurrenceWeekdays,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type PropsWithChildren,
+} from "react";
+import { useColorScheme as useSystemColorScheme } from "react-native";
+
+import i18n, { resolveAppLanguage } from "@/i18n";
+import {
   getMarkedDateKeys,
   getOccurrencesForDate,
+  getRecurrenceWeekdays,
+  occursOnDate,
   toDateKey,
-} from '@/lib/date';
-import { createId } from '@/lib/ids';
+} from "@/lib/date";
+import { createId } from "@/lib/ids";
 import {
   getNotificationPermissionState,
   requestNotificationAccess,
   syncScheduledNotifications,
-} from '@/lib/notifications';
-import { loadScopedPersistedState, persistState } from '@/lib/storage';
+} from "@/lib/notifications";
+import { loadScopedPersistedState, persistState } from "@/lib/storage";
 import {
   DAILY_APPOINTMENT_LIMIT_MAX,
   DAILY_APPOINTMENT_LIMIT_MIN,
@@ -34,7 +40,7 @@ import {
   type OnboardingStatus,
   type PaywallTrigger,
   type ReminderSettings,
-} from '@/types/domain';
+} from "@/types/domain";
 
 type DailyLimitValidationResult = {
   exceededDates: Date[];
@@ -48,16 +54,20 @@ type CanilendarContextValue = {
   settings: ReminderSettings;
   onboardingChecklist: OnboardingChecklistState;
   onboardingStatus: OnboardingStatus;
-  resolvedColorScheme: 'light' | 'dark';
+  resolvedColorScheme: "light" | "dark";
   isLoaded: boolean;
   notificationPermission: NotificationPermissionState;
   canCreateDog: boolean;
   canCreateAppointment: boolean;
   getDogById: (dogId: string) => DogProfile | undefined;
   getAppointmentById: (appointmentId: string) => Appointment | undefined;
-  getOccurrencesForDate: (date: Date) => ReturnType<typeof getOccurrencesForDate>;
+  getOccurrencesForDate: (
+    date: Date,
+  ) => ReturnType<typeof getOccurrencesForDate>;
   getMarkedDatesForMonth: (visibleMonth: Date) => Set<string>;
-  validateAppointmentDailyLimit: (input: AppointmentInput) => DailyLimitValidationResult;
+  validateAppointmentDailyLimit: (
+    input: AppointmentInput,
+  ) => DailyLimitValidationResult;
   saveDog: (input: DogInput) => DogProfile | null;
   deleteDog: (dogId: string) => boolean;
   saveAppointment: (input: AppointmentInput) => Promise<Appointment | null>;
@@ -72,7 +82,9 @@ type CanilendarContextValue = {
   requestNotificationPermission: () => Promise<NotificationPermissionState>;
 };
 
-const CanilendarContext = createContext<CanilendarContextValue | undefined>(undefined);
+const CanilendarContext = createContext<CanilendarContextValue | undefined>(
+  undefined,
+);
 
 function normalizeText(value: string) {
   return value.trim();
@@ -86,15 +98,18 @@ function buildDogRecord(input: DogInput, currentDog?: DogProfile): DogProfile {
     name: normalizeText(input.name),
     address: normalizeText(input.address),
     ownerPhone: normalizeText(input.ownerPhone),
-    notes: normalizeText(input.notes ?? ''),
-    metadata: normalizeText(input.metadata ?? ''),
+    notes: normalizeText(input.notes ?? ""),
+    metadata: normalizeText(input.metadata ?? ""),
     createdAt: currentDog?.createdAt ?? timestamp,
     updatedAt: timestamp,
   };
 }
 
 function clampDailyAppointmentLimit(limit: number) {
-  return Math.min(DAILY_APPOINTMENT_LIMIT_MAX, Math.max(DAILY_APPOINTMENT_LIMIT_MIN, Math.round(limit)));
+  return Math.min(
+    DAILY_APPOINTMENT_LIMIT_MAX,
+    Math.max(DAILY_APPOINTMENT_LIMIT_MIN, Math.round(limit)),
+  );
 }
 
 function getFirstOccurrenceOnOrAfter(startAt: Date, weekday: number) {
@@ -104,7 +119,10 @@ function getFirstOccurrenceOnOrAfter(startAt: Date, weekday: number) {
   return addDays(startDate, dayOffset);
 }
 
-function buildDraftAppointment(input: AppointmentInput, currentAppointment?: Appointment): Appointment {
+function buildDraftAppointment(
+  input: AppointmentInput,
+  currentAppointment?: Appointment,
+): Appointment {
   const recurrenceWeekdays = input.isRecurring
     ? input.recurrenceWeekdays.length > 0
       ? input.recurrenceWeekdays
@@ -113,17 +131,19 @@ function buildDraftAppointment(input: AppointmentInput, currentAppointment?: App
   const timestamp = new Date().toISOString();
 
   return {
-    id: currentAppointment?.id ?? input.id ?? 'draft-appointment',
-    dogId: currentAppointment?.dogId ?? input.dog.id ?? 'draft-dog',
+    id: currentAppointment?.id ?? input.id ?? "draft-appointment",
+    dogId: currentAppointment?.dogId ?? input.dog.id ?? "draft-dog",
     startAt: input.startAt,
     hasPickupTime: input.hasPickupTime,
     endAt: input.endAt ?? currentAppointment?.endAt ?? null,
-    notes: normalizeText(input.notes ?? currentAppointment?.notes ?? ''),
-    metadata: normalizeText(input.metadata ?? currentAppointment?.metadata ?? ''),
+    notes: normalizeText(input.notes ?? currentAppointment?.notes ?? ""),
+    metadata: normalizeText(
+      input.metadata ?? currentAppointment?.metadata ?? "",
+    ),
     isRecurring: input.isRecurring,
     recurrenceRule: input.isRecurring
       ? {
-          frequency: 'weekly',
+          frequency: "weekly",
           weekdays: recurrenceWeekdays,
         }
       : null,
@@ -152,22 +172,24 @@ export function CanilendarProvider({
   const [dogs, setDogs] = useState<DogProfile[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
-  const [onboardingChecklist, setOnboardingChecklist] = useState(DEFAULT_ONBOARDING_CHECKLIST);
+  const [onboardingChecklist, setOnboardingChecklist] = useState(
+    DEFAULT_ONBOARDING_CHECKLIST,
+  );
   const [notificationPermission, setNotificationPermission] =
-    useState<NotificationPermissionState>('undetermined');
+    useState<NotificationPermissionState>("undetermined");
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const resolvedColorScheme: 'light' | 'dark' =
-    settings.appearanceMode === 'system'
-      ? systemColorScheme === 'dark'
-        ? 'dark'
-        : 'light'
+  const resolvedColorScheme: "light" | "dark" =
+    settings.appearanceMode === "system"
+      ? systemColorScheme === "dark"
+        ? "dark"
+        : "light"
       : settings.appearanceMode;
   const onboardingStatus: OnboardingStatus = isLoaded
     ? onboardingChecklist.completedAt
-      ? 'complete'
-      : 'incomplete'
-    : 'loading';
+      ? "complete"
+      : "incomplete"
+    : "loading";
 
   useEffect(() => {
     let isMounted = true;
@@ -232,16 +254,26 @@ export function CanilendarProvider({
       return;
     }
 
-    void persistState({
-      dogs,
-      appointments,
-      settings,
-      onboarding: onboardingChecklist,
-    }, storageScopeKey);
-  }, [appointments, dogs, isLoaded, onboardingChecklist, settings, storageScopeKey]);
+    void persistState(
+      {
+        dogs,
+        appointments,
+        settings,
+        onboarding: onboardingChecklist,
+      },
+      storageScopeKey,
+    );
+  }, [
+    appointments,
+    dogs,
+    isLoaded,
+    onboardingChecklist,
+    settings,
+    storageScopeKey,
+  ]);
 
   useEffect(() => {
-    if (!isLoaded || notificationPermission !== 'granted') {
+    if (!isLoaded || notificationPermission !== "granted") {
       return;
     }
 
@@ -251,7 +283,14 @@ export function CanilendarProvider({
       settings,
       onboarding: onboardingChecklist,
     });
-  }, [appointments, dogs, isLoaded, notificationPermission, onboardingChecklist, settings]);
+  }, [
+    appointments,
+    dogs,
+    isLoaded,
+    notificationPermission,
+    onboardingChecklist,
+    settings,
+  ]);
 
   function getDogById(dogId: string) {
     return dogs.find((dog) => dog.id === dogId);
@@ -269,11 +308,20 @@ export function CanilendarProvider({
     return getMarkedDateKeys(appointments, dogs, visibleMonth);
   }
 
-  function validateAppointmentDailyLimit(input: AppointmentInput): DailyLimitValidationResult {
-    const currentAppointment = input.id ? getAppointmentById(input.id) : undefined;
-    const candidateAppointment = buildDraftAppointment(input, currentAppointment);
+  function validateAppointmentDailyLimit(
+    input: AppointmentInput,
+  ): DailyLimitValidationResult {
+    const currentAppointment = input.id
+      ? getAppointmentById(input.id)
+      : undefined;
+    const candidateAppointment = buildDraftAppointment(
+      input,
+      currentAppointment,
+    );
     const comparisonAppointments = currentAppointment
-      ? appointments.filter((appointment) => appointment.id !== currentAppointment.id)
+      ? appointments.filter(
+          (appointment) => appointment.id !== currentAppointment.id,
+        )
       : appointments;
     const validationDates = new Map<string, Date>();
     const candidateStartAt = parseISO(candidateAppointment.startAt);
@@ -288,7 +336,9 @@ export function CanilendarProvider({
 
     if (candidateAppointment.isRecurring) {
       candidateWeekdays.forEach((weekday) => {
-        addValidationDate(getFirstOccurrenceOnOrAfter(candidateStartAt, weekday));
+        addValidationDate(
+          getFirstOccurrenceOnOrAfter(candidateStartAt, weekday),
+        );
       });
 
       comparisonAppointments.forEach((appointment) => {
@@ -310,11 +360,19 @@ export function CanilendarProvider({
             return;
           }
 
-          const candidateDate = getFirstOccurrenceOnOrAfter(candidateStartAt, weekday);
-          const recurringStartDate = getFirstOccurrenceOnOrAfter(appointmentStartAt, weekday);
+          const candidateDate = getFirstOccurrenceOnOrAfter(
+            candidateStartAt,
+            weekday,
+          );
+          const recurringStartDate = getFirstOccurrenceOnOrAfter(
+            appointmentStartAt,
+            weekday,
+          );
 
           addValidationDate(
-            recurringStartDate > candidateDate ? recurringStartDate : candidateDate
+            recurringStartDate > candidateDate
+              ? recurringStartDate
+              : candidateDate,
           );
         });
       });
@@ -323,11 +381,18 @@ export function CanilendarProvider({
     }
 
     const limit = settings.dailyAppointmentLimit;
-    const candidateAndExistingAppointments = [...comparisonAppointments, candidateAppointment];
+    const candidateAndExistingAppointments = [
+      ...comparisonAppointments,
+      candidateAppointment,
+    ];
     const exceededDates = [...validationDates.values()]
       .filter((date) => {
-        const currentCount = appointments.filter((appointment) => occursOnDate(appointment, date)).length;
-        const nextCount = candidateAndExistingAppointments.filter((appointment) => occursOnDate(appointment, date)).length;
+        const currentCount = appointments.filter((appointment) =>
+          occursOnDate(appointment, date),
+        ).length;
+        const nextCount = candidateAndExistingAppointments.filter(
+          (appointment) => occursOnDate(appointment, date),
+        ).length;
 
         return nextCount > limit && nextCount > currentCount;
       })
@@ -340,14 +405,18 @@ export function CanilendarProvider({
     };
   }
 
-  const canCreateDog = isPro || dogs.length < FREE_TIER_LIMITS.dogs;
-  const canCreateAppointment = isPro || appointments.length < FREE_TIER_LIMITS.appointments;
+  const canCreateDog = __DEV__
+    ? true
+    : isPro || dogs.length < FREE_TIER_LIMITS.dogs;
+  const canCreateAppointment = __DEV__
+    ? true
+    : isPro || appointments.length < FREE_TIER_LIMITS.appointments;
 
   function saveDog(input: DogInput) {
     const existingDog = input.id ? getDogById(input.id) : undefined;
 
     if (!existingDog && !canCreateDog) {
-      onRequireUpgrade('dog_limit');
+      onRequireUpgrade("dog_limit");
       return null;
     }
 
@@ -355,10 +424,14 @@ export function CanilendarProvider({
 
     setDogs((currentDogs) => {
       if (existingDog) {
-        return currentDogs.map((dog) => (dog.id === existingDog.id ? nextDog : dog));
+        return currentDogs.map((dog) =>
+          dog.id === existingDog.id ? nextDog : dog,
+        );
       }
 
-      return [...currentDogs, nextDog].sort((left, right) => left.name.localeCompare(right.name));
+      return [...currentDogs, nextDog].sort((left, right) =>
+        left.name.localeCompare(right.name),
+      );
     });
 
     return nextDog;
@@ -377,7 +450,7 @@ export function CanilendarProvider({
     const permissionState = await requestNotificationAccess();
     setNotificationPermission(permissionState);
 
-    if (permissionState === 'granted' && isLoaded) {
+    if (permissionState === "granted" && isLoaded) {
       await syncScheduledNotifications({
         dogs,
         appointments,
@@ -397,10 +470,18 @@ export function CanilendarProvider({
   }
 
   async function saveAppointment(input: AppointmentInput) {
-    const currentAppointment = input.id ? getAppointmentById(input.id) : undefined;
+    const currentAppointment = input.id
+      ? getAppointmentById(input.id)
+      : undefined;
+
+    console.log("currentAppointment", {
+      currentAppointment,
+      input,
+      canCreateAppointment,
+    });
 
     if (!currentAppointment && !canCreateAppointment) {
-      onRequireUpgrade('appointment_limit');
+      onRequireUpgrade("appointment_limit");
       return null;
     }
 
@@ -415,7 +496,8 @@ export function CanilendarProvider({
     }
 
     const timestamp = new Date().toISOString();
-    const reminderMinutesBefore = input.reminderMinutesBefore ?? settings.defaultReminderMinutes;
+    const reminderMinutesBefore =
+      input.reminderMinutesBefore ?? settings.defaultReminderMinutes;
     const weekdays = input.isRecurring
       ? input.recurrenceWeekdays.length > 0
         ? input.recurrenceWeekdays
@@ -427,12 +509,12 @@ export function CanilendarProvider({
       startAt: input.startAt,
       hasPickupTime: input.hasPickupTime,
       endAt: input.endAt ?? null,
-      notes: normalizeText(input.notes ?? ''),
-      metadata: normalizeText(input.metadata ?? ''),
+      notes: normalizeText(input.notes ?? ""),
+      metadata: normalizeText(input.metadata ?? ""),
       isRecurring: input.isRecurring,
       recurrenceRule: input.isRecurring
         ? {
-            frequency: 'weekly',
+            frequency: "weekly",
             weekdays,
           }
         : null,
@@ -444,16 +526,20 @@ export function CanilendarProvider({
     setAppointments((currentAppointments) => {
       if (currentAppointment) {
         return currentAppointments
-          .map((appointment) => (appointment.id === currentAppointment.id ? nextAppointment : appointment))
+          .map((appointment) =>
+            appointment.id === currentAppointment.id
+              ? nextAppointment
+              : appointment,
+          )
           .sort((left, right) => left.startAt.localeCompare(right.startAt));
       }
 
       return [...currentAppointments, nextAppointment].sort((left, right) =>
-        left.startAt.localeCompare(right.startAt)
+        left.startAt.localeCompare(right.startAt),
       );
     });
 
-    if (notificationPermission === 'undetermined') {
+    if (notificationPermission === "undetermined") {
       void requestPermission();
     }
 
@@ -462,7 +548,9 @@ export function CanilendarProvider({
 
   function deleteAppointment(appointmentId: string) {
     setAppointments((currentAppointments) =>
-      currentAppointments.filter((appointment) => appointment.id !== appointmentId)
+      currentAppointments.filter(
+        (appointment) => appointment.id !== appointmentId,
+      ),
     );
   }
 
@@ -479,18 +567,19 @@ export function CanilendarProvider({
 
   function markChecklistStepSeen(target: ChecklistTarget) {
     setOnboardingChecklist((current) => {
-      if (target === 'dogs' && current.hasVisitedDogs) {
+      if (target === "dogs" && current.hasVisitedDogs) {
         return current;
       }
 
-      if (target === 'settings' && current.hasVisitedSettings) {
+      if (target === "settings" && current.hasVisitedSettings) {
         return current;
       }
 
       return {
         ...current,
-        hasVisitedDogs: target === 'dogs' ? true : current.hasVisitedDogs,
-        hasVisitedSettings: target === 'settings' ? true : current.hasVisitedSettings,
+        hasVisitedDogs: target === "dogs" ? true : current.hasVisitedDogs,
+        hasVisitedSettings:
+          target === "settings" ? true : current.hasVisitedSettings,
       };
     });
   }
@@ -539,14 +628,16 @@ export function CanilendarProvider({
         saveAppointment,
         deleteAppointment,
         updateSettings,
-        updateAppearanceMode: (mode) => updateSettings({ appearanceMode: mode }),
+        updateAppearanceMode: (mode) =>
+          updateSettings({ appearanceMode: mode }),
         markChecklistStepSeen,
         dismissHomeChecklist,
         completeOnboarding,
         resetLocalData,
         refreshNotificationPermission: refreshPermission,
         requestNotificationPermission: requestPermission,
-      }}>
+      }}
+    >
       {children}
     </CanilendarContext.Provider>
   );
@@ -556,7 +647,7 @@ export function useCanilendar() {
   const context = useContext(CanilendarContext);
 
   if (!context) {
-    throw new Error('useCanilendar must be used within a CanilendarProvider');
+    throw new Error("useCanilendar must be used within a CanilendarProvider");
   }
 
   return context;

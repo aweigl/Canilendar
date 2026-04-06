@@ -6,6 +6,10 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { posthog } from "@/lib/posthog";
+import { router } from "expo-router";
+import { IconButton } from "../ui/icon-button";
+import { IconSymbol } from "../ui/icon-symbol";
 
 type OnboardingShellProps = {
   step: number;
@@ -28,12 +32,19 @@ export function OnboardingShell({
   const palette = Colors[colorScheme];
   const progress = `${step}/${totalSteps}`;
 
+  const goBack = () => {
+    posthog.capture("onboarding_back", {
+      step,
+    });
+    router.back();
+  };
+
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: palette.background }]}
     >
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { minHeight: "100%" }]}
         showsVerticalScrollIndicator={false}
       >
         <ThemedView
@@ -45,22 +56,27 @@ export function OnboardingShell({
             },
           ]}
         >
-          <View style={styles.row}>
-            <ThemedText
-              type="eyebrow"
-              lightColor={palette.accent}
-              darkColor={palette.accent}
-            >
-              {eyebrow}
-            </ThemedText>
+          <View style={[styles.row, { marginBottom: Spacing.sm }]}>
+            {step > 1 ? (
+              <IconButton
+                onPress={goBack}
+                icon={
+                  <IconSymbol
+                    name="arrow.left.circle.fill"
+                    size={32}
+                    color={palette.accent}
+                  />
+                }
+              />
+            ) : (
+              <View />
+            )}
             <ThemedView
-              style={[
-                styles.badge,
-                { backgroundColor: palette.supportSoft },
-              ]}
+              style={[styles.badge, { backgroundColor: palette.supportSoft }]}
             >
               <ThemedText
                 type="eyebrow"
+                style={styles.marginTopBotton}
                 lightColor={palette.support}
                 darkColor={palette.support}
               >
@@ -72,6 +88,7 @@ export function OnboardingShell({
           <ThemedText
             lightColor={palette.textMuted}
             darkColor={palette.textMuted}
+            style={{ marginTop: Spacing.sm }}
           >
             {description}
           </ThemedText>
@@ -91,6 +108,7 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
     padding: 20,
     paddingBottom: 48,
+    minHeight: "100%",
   },
   hero: {
     borderRadius: Radius.hero,
@@ -110,5 +128,9 @@ const styles = StyleSheet.create({
   },
   body: {
     gap: Spacing.md,
+  },
+  marginTopBotton: {
+    marginTop: Spacing.md,
+    marginBottom: Spacing.md,
   },
 });

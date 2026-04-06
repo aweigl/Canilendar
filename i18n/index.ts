@@ -85,14 +85,16 @@ const resources = {
         pickupAddress: "Pickup address",
         ownerPhone: "Owner phone",
         dogNotes: "Dog notes",
-        pickupTimeEnabled: "Adds a specific pickup time and enables reminder notifications.",
+        pickupTimeEnabled:
+          "Adds a specific pickup time and enables reminder notifications.",
         pickupTimeDisabled:
           "Disabled by default. This walk stays on the day plan without a time-based reminder.",
         repeatWeekly: "Repeat weekly",
         recurringOn: "Shows on every selected weekday.",
         oneTime: "Keeps this as a one-time appointment.",
         reminderLeadTime: "Reminder lead time",
-        reminderDisabled: "Enable pickup time if you want a reminder before the walk.",
+        reminderDisabled:
+          "Enable pickup time if you want a reminder before the walk.",
         noPickupTime: "No pickup time",
         appointmentNotes: "Appointment notes",
         reminderPreview:
@@ -239,8 +241,7 @@ const resources = {
         },
         devReset: {
           title: "Reset local data?",
-          body:
-            "This DEV action removes all dogs, appointments, settings, and onboarding progress saved on this simulator.",
+          body: "This DEV action removes all dogs, appointments, settings, and onboarding progress saved on this simulator.",
           button: "Reset local data",
           confirm: "Reset",
         },
@@ -267,8 +268,7 @@ const resources = {
           "Keep the imprint, privacy policy, and account deletion flow reachable at any time.",
         imprintEyebrow: "Legal notice",
         imprintTitle: "Imprint",
-        imprintDescription:
-          "Publisher and contact information for Canilendar.",
+        imprintDescription: "Publisher and contact information for Canilendar.",
         privacyEyebrow: "Privacy",
         privacyTitle: "Privacy Policy",
         privacyDescription:
@@ -528,7 +528,7 @@ const resources = {
         description:
           "Lege fest, wie Canilendar dich an den kommenden Tag erinnert.",
         notifications: "Benachrichtigungen",
-        notificationsEnabled: "Lokale Erinnerungen sind aktiviert.",
+        notificationsEnabled: "Erinnerungen sind aktiviert.",
         notificationsDenied:
           "Benachrichtigungen sind in den Systemeinstellungen blockiert.",
         notificationsUnknown:
@@ -556,7 +556,7 @@ const resources = {
           "Neue Termine starten mit dieser Vorlaufzeit. Du kannst sie pro Termin uberschreiben.",
         dailyAppointmentLimit: "Termine pro Tag",
         dailyAppointmentLimitDescription:
-          "Begrenze jeden Tag auf {{count}} Hundetermine. Maximal 15 sind moglich.",
+          "Begrenze jeden Tag auf maximal {{count}} Hundetermine.",
         account: {
           title: "Konto",
           description:
@@ -584,8 +584,7 @@ const resources = {
             "Upgrade nur, wenn du mehr als den ersten kostenlosen Hund und Termin brauchst.",
           active: "Canilendar Pro ist aktiv.",
           unavailable: "Kaufe sind in diesem Build noch nicht eingerichtet.",
-          freeTier:
-            "Du nutzt den kostenlosen Tarif mit 1 Hund und 1 Termin.",
+          freeTier: "Du nutzt den kostenlosen Tarif mit 1 Hund und 1 Termin.",
           upgrade: "Auf Pro upgraden",
           restore: "Kaufe wiederherstellen",
           restoring: "Stelle wieder her...",
@@ -603,8 +602,7 @@ const resources = {
         },
         devReset: {
           title: "Lokale Daten zurucksetzen?",
-          body:
-            "Diese DEV-Aktion entfernt alle Hunde, Termine, Einstellungen und den Onboarding-Fortschritt von diesem Simulator.",
+          body: "Diese DEV-Aktion entfernt alle Hunde, Termine, Einstellungen und den Onboarding-Fortschritt von diesem Simulator.",
           button: "Lokale Daten zurucksetzen",
           confirm: "Zurucksetzen",
         },
@@ -628,7 +626,7 @@ const resources = {
       legal: {
         sectionTitle: "Rechtliches",
         sectionDescription:
-          "Impressum, Datenschutzerklarung und die Konto-Loschung sollen jederzeit erreichbar sein.",
+          "Impressum, Datenschutzerklarung und Konto-Löschung",
         imprintEyebrow: "Impressum",
         imprintTitle: "Impressum",
         imprintDescription:
@@ -664,8 +662,7 @@ const resources = {
           reminderDisabled:
             "Es wird keine Abholzeit-Erinnerung geplant, bis du eine Uhrzeit aktivierst.",
           save: "Termin speichern",
-          pastAppointmentBody:
-            "Der erste Termin muss in der Zukunft liegen.",
+          pastAppointmentBody: "Der erste Termin muss in der Zukunft liegen.",
         },
         reminders: {
           eyebrow: "Erinnerungen",
@@ -970,8 +967,7 @@ const resources = {
         },
         devReset: {
           title: "Reinitialiser les donnees locales ?",
-          body:
-            "Cette action DEV supprime tous les chiens, rendez-vous, reglages et la progression d'onboarding enregistres sur ce simulateur.",
+          body: "Cette action DEV supprime tous les chiens, rendez-vous, reglages et la progression d'onboarding enregistres sur ce simulateur.",
           button: "Reinitialiser les donnees locales",
           confirm: "Reinitialiser",
         },
@@ -1149,8 +1145,7 @@ const resources = {
           "Inicia sesion con Apple para desbloquear tu agenda, vincular las compras a tu identidad de Apple y seguir con la configuracion en este dispositivo.",
         valuePointOne:
           "Guarda cada perro una vez y programa paseos en segundos.",
-        valuePointTwo:
-          "Ve tu dia en una sola agenda con citas recurrentes.",
+        valuePointTwo: "Ve tu dia en una sola agenda con citas recurrentes.",
         valuePointThree:
           "Manten premium simple: un plan Pro desbloquea perros y citas ilimitados.",
         appleUnavailable:
@@ -1319,8 +1314,7 @@ const resources = {
             "Mejora solo cuando necesites mas que el primer perro y la primera cita gratuitos.",
           active: "Canilendar Pro esta activo.",
           unavailable: "Las compras aun no estan configuradas en esta build.",
-          freeTier:
-            "Estas en el plan gratuito con 1 perro y 1 cita incluidos.",
+          freeTier: "Estas en el plan gratuito con 1 perro y 1 cita incluidos.",
           upgrade: "Mejorar a Pro",
           restore: "Restaurar compras",
           restoring: "Restaurando...",
@@ -1338,8 +1332,7 @@ const resources = {
         },
         devReset: {
           title: "Reiniciar datos locales?",
-          body:
-            "Esta accion DEV elimina todos los perros, citas, ajustes y el progreso del onboarding guardados en este simulador.",
+          body: "Esta accion DEV elimina todos los perros, citas, ajustes y el progreso del onboarding guardados en este simulador.",
           button: "Reiniciar datos locales",
           confirm: "Reiniciar",
         },
@@ -1399,8 +1392,7 @@ const resources = {
           reminderDisabled:
             "No se programara ningun recordatorio por hora hasta que actives una hora.",
           save: "Guardar cita",
-          pastAppointmentBody:
-            "La primera cita tiene que estar en el futuro.",
+          pastAppointmentBody: "La primera cita tiene que estar en el futuro.",
         },
         reminders: {
           eyebrow: "Recordatorios",

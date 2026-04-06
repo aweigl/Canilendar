@@ -1,6 +1,6 @@
 import { router } from "expo-router";
-import { StyleSheet, View } from "react-native";
 import { usePostHog } from "posthog-react-native";
+import { StyleSheet, View } from "react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedText } from "@/components/themed-text";
@@ -16,7 +16,7 @@ export default function OnboardingWelcomeScreen() {
 
   function handleStartSetup() {
     posthog.capture("onboarding_started");
-    router.push("/onboarding/dog" as never);
+    router.push("/onboarding/dog");
   }
 
   return (
@@ -30,24 +30,56 @@ export default function OnboardingWelcomeScreen() {
       <ThemedView
         style={[
           styles.card,
-          { backgroundColor: palette.surface, borderColor: palette.border },
+          {
+            backgroundColor: palette.surface,
+            borderColor: palette.border,
+          },
         ]}
       >
         <View style={styles.row}>
-          <ThemedText type="sectionTitle">1</ThemedText>
-          <ThemedText>Save your first reusable dog profile.</ThemedText>
+          <ThemedText
+            lightColor={palette.support}
+            darkColor={palette.support}
+            type="sectionTitle"
+          >
+            1
+          </ThemedText>
+          <ThemedText lightColor={palette.support} darkColor={palette.support}>
+            Save your first reusable dog profile.
+          </ThemedText>
         </View>
         <View style={styles.row}>
-          <ThemedText type="sectionTitle">2</ThemedText>
-          <ThemedText>Schedule the first appointment that should appear in your agenda.</ThemedText>
+          <ThemedText
+            lightColor={palette.support}
+            darkColor={palette.support}
+            type="sectionTitle"
+          >
+            2
+          </ThemedText>
+          <ThemedText lightColor={palette.support} darkColor={palette.support}>
+            Schedule the first appointment that should appear in your agenda.
+          </ThemedText>
         </View>
         <View style={styles.row}>
-          <ThemedText type="sectionTitle">3</ThemedText>
-          <ThemedText>Turn on reminders after real data exists, so the prompt feels earned.</ThemedText>
+          <ThemedText
+            lightColor={palette.support}
+            darkColor={palette.support}
+            type="sectionTitle"
+          >
+            3
+          </ThemedText>
+          <ThemedText lightColor={palette.support} darkColor={palette.support}>
+            Turn on reminders after real data exists, so the prompt feels
+            earned.
+          </ThemedText>
         </View>
       </ThemedView>
 
       <AppButton
+        style={{
+          position: "fixed",
+          bottom: 0,
+        }}
         label="Start setup"
         onPress={handleStartSetup}
         icon="arrow.right.circle.fill"
@@ -66,6 +98,11 @@ const styles = StyleSheet.create({
   row: {
     alignItems: "flex-start",
     flexDirection: "row",
-    gap: Spacing.md,
+    gap: Spacing.sm,
+    padding: Spacing.xs,
+  },
+  marginTopBotton: {
+    marginTop: Spacing.md,
+    marginBottom: Spacing.md,
   },
 });

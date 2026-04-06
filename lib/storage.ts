@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 import {
   DAILY_APPOINTMENT_LIMIT_MAX,
@@ -244,22 +245,39 @@ export async function clearScopedPersistedState(
 
 export async function loadAuthSession(): Promise<AuthSession | null> {
   try {
+    const secureValue = await SecureStore.getItemAsync(AUTH_STORAGE_KEY);
+
+    if (secureValue) {
+      return normalizeAuthSession(JSON.parse(secureValue));
+    }
+
     const rawValue = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
 
     if (!rawValue) {
       return null;
     }
 
-    return normalizeAuthSession(JSON.parse(rawValue));
+    const session = normalizeAuthSession(JSON.parse(rawValue));
+
+    if (session) {
+      await SecureStore.setItemAsync(AUTH_STORAGE_KEY, JSON.stringify(session));
+      await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
+    }
+
+    return session;
   } catch {
     return null;
   }
 }
 
 export async function persistAuthSession(session: AuthSession) {
-  await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+  await SecureStore.setItemAsync(AUTH_STORAGE_KEY, JSON.stringify(session));
+  await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
 }
 
 export async function clearAuthSession() {
-  await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
+  await Promise.all([
+    SecureStore.deleteItemAsync(AUTH_STORAGE_KEY),
+    AsyncStorage.removeItem(AUTH_STORAGE_KEY),
+  ]);
 }

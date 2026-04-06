@@ -6,7 +6,7 @@ import {
   type TextInputProps,
   type TextStyle,
 } from "react-native";
-import { Input, Label, YStack } from "tamagui";
+import { Label, YStack } from "tamagui";
 
 import { ThemedText } from "@/components/themed-text";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
@@ -69,7 +69,7 @@ export function InputField({
       minHeight,
       textAlignVertical: multiline ? "top" : "center",
     },
-    style as any,
+    style,
   ] as const;
   const handleBlur = (event: any) => {
     setIsFocused(false);
@@ -82,7 +82,7 @@ export function InputField({
 
   return (
     <YStack gap={Spacing.sm}>
-      <Label size="$3" style={[styles.label, { color: palette.textMuted }]}>
+      <Label size="$2" style={[styles.label, { color: palette.textMuted }]}>
         {label}
       </Label>
       {helperText ? (
@@ -94,35 +94,23 @@ export function InputField({
           {helperText}
         </ThemedText>
       ) : null}
-      {multiline ? (
-        <TextInput
-          accessibilityState={{ disabled: rest.editable === false }}
-          multiline
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          placeholderTextColor={palette.textSubtle as any}
-          selectionColor={palette.accent}
-          style={fieldStyle as any}
-          {...rest}
-        />
-      ) : (
-        <Input
-          accessibilityState={{ disabled: rest.editable === false }}
-          focusStyle={{ borderColor: palette.borderStrong } as never}
-          onBlur={handleBlur}
-          onFocus={handleFocus}
-          placeholderTextColor={palette.textSubtle as any}
-          style={fieldStyle as any}
-          unstyled
-          {...rest}
-        />
-      )}
+      <TextInput
+        accessibilityState={{ disabled: rest.editable === false }}
+        multiline={multiline}
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        placeholderTextColor={palette.textSubtle}
+        selectionColor={palette.accent}
+        style={fieldStyle as any}
+        {...rest}
+      />
     </YStack>
   );
 }
 
 const styles = StyleSheet.create({
   label: {
+    marginTop: Spacing.md,
     fontFamily: Fonts.rounded,
     fontSize: 13,
     letterSpacing: 0.2,

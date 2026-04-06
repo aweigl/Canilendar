@@ -1,10 +1,10 @@
-import { Pressable, StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   describePickupTime,
   formatDayNumber,
@@ -14,8 +14,8 @@ import {
   getWeekDays,
   getWeekdayShortLabel,
   toDateKey,
-} from '@/lib/date';
-import type { AppointmentOccurrence } from '@/types/domain';
+} from "@/lib/date";
+import type { AppointmentOccurrence } from "@/types/domain";
 
 type WeekTableProps = {
   visibleWeekStart: Date;
@@ -26,14 +26,14 @@ type WeekTableProps = {
 };
 
 const MAX_VISIBLE_ROWS = 3;
-const DAY_ACCENTS = [
-  { strong: '#B86A46', soft: '#F0D7C8' },
-  { strong: '#9A7A28', soft: '#ECDDAD' },
-  { strong: '#5B7C62', soft: '#D9E6DB' },
-  { strong: '#347E72', soft: '#D1E8E3' },
-  { strong: '#5E7FB1', soft: '#D7E1F0' },
-  { strong: '#8B6BA7', soft: '#E1D6EA' },
-  { strong: '#B35F6D', soft: '#F0D4DA' },
+export const DAY_ACCENTS = [
+  { strong: "#B86A46", soft: "#F0D7C8" },
+  { strong: "#9A7A28", soft: "#ECDDAD" },
+  { strong: "#5B7C62", soft: "#D9E6DB" },
+  { strong: "#347E72", soft: "#D1E8E3" },
+  { strong: "#5E7FB1", soft: "#D7E1F0" },
+  { strong: "#8B6BA7", soft: "#E1D6EA" },
+  { strong: "#B35F6D", soft: "#F0D4DA" },
 ] as const;
 
 function chunkOccurrences(occurrences: AppointmentOccurrence[]) {
@@ -54,7 +54,7 @@ export function WeekTable({
   onChangeWeek,
 }: WeekTableProps) {
   const { t } = useTranslation();
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const weekDays = getWeekDays(visibleWeekStart);
 
@@ -72,17 +72,19 @@ export function WeekTable({
           style={({ pressed }) => [
             styles.navButton,
             {
-              backgroundColor: pressed ? palette.surfaceAccent : palette.surface,
+              backgroundColor: pressed
+                ? palette.surfaceAccent
+                : palette.surface,
               borderColor: pressed ? palette.borderStrong : palette.border,
             },
           ]}
         >
-          <ThemedText style={styles.navLabel}>{'<'}</ThemedText>
+          <ThemedText style={styles.navLabel}>{"<"}</ThemedText>
         </Pressable>
 
         <View style={styles.headerCopy}>
           <ThemedText type="sectionTitle" style={styles.headerTitle}>
-            {t('home.weekTable')}
+            {t("home.weekTable")}
           </ThemedText>
           <ThemedText
             lightColor={palette.textMuted}
@@ -99,12 +101,14 @@ export function WeekTable({
           style={({ pressed }) => [
             styles.navButton,
             {
-              backgroundColor: pressed ? palette.surfaceAccent : palette.surface,
+              backgroundColor: pressed
+                ? palette.surfaceAccent
+                : palette.surface,
               borderColor: pressed ? palette.borderStrong : palette.border,
             },
           ]}
         >
-          <ThemedText style={styles.navLabel}>{'>'}</ThemedText>
+          <ThemedText style={styles.navLabel}>{">"}</ThemedText>
         </Pressable>
       </View>
 
@@ -114,7 +118,10 @@ export function WeekTable({
           const occurrences = getOccurrencesForDate(date);
           const rows = chunkOccurrences(occurrences);
           const visibleRows = rows.slice(0, MAX_VISIBLE_ROWS);
-          const hiddenCount = Math.max(occurrences.length - visibleRows.length * 2, 0);
+          const hiddenCount = Math.max(
+            occurrences.length - visibleRows.length * 2,
+            0,
+          );
           const accent = DAY_ACCENTS[index];
 
           return (
@@ -125,11 +132,14 @@ export function WeekTable({
               style={({ pressed }) => [
                 styles.dayCard,
                 {
-                  backgroundColor: isSelected ? palette.surface : palette.surfaceRaised,
+                  backgroundColor: isSelected
+                    ? palette.surface
+                    : palette.surfaceRaised,
                   borderColor: isSelected ? accent.strong : palette.border,
                   borderWidth: isSelected ? 1.5 : 1,
                 },
-                pressed && !isSelected && { backgroundColor: palette.surfaceAccent },
+                pressed &&
+                  !isSelected && { backgroundColor: palette.surfaceAccent },
               ]}
             >
               <View style={styles.dayHeader}>
@@ -138,7 +148,9 @@ export function WeekTable({
                     style={[
                       styles.dayBadge,
                       {
-                        backgroundColor: isSelected ? accent.strong : accent.soft,
+                        backgroundColor: isSelected
+                          ? accent.strong
+                          : accent.soft,
                         borderColor: isSelected ? accent.strong : accent.soft,
                       },
                     ]}
@@ -162,19 +174,21 @@ export function WeekTable({
                   darkColor={palette.textMuted}
                   style={styles.dayCount}
                 >
-                  {t('home.weekCount', { count: occurrences.length })}
+                  {t("home.weekCount", { count: occurrences.length })}
                 </ThemedText>
               </View>
 
               <View style={[styles.table, { borderColor: palette.border }]}>
                 {rows.length === 0 ? (
-                  <View style={[styles.emptyRow, { borderColor: palette.border }]}>
+                  <View
+                    style={[styles.emptyRow, { borderColor: palette.border }]}
+                  >
                     <ThemedText
                       lightColor={palette.textSubtle}
                       darkColor={palette.textSubtle}
                       style={styles.emptyLabel}
                     >
-                      {t('home.weekEmpty')}
+                      {t("home.weekEmpty")}
                     </ThemedText>
                   </View>
                 ) : (
@@ -184,7 +198,10 @@ export function WeekTable({
                         key={`${date.toISOString()}-${rowIndex}`}
                         style={[
                           styles.tableRow,
-                          rowIndex > 0 && { borderTopColor: palette.border, borderTopWidth: 1 },
+                          rowIndex > 0 && {
+                            borderTopColor: palette.border,
+                            borderTopWidth: 1,
+                          },
                         ]}
                       >
                         {[0, 1].map((columnIndex) => {
@@ -244,7 +261,7 @@ export function WeekTable({
                           darkColor={palette.textMuted}
                           style={styles.moreLabel}
                         >
-                          {t('home.weekMore', { count: hiddenCount })}
+                          {t("home.weekMore", { count: hiddenCount })}
                         </ThemedText>
                       </View>
                     ) : null}
@@ -267,28 +284,28 @@ const styles = StyleSheet.create({
     padding: 18,
   },
   header: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: Spacing.md,
   },
   headerCopy: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
     gap: 2,
   },
   headerTitle: {
     fontSize: 21,
-    textAlign: 'center',
+    textAlign: "center",
   },
   headerRange: {
-    textAlign: 'center',
+    textAlign: "center",
   },
   navButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: Radius.control,
     borderWidth: 1,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 36,
   },
   navLabel: {
@@ -306,14 +323,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   dayHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
     gap: Spacing.sm,
   },
   dayHeaderMain: {
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     gap: Spacing.sm,
   },
   dayBadge: {
@@ -326,8 +343,8 @@ const styles = StyleSheet.create({
   dayBadgeText: {
     fontFamily: Fonts.rounded,
     fontSize: 12,
-    textAlign: 'center',
-    textTransform: 'uppercase',
+    textAlign: "center",
+    textTransform: "uppercase",
   },
   dayNumber: {
     fontSize: 16,
@@ -336,20 +353,20 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.rounded,
     fontSize: 11,
     lineHeight: 14,
-    textAlign: 'right',
+    textAlign: "right",
   },
   table: {
     borderRadius: 16,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   tableCell: {
     flex: 1,
     minHeight: 42,
-    justifyContent: 'center',
+    justifyContent: "center",
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
@@ -366,8 +383,8 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   emptyRow: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     minHeight: 42,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -377,9 +394,9 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
   moreRow: {
-    alignItems: 'center',
+    alignItems: "center",
     borderTopWidth: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     minHeight: 30,
     paddingHorizontal: 10,
     paddingVertical: 5,

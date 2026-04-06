@@ -1,7 +1,7 @@
 import { router } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import { useMemo, useState } from "react";
 import { Alert, StyleSheet } from "react-native";
-import { usePostHog } from "posthog-react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedView } from "@/components/themed-view";
@@ -25,7 +25,10 @@ export default function OnboardingDogScreen() {
 
   function handleContinue() {
     if (!name.trim() || !address.trim() || !ownerPhone.trim()) {
-      Alert.alert("Missing details", "Add the dog name, address, and owner phone number first.");
+      Alert.alert(
+        "Missing details",
+        "Add the dog name, address, and owner phone number first.",
+      );
       return;
     }
 
@@ -45,7 +48,7 @@ export default function OnboardingDogScreen() {
       is_edit: isEditing,
     });
 
-    router.push("/onboarding/appointment" as never);
+    router.push("/onboarding/appointment");
   }
 
   return (
@@ -53,7 +56,7 @@ export default function OnboardingDogScreen() {
       step={2}
       totalSteps={5}
       eyebrow="First dog"
-      title="Save the client once"
+      title="Save your first dog profile."
       description="This becomes the profile you can reuse in future appointments from the Dogs tab."
     >
       <ThemedView

@@ -50,10 +50,7 @@ export function SubscriptionOptionCard({
         </View>
         {featured ? (
           <View
-            style={[
-              styles.badge,
-              { backgroundColor: palette.supportSoft },
-            ]}
+            style={[styles.badge, { backgroundColor: palette.supportSoft }]}
           >
             <ThemedText
               type="eyebrow"
