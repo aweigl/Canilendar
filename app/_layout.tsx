@@ -12,7 +12,12 @@ import {
   ThemeProvider,
   type Theme,
 } from "@react-navigation/native";
-import { Stack, useGlobalSearchParams, usePathname, useSegments } from "expo-router";
+import {
+  Stack,
+  useGlobalSearchParams,
+  usePathname,
+  useSegments,
+} from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { PostHogProvider } from "posthog-react-native";
@@ -46,7 +51,7 @@ export const unstable_settings = {
 };
 
 configureNotificationHandling();
-void SplashScreen.preventAutoHideAsync().catch(() => {
+SplashScreen.preventAutoHideAsync().catch(() => {
   // Expo Go / reload paths do not always register a native splash screen.
 });
 
@@ -155,7 +160,7 @@ function RootNavigation() {
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
-      void SplashScreen.hideAsync().catch(() => {
+      SplashScreen.hideAsync().catch(() => {
         // Ignore splash lifecycle mismatches during Expo Go reloads.
       });
     }

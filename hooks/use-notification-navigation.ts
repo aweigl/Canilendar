@@ -18,7 +18,7 @@ export function useNotificationNavigation() {
 
     if (lastResponse?.notification) {
       redirectFromNotification(lastResponse.notification);
-      void Notifications.clearLastNotificationResponseAsync();
+      Notifications.clearLastNotificationResponseAsync();
     }
 
     const subscription = Notifications.addNotificationResponseReceivedListener(

@@ -1,12 +1,9 @@
-import { AppState } from "react-native";
 import { useCallback, useEffect, useRef } from "react";
+import { AppState } from "react-native";
 
 import { posthog } from "@/lib/posthog";
 import { isStoreReviewAvailable, requestStoreReview } from "@/lib/review";
-import type {
-  OnboardingStatus,
-  ReviewPromptState,
-} from "@/types/domain";
+import type { OnboardingStatus, ReviewPromptState } from "@/types/domain";
 
 type UseReviewPromptParams = {
   isAuthenticated: boolean;
@@ -117,8 +114,7 @@ export function useReviewPrompt({
         updateReviewPrompt({
           promptedAt,
           lastCheckedAt: promptedAt,
-          eligibilityTrackedAt:
-            reviewPrompt.eligibilityTrackedAt ?? promptedAt,
+          eligibilityTrackedAt: reviewPrompt.eligibilityTrackedAt ?? promptedAt,
         });
       } catch {
         const skipKey = `${source}:request_failed:${pathname}:${reviewPrompt.eligibleAfter}`;
@@ -150,13 +146,13 @@ export function useReviewPrompt({
   );
 
   useEffect(() => {
-    void maybeRequestReview("route_change");
+    maybeRequestReview("route_change");
   }, [maybeRequestReview]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState) => {
       if (nextState === "active") {
-        void maybeRequestReview("app_foreground");
+        maybeRequestReview("app_foreground");
       }
     });
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -11,6 +11,7 @@ import { Label, YStack } from "tamagui";
 import { ThemedText } from "@/components/themed-text";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useKeyboardAwareScroll } from "@/components/ui/keyboard-aware-scroll-view";
 
 type SupportedInputProps = Pick<
   TextInputProps,
@@ -53,6 +54,8 @@ export function InputField({
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<TextInput>(null);
+  const scrollFocusedInput = useKeyboardAwareScroll();
   const helperText = error ?? hint;
   const helperColor = error ? palette.danger : palette.textMuted;
   const minHeight = multiline ? 80 : 56;
@@ -77,6 +80,7 @@ export function InputField({
   };
   const handleFocus = (event: any) => {
     setIsFocused(true);
+    scrollFocusedInput?.(inputRef.current);
     onFocus?.(event as never);
   };
 
@@ -100,6 +104,7 @@ export function InputField({
         onBlur={handleBlur}
         onFocus={handleFocus}
         placeholderTextColor={palette.textSubtle}
+        ref={inputRef}
         selectionColor={palette.accent}
         style={fieldStyle as any}
         {...rest}

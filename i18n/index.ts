@@ -135,6 +135,12 @@ const resources = {
         title: "Dogs",
         description:
           "Keep client details reusable so appointments can be added in seconds.",
+        photoLabel: "Photo",
+        photoHint:
+          "Add an optional photo from the camera or your photo library.",
+        addFromCamera: "Take photo",
+        chooseFromLibrary: "Choose from library",
+        removePhoto: "Remove photo",
         addDog: "Add dog",
         editorAddTitle: "Add a dog profile",
         editorEditTitle: "Edit dog profile",
@@ -156,6 +162,15 @@ const resources = {
           stillScheduledTitle: "Dog still scheduled",
           stillScheduledBody:
             "Remove or reassign this dog's appointments before deleting the profile.",
+          cameraPermissionTitle: "Camera access needed",
+          cameraPermissionBody:
+            "Allow camera access if you want to take a photo for this dog profile.",
+          libraryPermissionTitle: "Photo library access needed",
+          libraryPermissionBody:
+            "Allow photo-library access if you want to choose an existing dog photo.",
+          photoProcessingTitle: "Could not use photo",
+          photoProcessingBody:
+            "Try another photo or try again in a moment.",
         },
         placeholders: {
           dogName: "Milo",
@@ -494,6 +509,12 @@ const resources = {
         title: "Hunde",
         description:
           "Halte Kundendetails wiederverwendbar, damit Termine in Sekunden angelegt werden konnen.",
+        photoLabel: "Foto",
+        photoHint:
+          "Fuge optional ein Foto aus der Kamera oder deiner Mediathek hinzu.",
+        addFromCamera: "Foto aufnehmen",
+        chooseFromLibrary: "Aus Mediathek wahlen",
+        removePhoto: "Foto entfernen",
         addDog: "Hund hinzufugen",
         editorAddTitle: "Hundeprofil anlegen",
         editorEditTitle: "Hundeprofil bearbeiten",
@@ -515,6 +536,15 @@ const resources = {
           stillScheduledTitle: "Hund ist noch eingeplant",
           stillScheduledBody:
             "Entferne oder ubertrage zuerst die Termine dieses Hundes, bevor du das Profil loschst.",
+          cameraPermissionTitle: "Kamerazugriff erforderlich",
+          cameraPermissionBody:
+            "Erlaube den Kamerazugriff, wenn du fur dieses Hundeprofil ein Foto aufnehmen mochtest.",
+          libraryPermissionTitle: "Mediathekszugriff erforderlich",
+          libraryPermissionBody:
+            "Erlaube den Zugriff auf die Mediathek, wenn du ein bestehendes Hundefoto auswahlen mochtest.",
+          photoProcessingTitle: "Foto konnte nicht verwendet werden",
+          photoProcessingBody:
+            "Versuche ein anderes Foto oder probiere es gleich noch einmal.",
         },
         placeholders: {
           dogName: "Milo",
@@ -857,6 +887,12 @@ const resources = {
         title: "Chiens",
         description:
           "Gardez les details des clients reutilisables pour ajouter des rendez-vous en quelques secondes.",
+        photoLabel: "Photo",
+        photoHint:
+          "Ajoutez une photo facultative depuis l'appareil photo ou la phototheque.",
+        addFromCamera: "Prendre une photo",
+        chooseFromLibrary: "Choisir depuis la phototheque",
+        removePhoto: "Supprimer la photo",
         addDog: "Ajouter un chien",
         editorAddTitle: "Ajouter un profil de chien",
         editorEditTitle: "Modifier le profil du chien",
@@ -878,6 +914,15 @@ const resources = {
           stillScheduledTitle: "Chien encore programme",
           stillScheduledBody:
             "Retirez ou reattribuez les rendez-vous de ce chien avant de supprimer le profil.",
+          cameraPermissionTitle: "Acces a l'appareil photo requis",
+          cameraPermissionBody:
+            "Autorisez l'appareil photo si vous voulez prendre une photo pour ce profil de chien.",
+          libraryPermissionTitle: "Acces a la phototheque requis",
+          libraryPermissionBody:
+            "Autorisez la phototheque si vous voulez choisir une photo existante du chien.",
+          photoProcessingTitle: "Impossible d'utiliser la photo",
+          photoProcessingBody:
+            "Essayez une autre photo ou reessayez dans un instant.",
         },
         placeholders: {
           dogName: "Milo",
@@ -1226,6 +1271,12 @@ const resources = {
         title: "Perros",
         description:
           "Mantén los datos del cliente reutilizables para que las citas se agreguen en segundos.",
+        photoLabel: "Foto",
+        photoHint:
+          "Añade una foto opcional desde la camara o desde tu fototeca.",
+        addFromCamera: "Tomar foto",
+        chooseFromLibrary: "Elegir de la fototeca",
+        removePhoto: "Quitar foto",
         addDog: "Agregar perro",
         editorAddTitle: "Agregar perfil de perro",
         editorEditTitle: "Editar perfil del perro",
@@ -1247,6 +1298,15 @@ const resources = {
           stillScheduledTitle: "El perro sigue programado",
           stillScheduledBody:
             "Quita o reasigna las citas de este perro antes de eliminar el perfil.",
+          cameraPermissionTitle: "Se necesita acceso a la camara",
+          cameraPermissionBody:
+            "Permite el acceso a la camara si quieres tomar una foto para este perfil de perro.",
+          libraryPermissionTitle: "Se necesita acceso a la fototeca",
+          libraryPermissionBody:
+            "Permite el acceso a la fototeca si quieres elegir una foto existente del perro.",
+          photoProcessingTitle: "No se pudo usar la foto",
+          photoProcessingBody:
+            "Prueba con otra foto o vuelve a intentarlo en un momento.",
         },
         placeholders: {
           dogName: "Milo",
@@ -1486,7 +1546,7 @@ export function resolveAppLanguage(
 }
 
 if (!i18n.isInitialized) {
-  void i18n.use(initReactI18next).init({
+  i18n.use(initReactI18next).init({
     resources,
     lng: "en",
     fallbackLng: "en",

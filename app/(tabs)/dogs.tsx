@@ -1,5 +1,5 @@
 import { usePostHog } from "posthog-react-native";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,13 +12,19 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import {
+  cleanupReplacedDraftDogPhoto,
+  createDogFormState,
+  createEmptyDogForm,
+  deleteDogPhoto,
+  discardDraftDogPhoto,
+  pickDogPhoto,
+  type DogFormState,
+  type DogPhotoErrorReason,
+  type DogPhotoSource,
+} from "@/lib/dog-photos";
 
-const EMPTY_DOG = {
-  name: "",
-  address: "",
-  ownerPhone: "",
-  notes: "",
-};
+const EMPTY_DOG = createEmptyDogForm();
 
 export default function DogsScreen() {
   const { t } = useTranslation();
@@ -29,7 +35,14 @@ export default function DogsScreen() {
     useCanilendar();
   const [isEditing, setIsEditing] = useState(false);
   const [editingDogId, setEditingDogId] = useState<string | null>(null);
-  const [form, setForm] = useState(EMPTY_DOG);
+  const [form, setForm] = useState<DogFormState>(EMPTY_DOG);
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const originalPhotoUriRef = useRef<string | null>(null);
+  const latestPhotoUriRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    latestPhotoUriRef.current = form.photoUri;
+  }, [form.photoUri]);
 
   useEffect(() => {
     if (isLoaded && dogs.length === 0) {
@@ -43,19 +56,38 @@ export default function DogsScreen() {
     }
   }, [isLoaded, markChecklistStepSeen]);
 
+  useEffect(() => {
+    return () => {
+      discardDraftDogPhoto({
+        currentPhotoUri: latestPhotoUriRef.current,
+        originalPhotoUri: originalPhotoUriRef.current,
+      });
+    };
+  }, []);
+
   if (!isLoaded) {
     return <LoadingView />;
   }
 
+  function syncFormFromDog(dog?: (typeof dogs)[number] | null) {
+    const nextForm = createDogFormState(dog);
+
+    originalPhotoUriRef.current = nextForm.photoUri;
+    latestPhotoUriRef.current = nextForm.photoUri;
+    setEditingDogId(dog?.id ?? null);
+    setForm(nextForm);
+  }
+
   function resetForm() {
+    originalPhotoUriRef.current = null;
+    latestPhotoUriRef.current = null;
     setEditingDogId(null);
     setForm(EMPTY_DOG);
     setIsEditing(false);
   }
 
   function beginCreateDog() {
-    setEditingDogId(null);
-    setForm(EMPTY_DOG);
+    syncFormFromDog(null);
     setIsEditing(true);
   }
 
@@ -66,14 +98,59 @@ export default function DogsScreen() {
       return;
     }
 
-    setEditingDogId(dog.id);
-    setForm({
-      name: dog.name,
-      address: dog.address,
-      ownerPhone: dog.ownerPhone,
-      notes: dog.notes ?? "",
-    });
+    syncFormFromDog(dog);
     setIsEditing(true);
+  }
+
+  function showPhotoError(reason: DogPhotoErrorReason) {
+    const keyPrefix =
+      reason === "camera-permission"
+        ? "cameraPermission"
+        : reason === "library-permission"
+          ? "libraryPermission"
+          : "photoProcessing";
+
+    Alert.alert(
+      t(`dogs.alerts.${keyPrefix}Title`),
+      t(`dogs.alerts.${keyPrefix}Body`),
+    );
+  }
+
+  async function handlePickPhoto(source: DogPhotoSource) {
+    setPhotoBusy(true);
+
+    const result = await pickDogPhoto(source);
+
+    setPhotoBusy(false);
+
+    if (result.canceled) {
+      return;
+    }
+
+    if ("errorReason" in result) {
+      showPhotoError(result.errorReason);
+      return;
+    }
+
+    await cleanupReplacedDraftDogPhoto({
+      currentPhotoUri: latestPhotoUriRef.current,
+      nextPhotoUri: result.photoUri,
+      originalPhotoUri: originalPhotoUriRef.current,
+    });
+
+    latestPhotoUriRef.current = result.photoUri;
+    setForm((current) => ({ ...current, photoUri: result.photoUri }));
+  }
+
+  function handleRemovePhoto() {
+    const currentPhotoUri = latestPhotoUriRef.current;
+
+    if (currentPhotoUri && currentPhotoUri !== originalPhotoUriRef.current) {
+      deleteDogPhoto(currentPhotoUri);
+    }
+
+    latestPhotoUriRef.current = null;
+    setForm((current) => ({ ...current, photoUri: null }));
   }
 
   function handleSave() {
@@ -91,11 +168,15 @@ export default function DogsScreen() {
       address: form.address,
       ownerPhone: form.ownerPhone,
       notes: form.notes,
+      photoUri: form.photoUri ?? undefined,
     });
 
     if (!savedDog) {
       return;
     }
+
+    originalPhotoUriRef.current = savedDog.photoUri ?? null;
+    latestPhotoUriRef.current = savedDog.photoUri ?? null;
 
     posthog.capture("dog_saved", {
       is_edit: Boolean(editingDogId),
@@ -136,7 +217,13 @@ export default function DogsScreen() {
     );
   }
 
-  const cancelEdit = () => setIsEditing(false);
+  const cancelEdit = () => {
+    discardDraftDogPhoto({
+      currentPhotoUri: latestPhotoUriRef.current,
+      originalPhotoUri: originalPhotoUriRef.current,
+    });
+    resetForm();
+  };
 
   return (
     <SafeAreaView
@@ -172,6 +259,14 @@ export default function DogsScreen() {
           setForm={setForm}
           cancelEdit={cancelEdit}
           handleSave={handleSave}
+          pickFromCamera={() => {
+            handlePickPhoto("camera");
+          }}
+          pickFromLibrary={() => {
+            handlePickPhoto("library");
+          }}
+          removePhoto={handleRemovePhoto}
+          photoBusy={photoBusy}
         />
       ) : (
         <>

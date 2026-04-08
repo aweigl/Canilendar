@@ -44,6 +44,7 @@ export function clampDailyAppointmentLimit(
 
 export function buildDogRecord(input: DogInput, currentDog?: DogProfile) {
   const timestamp = new Date().toISOString();
+  const normalizedPhotoUri = normalizeText(input.photoUri ?? "");
 
   return {
     id: currentDog?.id ?? input.id ?? createId(),
@@ -51,6 +52,7 @@ export function buildDogRecord(input: DogInput, currentDog?: DogProfile) {
     address: normalizeText(input.address),
     ownerPhone: normalizeText(input.ownerPhone),
     notes: normalizeText(input.notes ?? ""),
+    photoUri: normalizedPhotoUri || undefined,
     metadata: normalizeText(input.metadata ?? ""),
     createdAt: currentDog?.createdAt ?? timestamp,
     updatedAt: timestamp,

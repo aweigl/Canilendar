@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { DogAvatar } from '@/components/ui/dog-avatar';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { describePickupTime, describeRecurrence } from '@/lib/date';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -27,9 +28,16 @@ export function AgendaDogCard({ occurrence, onPress }: AgendaDogCardProps) {
           },
         ]}>
         <View style={styles.header}>
-          <ThemedText type="sectionTitle" style={styles.name}>
-            {occurrence.dog.name}
-          </ThemedText>
+          <View style={styles.identity}>
+            <DogAvatar
+              name={occurrence.dog.name}
+              photoUri={occurrence.dog.photoUri}
+              size={52}
+            />
+            <ThemedText type="sectionTitle" style={styles.name}>
+              {occurrence.dog.name}
+            </ThemedText>
+          </View>
           <View
             style={[
               styles.timePill,
@@ -68,11 +76,17 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     justifyContent: 'space-between',
   },
+  identity: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginRight: Spacing.xs,
+  },
   name: {
     flex: 1,
     fontSize: 22,
     lineHeight: 26,
-    marginRight: Spacing.xs,
   },
   timePill: {
     borderRadius: Radius.pill,

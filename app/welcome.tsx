@@ -100,7 +100,7 @@ export default function WelcomeScreen() {
           buttonType={AppleButton.Type.SIGN_IN}
           cornerRadius={Radius.controlLarge}
           onPress={() => {
-            void handleAppleSignIn();
+            handleAppleSignIn();
           }}
           style={[
             styles.appleButton,

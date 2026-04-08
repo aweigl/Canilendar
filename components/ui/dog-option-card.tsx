@@ -5,6 +5,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import type { DogProfile } from '@/types/domain';
+import { DogAvatar } from './dog-avatar';
 
 type DogOptionCardProps = {
   dog: DogProfile;
@@ -35,13 +36,18 @@ export function DogOptionCard({ dog, selected, onPress }: DogOptionCardProps) {
       }}>
       <YStack gap={Spacing.sm} width="100%">
         <XStack style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
-          <ThemedText type="sectionTitle">{dog.name}</ThemedText>
-          <ThemedText
-            lightColor={selected ? palette.accentPressed : palette.textSubtle}
-            darkColor={selected ? palette.onAccent : palette.textSubtle}
-            type="eyebrow">
-            {selected ? t('dogCard.selected') : t('dogCard.savedDog')}
-          </ThemedText>
+          <XStack flex={1} gap={Spacing.sm}>
+            <DogAvatar name={dog.name} photoUri={dog.photoUri} size={56} />
+            <YStack flex={1} gap={4}>
+              <ThemedText type="sectionTitle">{dog.name}</ThemedText>
+              <ThemedText
+                lightColor={selected ? palette.accentPressed : palette.textSubtle}
+                darkColor={selected ? palette.onAccent : palette.textSubtle}
+                type="eyebrow">
+                {selected ? t('dogCard.selected') : t('dogCard.savedDog')}
+              </ThemedText>
+            </YStack>
+          </XStack>
         </XStack>
 
         <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>

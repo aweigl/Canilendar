@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { DogAvatar } from '@/components/ui/dog-avatar';
 import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
 import { describePickupTime, describeRecurrence, describeReminder } from '@/lib/date';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -40,9 +41,16 @@ export function AppointmentCard({ occurrence, onPress }: AppointmentCardProps) {
             </ThemedText>
           </View>
           <View style={styles.content}>
-            <ThemedText type="sectionTitle" style={styles.name}>
-              {occurrence.dog.name}
-            </ThemedText>
+            <View style={styles.identity}>
+              <DogAvatar
+                name={occurrence.dog.name}
+                photoUri={occurrence.dog.photoUri}
+                size={50}
+              />
+              <ThemedText type="sectionTitle" style={styles.name}>
+                {occurrence.dog.name}
+              </ThemedText>
+            </View>
             <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted} style={styles.meta}>
               {occurrence.dog.address}
             </ThemedText>
@@ -88,7 +96,13 @@ const styles = StyleSheet.create({
     gap: 4,
     paddingTop: 2,
   },
+  identity: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
   name: {
+    flex: 1,
     fontSize: 21,
   },
   meta: {

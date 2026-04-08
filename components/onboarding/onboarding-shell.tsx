@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { KeyboardAwareScrollView } from "@/components/ui/keyboard-aware-scroll-view";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { posthog } from "@/lib/posthog";
@@ -43,7 +44,7 @@ export function OnboardingShell({
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: palette.background }]}
     >
-      <ScrollView
+      <KeyboardAwareScrollView
         contentContainerStyle={[styles.content, { minHeight: "100%" }]}
         showsVerticalScrollIndicator={false}
       >
@@ -92,7 +93,7 @@ export function OnboardingShell({
         </ThemedView>
 
         <View style={styles.body}>{children}</View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

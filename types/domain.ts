@@ -28,6 +28,7 @@ export type DogProfile = {
   address: string;
   ownerPhone: string;
   notes?: string;
+  photoUri?: string;
   metadata?: string;
   createdAt: string;
   updatedAt: string;
@@ -103,6 +104,7 @@ export type DogInput = {
   address: string;
   ownerPhone: string;
   notes?: string;
+  photoUri?: string;
   metadata?: string;
 };
 

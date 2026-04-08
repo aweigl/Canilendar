@@ -11,6 +11,9 @@ import { ThemedView } from "@/components/themed-view";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
+  DogAvatar,
+} from "@/components/ui/dog-avatar";
+import {
   describePickupTime,
   formatDayNumber,
   formatWeekRange,
@@ -258,13 +261,21 @@ export function WeekTable({
                                   ]}
                                 >
                                   <View style={styles.cellContent}>
-                                    <ThemedText
-                                      numberOfLines={1}
-                                      type="defaultSemiBold"
-                                      style={styles.cellTitle}
-                                    >
-                                      {occurrence.dog.name}
-                                    </ThemedText>
+                                    <View style={styles.cellIdentity}>
+                                      <DogAvatar
+                                        index={index}
+                                        name={occurrence.dog.name}
+                                        photoUri={occurrence.dog.photoUri}
+                                        size={24}
+                                      />
+                                      <ThemedText
+                                        numberOfLines={1}
+                                        type="defaultSemiBold"
+                                        style={styles.cellTitle}
+                                      >
+                                        {occurrence.dog.name}
+                                      </ThemedText>
+                                    </View>
                                     <ThemedText
                                       lightColor={palette.textSubtle}
                                       darkColor={palette.textSubtle}
@@ -415,7 +426,13 @@ const styles = StyleSheet.create({
   cellContent: {
     gap: 1,
   },
+  cellIdentity: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 6,
+  },
   cellTitle: {
+    flex: 1,
     fontSize: 13,
     lineHeight: 16,
   },

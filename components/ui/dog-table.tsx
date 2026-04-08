@@ -4,39 +4,12 @@ import { DogProfile } from "@/types/domain";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleProp, ViewStyle } from "react-native";
-import { ScrollView, Text, View, XStack, YStack } from "tamagui";
+import { ScrollView, XStack, YStack } from "tamagui";
 import { ThemedText } from "../themed-text";
-import { DAY_ACCENTS } from "../week-table";
+import { DogAvatar } from "./dog-avatar";
 import { IconButton } from "./icon-button";
 import { IconSymbol } from "./icon-symbol";
 import { InputField } from "./input-field";
-
-const Avatar = ({ name, index }: { name: string; index: number }) => {
-  return (
-    <View
-      style={{
-        width: 46,
-        height: 46,
-        borderRadius: 99,
-        backgroundColor: DAY_ACCENTS[index].soft,
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <Text
-        style={{
-          textTransform: "uppercase",
-          opacity: 0.9,
-          fontSize: 16,
-          fontWeight: "bold",
-          color: DAY_ACCENTS[index].strong,
-        }}
-      >
-        {name.slice(0, 2)}
-      </Text>
-    </View>
-  );
-};
 
 interface DogTableEntry extends DogProfile {
   selected?: boolean;
@@ -74,7 +47,7 @@ export const DogTableRow = ({
         gap: Spacing.md,
       }}
     >
-      <Avatar name={dog.name} index={index} />
+      <DogAvatar name={dog.name} photoUri={dog.photoUri} index={index} />
       <YStack flex={1}>
         <ThemedText
           type="defaultSemiBold"
@@ -102,6 +75,15 @@ export const DogTableRow = ({
           ellipsizeMode="tail"
         >
           {dog.ownerPhone}
+        </ThemedText>
+        <ThemedText
+          lightColor={palette.textMuted}
+          darkColor={palette.textMuted}
+          style={{ opacity: 0.7 }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {dog.notes}
         </ThemedText>
       </YStack>
       <YStack>

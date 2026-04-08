@@ -9,20 +9,18 @@ import { useColorScheme as useSystemColorScheme } from "react-native";
 
 import i18n, { resolveAppLanguage } from "@/i18n";
 import {
-  getMarkedDateKeys,
-  getOccurrencesForDate,
-} from "@/lib/date";
-import {
   buildAppointmentRecord,
   buildDogRecord,
   clampDailyAppointmentLimit,
   completeOnboardingState,
   markChecklistTargetSeen,
-  type DailyLimitValidationResult,
   upsertAppointmentRecord,
   upsertDogRecord,
   validateAppointmentDailyLimit as validateDailyLimit,
+  type DailyLimitValidationResult,
 } from "@/lib/canilendar-state";
+import { getMarkedDateKeys, getOccurrencesForDate } from "@/lib/date";
+import { deleteDogPhoto } from "@/lib/dog-photos";
 import {
   getNotificationPermissionState,
   requestNotificationAccess,
@@ -46,8 +44,8 @@ import {
   type OnboardingChecklistState,
   type OnboardingStatus,
   type PaywallTrigger,
-  type ReviewPromptState,
   type ReminderSettings,
+  type ReviewPromptState,
 } from "@/types/domain";
 
 type CanilendarContextValue = {
@@ -89,7 +87,6 @@ type CanilendarContextValue = {
 const CanilendarContext = createContext<CanilendarContextValue | undefined>(
   undefined,
 );
-
 
 type CanilendarProviderProps = PropsWithChildren<{
   isPro: boolean;
@@ -171,7 +168,7 @@ export function CanilendarProvider({
       setIsLoaded(true);
     }
 
-    void bootstrap();
+    bootstrap();
 
     return () => {
       isMounted = false;
@@ -186,7 +183,7 @@ export function CanilendarProvider({
     const language = resolveAppLanguage(settings.language);
 
     if (i18n.resolvedLanguage !== language) {
-      void i18n.changeLanguage(language);
+      i18n.changeLanguage(language);
     }
   }, [isLoaded, settings.language]);
 
@@ -195,7 +192,7 @@ export function CanilendarProvider({
       return;
     }
 
-    void persistState(
+    persistState(
       {
         dogs,
         appointments,
@@ -220,7 +217,7 @@ export function CanilendarProvider({
       return;
     }
 
-    void syncScheduledNotifications({
+    syncScheduledNotifications({
       dogs,
       appointments,
       settings,
@@ -282,17 +279,30 @@ export function CanilendarProvider({
 
     const nextDog = buildDogRecord(input, existingDog);
 
-    setDogs((currentDogs) => upsertDogRecord(currentDogs, nextDog, existingDog));
+    setDogs((currentDogs) =>
+      upsertDogRecord(currentDogs, nextDog, existingDog),
+    );
+
+    if (existingDog?.photoUri && existingDog.photoUri !== nextDog.photoUri) {
+      deleteDogPhoto(existingDog.photoUri);
+    }
 
     return nextDog;
   }
 
   function deleteDog(dogId: string) {
+    const dog = getDogById(dogId);
+
     if (appointments.some((appointment) => appointment.dogId === dogId)) {
       return false;
     }
 
     setDogs((currentDogs) => currentDogs.filter((dog) => dog.id !== dogId));
+
+    if (dog?.photoUri) {
+      deleteDogPhoto(dog.photoUri);
+    }
+
     return true;
   }
 
@@ -356,7 +366,7 @@ export function CanilendarProvider({
     );
 
     if (notificationPermission === "undetermined") {
-      void requestPermission();
+      requestPermission();
     }
 
     return nextAppointment;
@@ -386,7 +396,9 @@ export function CanilendarProvider({
   }
 
   function markChecklistStepSeen(target: ChecklistTarget) {
-    setOnboardingChecklist((current) => markChecklistTargetSeen(current, target));
+    setOnboardingChecklist((current) =>
+      markChecklistTargetSeen(current, target),
+    );
   }
 
   function dismissHomeChecklist() {
@@ -397,7 +409,10 @@ export function CanilendarProvider({
   }
 
   function completeOnboarding() {
-    const nextState = completeOnboardingState(onboardingChecklist, reviewPrompt);
+    const nextState = completeOnboardingState(
+      onboardingChecklist,
+      reviewPrompt,
+    );
 
     setOnboardingChecklist(nextState.onboardingChecklist);
     setReviewPrompt(nextState.reviewPrompt);
@@ -411,6 +426,12 @@ export function CanilendarProvider({
   }
 
   function resetLocalData() {
+    dogs.forEach((dog) => {
+      if (dog.photoUri) {
+        deleteDogPhoto(dog.photoUri);
+      }
+    });
+
     setDogs([]);
     setAppointments([]);
     setSettings(DEFAULT_SETTINGS);

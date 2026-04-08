@@ -31,6 +31,13 @@
       "expo-router",
       "expo-notifications",
       [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Canilendar uses the camera so you can add a dog photo directly to a dog profile.",
+          "photosPermission": "Canilendar uses your photo library so you can attach an existing dog photo to a dog profile."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-screen.png",

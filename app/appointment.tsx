@@ -4,9 +4,9 @@ import DateTimePicker, {
 import * as Haptics from "expo-haptics";
 import { Stack, router, useLocalSearchParams } from "expo-router";
 import { usePostHog } from "posthog-react-native";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Platform, ScrollView, StyleSheet, View } from "react-native";
+import { Alert, Platform, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LoadingView } from "@/components/loading-view";
@@ -17,6 +17,7 @@ import { ChoiceChip } from "@/components/ui/choice-chip";
 import { DogEditForm } from "@/components/ui/dog-edit-form";
 import { DogTable, DogTableRow } from "@/components/ui/dog-table";
 import { InputField } from "@/components/ui/input-field";
+import { KeyboardAwareScrollView } from "@/components/ui/keyboard-aware-scroll-view";
 import { ToggleSwitch } from "@/components/ui/toggle-switch";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
@@ -29,15 +30,18 @@ import {
   getDateOnlyStartAt,
   getDefaultPickupTime,
 } from "@/lib/date";
+import {
+  cleanupReplacedDraftDogPhoto,
+  createDogFormState,
+  deleteDogPhoto,
+  discardDraftDogPhoto,
+  pickDogPhoto,
+  type DogFormState,
+  type DogPhotoErrorReason,
+  type DogPhotoSource,
+} from "@/lib/dog-photos";
 import { triggerNotification } from "@/lib/haptics";
 import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
-
-const EMPTY_DOG_FORM = {
-  name: "",
-  address: "",
-  ownerPhone: "",
-  notes: "",
-};
 
 export default function AppointmentScreen() {
   const { t } = useTranslation();
@@ -76,16 +80,8 @@ export default function AppointmentScreen() {
     appointmentDog?.id ?? dogs[0]?.id ?? null,
   );
 
-  const [dogForm, setDogForm] = useState({
-    name: appointmentDog?.name ?? dogs[0]?.name ?? EMPTY_DOG_FORM.name,
-    address:
-      appointmentDog?.address ?? dogs[0]?.address ?? EMPTY_DOG_FORM.address,
-    ownerPhone:
-      appointmentDog?.ownerPhone ??
-      dogs[0]?.ownerPhone ??
-      EMPTY_DOG_FORM.ownerPhone,
-    notes: appointmentDog?.notes ?? dogs[0]?.notes ?? EMPTY_DOG_FORM.notes,
-  });
+  const [dogForm, setDogForm] = useState<DogFormState>(() => createDogFormState(appointmentDog ?? dogs[0]));
+  const [photoBusy, setPhotoBusy] = useState(false);
   const [appointmentDate, setAppointmentDate] = useState(initialStartAt);
   const [hasPickupTime, setHasPickupTime] = useState(
     appointment?.hasPickupTime ?? false,
@@ -105,6 +101,38 @@ export default function AppointmentScreen() {
   const [reminderMinutesBefore, setReminderMinutesBefore] = useState(
     appointment?.reminderMinutesBefore ?? settings.defaultReminderMinutes,
   );
+  const originalPhotoUriRef = useRef<string | null>(
+    appointmentDog?.photoUri ?? dogs[0]?.photoUri ?? null,
+  );
+  const latestPhotoUriRef = useRef<string | null>(
+    appointmentDog?.photoUri ?? dogs[0]?.photoUri ?? null,
+  );
+  const preservePickedPhotoOnUnmountRef = useRef(false);
+
+  useEffect(() => {
+    latestPhotoUriRef.current = dogForm.photoUri;
+  }, [dogForm.photoUri]);
+
+  useEffect(() => {
+    return () => {
+      if (preservePickedPhotoOnUnmountRef.current) {
+        return;
+      }
+
+      discardDraftDogPhoto({
+        currentPhotoUri: latestPhotoUriRef.current,
+        originalPhotoUri: originalPhotoUriRef.current,
+      });
+    };
+  }, []);
+
+  const syncDogForm = useEffectEvent((dog?: (typeof dogs)[number] | null) => {
+    const nextForm = createDogFormState(dog);
+
+    originalPhotoUriRef.current = nextForm.photoUri;
+    latestPhotoUriRef.current = nextForm.photoUri;
+    setDogForm(nextForm);
+  });
 
   useEffect(() => {
     if (!isLoaded) {
@@ -113,15 +141,13 @@ export default function AppointmentScreen() {
 
     if (appointment && appointmentDog) {
       const startAt = new Date(appointment.startAt);
+      const nextForm = createDogFormState(appointmentDog);
 
       setDogMode("existing");
       setSelectedDogId(appointmentDog.id);
-      setDogForm({
-        name: appointmentDog.name,
-        address: appointmentDog.address,
-        ownerPhone: appointmentDog.ownerPhone,
-        notes: appointmentDog.notes ?? "",
-      });
+      originalPhotoUriRef.current = nextForm.photoUri;
+      latestPhotoUriRef.current = nextForm.photoUri;
+      setDogForm(nextForm);
       setAppointmentDate(startAt);
       setHasPickupTime(appointment.hasPickupTime);
       setAppointmentTime(
@@ -152,12 +178,11 @@ export default function AppointmentScreen() {
       return;
     }
 
-    setDogForm({
-      name: selectedDog.name,
-      address: selectedDog.address,
-      ownerPhone: selectedDog.ownerPhone,
-      notes: selectedDog.notes ?? "",
-    });
+    const nextForm = createDogFormState(selectedDog);
+
+    originalPhotoUriRef.current = nextForm.photoUri;
+    latestPhotoUriRef.current = nextForm.photoUri;
+    setDogForm(nextForm);
   }, [dogMode, dogs, selectedDogId]);
 
   const dogTableDogs = useMemo(() => {
@@ -199,6 +224,83 @@ export default function AppointmentScreen() {
 
       return [...currentValue, weekday].sort((left, right) => left - right);
     });
+  }
+
+  function showPhotoError(reason: DogPhotoErrorReason) {
+    const keyPrefix =
+      reason === "camera-permission"
+        ? "cameraPermission"
+        : reason === "library-permission"
+          ? "libraryPermission"
+          : "photoProcessing";
+
+    Alert.alert(
+      t(`dogs.alerts.${keyPrefix}Title`),
+      t(`dogs.alerts.${keyPrefix}Body`),
+    );
+  }
+
+  async function handlePickPhoto(source: DogPhotoSource) {
+    setPhotoBusy(true);
+
+    const result = await pickDogPhoto(source);
+
+    setPhotoBusy(false);
+
+    if (result.canceled) {
+      return;
+    }
+
+    if ("errorReason" in result) {
+      showPhotoError(result.errorReason);
+      return;
+    }
+
+    await cleanupReplacedDraftDogPhoto({
+      currentPhotoUri: latestPhotoUriRef.current,
+      nextPhotoUri: result.photoUri,
+      originalPhotoUri: originalPhotoUriRef.current,
+    });
+
+    latestPhotoUriRef.current = result.photoUri;
+    setDogForm((current) => ({ ...current, photoUri: result.photoUri }));
+  }
+
+  function handleRemovePhoto() {
+    const currentPhotoUri = latestPhotoUriRef.current;
+
+    if (currentPhotoUri && currentPhotoUri !== originalPhotoUriRef.current) {
+      deleteDogPhoto(currentPhotoUri);
+    }
+
+    latestPhotoUriRef.current = null;
+    setDogForm((current) => ({ ...current, photoUri: null }));
+  }
+
+  async function handleDogModeChange(nextMode: "existing" | "new") {
+    if (nextMode === dogMode) {
+      return;
+    }
+
+    if (nextMode === "new") {
+      originalPhotoUriRef.current = null;
+      latestPhotoUriRef.current = null;
+      setDogForm((current) => ({ ...current, photoUri: null }));
+      setDogMode("new");
+      return;
+    }
+
+    await discardDraftDogPhoto({
+      currentPhotoUri: latestPhotoUriRef.current,
+      originalPhotoUri: originalPhotoUriRef.current,
+    });
+
+    const nextSelectedDog =
+      dogs.find((dog) => dog.id === selectedDogId) ?? dogs[0] ?? null;
+
+    setSelectedDogId(nextSelectedDog?.id ?? null);
+    syncDogForm(nextSelectedDog);
+    setDogMode("existing");
   }
 
   async function handleSave() {
@@ -259,6 +361,7 @@ export default function AppointmentScreen() {
         address: dogForm.address,
         ownerPhone: dogForm.ownerPhone,
         notes: dogForm.notes,
+        photoUri: dogForm.photoUri ?? undefined,
       },
       startAt: nextStartAt.toISOString(),
       hasPickupTime,
@@ -296,6 +399,7 @@ export default function AppointmentScreen() {
         address: dogForm.address,
         ownerPhone: dogForm.ownerPhone,
         notes: dogForm.notes,
+        photoUri: dogForm.photoUri ?? undefined,
       },
       startAt: nextStartAt.toISOString(),
       hasPickupTime,
@@ -308,6 +412,8 @@ export default function AppointmentScreen() {
     if (!savedAppointment) {
       return;
     }
+
+    preservePickedPhotoOnUnmountRef.current = true;
 
     posthog.capture(
       appointment ? "appointment_updated" : "appointment_created",
@@ -338,7 +444,7 @@ export default function AppointmentScreen() {
           style: "destructive",
           onPress: () => {
             posthog.capture("appointment_deleted");
-            void triggerNotification(Haptics.NotificationFeedbackType.Warning);
+            triggerNotification(Haptics.NotificationFeedbackType.Warning);
             deleteAppointment(appointment.id);
             router.back();
           },
@@ -360,7 +466,7 @@ export default function AppointmentScreen() {
             : t("appointment.screenTitleNew"),
         }}
       />
-      <ScrollView
+      <KeyboardAwareScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
@@ -412,12 +518,16 @@ export default function AppointmentScreen() {
               <View style={styles.toggleRow}>
                 <ChoiceChip
                   label={t("appointment.savedDog")}
-                  onPress={() => setDogMode("existing")}
+                  onPress={() => {
+                    handleDogModeChange("existing");
+                  }}
                   selected={dogMode === "existing"}
                 />
                 <ChoiceChip
                   label={t("appointment.newDog")}
-                  onPress={() => setDogMode("new")}
+                  onPress={() => {
+                    handleDogModeChange("new");
+                  }}
                   selected={dogMode === "new"}
                 />
               </View>
@@ -427,6 +537,14 @@ export default function AppointmentScreen() {
                 editingDogId={selectedDogId}
                 form={dogForm}
                 setForm={setDogForm}
+                pickFromCamera={() => {
+                  handlePickPhoto("camera");
+                }}
+                pickFromLibrary={() => {
+                  handlePickPhoto("library");
+                }}
+                removePhoto={handleRemovePhoto}
+                photoBusy={photoBusy}
               />
             ) : (
               <DogTable
@@ -612,7 +730,7 @@ export default function AppointmentScreen() {
             />
           ) : null}
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

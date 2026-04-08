@@ -38,10 +38,11 @@ export default function PrivacyScreen() {
             {
               title: "Welche Daten Canilendar verarbeitet",
               bullets: [
-                "Lokal gespeicherte Planerdaten wie Hundeprofile, Adressen, Telefonnummern, Terminnotizen, wiederkehrende Termine und Erinnerungseinstellungen.",
+                "Lokal gespeicherte Planerdaten wie Hundeprofile, Hundefotos, Adressen, Telefonnummern, Terminnotizen, wiederkehrende Termine und Erinnerungseinstellungen.",
                 "Apple-Anmeldedaten: Apple User ID sowie gegebenenfalls E-Mail-Adresse und Name, soweit Apple diese bei der ersten Anmeldung ubermittelt.",
                 "RevenueCat-Abodaten: pseudonyme App User ID, Kaufstatus, Entitlements und Wiederherstellungsinformationen fur In-App-Kaufe.",
                 "Benachrichtigungsstatus und Metadaten fur lokale Erinnerungen auf dem Gerat.",
+                "Kamera- oder Mediathekszugriff nur dann, wenn du freiwillig ein Foto zu einem Hundeprofil hinzufugst.",
               ],
             },
             {
@@ -111,10 +112,11 @@ export default function PrivacyScreen() {
             {
               title: "What Canilendar Processes",
               bullets: [
-                "Locally stored planner data such as dog profiles, addresses, phone numbers, appointment notes, recurring appointments, and reminder settings.",
+                "Locally stored planner data such as dog profiles, dog photos, addresses, phone numbers, appointment notes, recurring appointments, and reminder settings.",
                 "Sign in with Apple data: Apple user ID plus email address and name when Apple provides them during the first authorization.",
                 "RevenueCat subscription data: pseudonymous app user ID, purchase status, entitlements, and restore information for in-app purchases.",
                 "Notification permission state and reminder metadata needed for local notifications on the device.",
+                "Camera or photo-library access only when you choose to attach a photo to a dog profile.",
               ],
             },
             {
@@ -178,7 +180,7 @@ export default function PrivacyScreen() {
     {
       label: t("legal.emailAction"),
       onPress: () => {
-        void handleEmailPress();
+        handleEmailPress();
       },
       icon: "envelope.fill" as const,
     },
@@ -187,7 +189,7 @@ export default function PrivacyScreen() {
           {
             label: t("legal.openHostedAction"),
             onPress: () => {
-              void Linking.openURL(privacyPolicyUrl);
+              Linking.openURL(privacyPolicyUrl);
             },
             icon: "arrow.right.circle.fill" as const,
           },
@@ -198,7 +200,7 @@ export default function PrivacyScreen() {
           {
             label: t("legal.privacyChoicesAction"),
             onPress: () => {
-              void Linking.openURL(privacyChoicesUrl);
+              Linking.openURL(privacyChoicesUrl);
             },
             icon: "arrow.right.circle.fill" as const,
           },

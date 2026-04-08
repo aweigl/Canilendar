@@ -9,6 +9,7 @@ import {
   DEFAULT_SETTINGS,
   type Appointment,
   type AuthSession,
+  type DogProfile,
   type PersistedAppState,
 } from '@/types/domain';
 
@@ -34,6 +35,37 @@ function clampDailyAppointmentLimit(value: unknown) {
     DAILY_APPOINTMENT_LIMIT_MAX,
     Math.max(DAILY_APPOINTMENT_LIMIT_MIN, Math.round(value))
   );
+}
+
+function normalizeDog(value: unknown): DogProfile | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const candidate = value as Record<string, unknown>;
+
+  if (
+    typeof candidate.id !== 'string' ||
+    typeof candidate.name !== 'string' ||
+    typeof candidate.address !== 'string' ||
+    typeof candidate.ownerPhone !== 'string' ||
+    typeof candidate.createdAt !== 'string' ||
+    typeof candidate.updatedAt !== 'string'
+  ) {
+    return null;
+  }
+
+  return {
+    id: candidate.id,
+    name: candidate.name,
+    address: candidate.address,
+    ownerPhone: candidate.ownerPhone,
+    notes: typeof candidate.notes === 'string' ? candidate.notes : '',
+    photoUri: typeof candidate.photoUri === 'string' ? candidate.photoUri : undefined,
+    metadata: typeof candidate.metadata === 'string' ? candidate.metadata : '',
+    createdAt: candidate.createdAt,
+    updatedAt: candidate.updatedAt,
+  };
 }
 
 function normalizeAppointment(value: unknown): Appointment | null {
@@ -116,7 +148,11 @@ function normalizeAuthSession(value: unknown): AuthSession | null {
 
 function normalizePersistedState(parsed: Partial<PersistedAppState>): PersistedAppState {
   return {
-    dogs: Array.isArray(parsed.dogs) ? parsed.dogs : [],
+    dogs: Array.isArray(parsed.dogs)
+      ? parsed.dogs
+          .map((dog) => normalizeDog(dog))
+          .filter((dog): dog is DogProfile => dog !== null)
+      : [],
     appointments: Array.isArray(parsed.appointments)
       ? parsed.appointments
           .map((appointment) => normalizeAppointment(appointment))

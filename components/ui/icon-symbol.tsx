@@ -3,6 +3,7 @@ import {
   ArrowLeftCircle,
   ArrowRightCircle,
   BellRing,
+  Camera,
   CalendarDays,
   CalendarPlus,
   ChevronRight,
@@ -13,6 +14,7 @@ import {
   Dog,
   Lock,
   Mail,
+  Images,
   PawPrint,
   Send,
   Settings,
@@ -52,7 +54,9 @@ export type IconSymbolName =
   | "cancel.fill"
   | "cancel.fill.circle"
   | "dog.plus"
-  | "user.plus";
+  | "user.plus"
+  | "camera.fill"
+  | "photo.fill";
 
 type IconWeight = "regular" | "medium" | "semibold" | "bold";
 
@@ -82,6 +86,8 @@ const MAPPING = {
   "cancel.fill.circle": CircleX,
   "dog.plus": Dog,
   "user.plus": UserPlus,
+  "camera.fill": Camera,
+  "photo.fill": Images,
 } as IconMapping;
 
 const STROKE_WIDTH_BY_WEIGHT: Record<IconWeight, number> = {

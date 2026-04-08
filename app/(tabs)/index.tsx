@@ -184,68 +184,70 @@ export default function HomeScreen() {
           )}
         </View>
 
-        <View style={styles.screenSection}>
-          <View style={styles.sectionHeader}>
-            <View>
-              <ThemedText type="sectionTitle" style={styles.sectionTitle}>
-                {t("home.agenda")}
-              </ThemedText>
-              <ThemedText
-                lightColor={palette.textMuted}
-                darkColor={palette.textMuted}
-              >
-                {formatLongDate(selectedDate)}
-              </ThemedText>
-            </View>
-          </View>
-
-          <ThemedView
-            style={[
-              styles.sectionCard,
-              {
-                backgroundColor: palette.surfaceRaised,
-                borderColor: palette.border,
-              },
-            ]}
-          >
-            <View style={styles.list}>
-              {occurrences.length === 0 ? (
-                <ThemedView
-                  style={[
-                    styles.emptyState,
-                    {
-                      backgroundColor: palette.surface,
-                      borderColor: palette.border,
-                    },
-                  ]}
+        {viewMode === "calendar" ? (
+          <View style={styles.screenSection}>
+            <View style={styles.sectionHeader}>
+              <View>
+                <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+                  {t("home.agenda")}
+                </ThemedText>
+                <ThemedText
+                  lightColor={palette.textMuted}
+                  darkColor={palette.textMuted}
                 >
-                  <ThemedText type="sectionTitle" style={styles.emptyTitle}>
-                    {t("home.emptyTitle")}
-                  </ThemedText>
-                  <ThemedText
-                    lightColor={palette.textMuted}
-                    darkColor={palette.textMuted}
-                  >
-                    {t("home.emptyDescription")}
-                  </ThemedText>
-                </ThemedView>
-              ) : (
-                occurrences.map((occurrence) => (
-                  <AgendaDogCard
-                    key={occurrence.occurrenceId}
-                    occurrence={occurrence}
-                    onPress={() =>
-                      router.push({
-                        pathname: "/appointment",
-                        params: { appointmentId: occurrence.appointment.id },
-                      } as never)
-                    }
-                  />
-                ))
-              )}
+                  {formatLongDate(selectedDate)}
+                </ThemedText>
+              </View>
             </View>
-          </ThemedView>
-        </View>
+
+            <ThemedView
+              style={[
+                styles.sectionCard,
+                {
+                  backgroundColor: palette.surfaceRaised,
+                  borderColor: palette.border,
+                },
+              ]}
+            >
+              <View style={styles.list}>
+                {occurrences.length === 0 ? (
+                  <ThemedView
+                    style={[
+                      styles.emptyState,
+                      {
+                        backgroundColor: palette.surface,
+                        borderColor: palette.border,
+                      },
+                    ]}
+                  >
+                    <ThemedText type="sectionTitle" style={styles.emptyTitle}>
+                      {t("home.emptyTitle")}
+                    </ThemedText>
+                    <ThemedText
+                      lightColor={palette.textMuted}
+                      darkColor={palette.textMuted}
+                    >
+                      {t("home.emptyDescription")}
+                    </ThemedText>
+                  </ThemedView>
+                ) : (
+                  occurrences.map((occurrence) => (
+                    <AgendaDogCard
+                      key={occurrence.occurrenceId}
+                      occurrence={occurrence}
+                      onPress={() =>
+                        router.push({
+                          pathname: "/appointment",
+                          params: { appointmentId: occurrence.appointment.id },
+                        } as never)
+                      }
+                    />
+                  ))
+                )}
+              </View>
+            </ThemedView>
+          </View>
+        ) : null}
       </ScrollView>
 
       <Pressable

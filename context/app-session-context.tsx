@@ -171,7 +171,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       }
     }
 
-    void bootstrapAuth();
+    bootstrapAuth();
 
     return () => {
       isMounted = false;
@@ -235,7 +235,7 @@ export function AppSessionProvider({ children }: PropsWithChildren) {
       }
     }
 
-    void bootstrapRevenueCat();
+    bootstrapRevenueCat();
 
     return () => {
       isMounted = false;

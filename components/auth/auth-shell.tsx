@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { KeyboardAwareScrollView } from "@/components/ui/keyboard-aware-scroll-view";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
@@ -29,7 +30,7 @@ export function AuthShell({
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: palette.background }]}
     >
-      <ScrollView
+      <KeyboardAwareScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
@@ -60,7 +61,7 @@ export function AuthShell({
 
         <View style={styles.body}>{children}</View>
         {footer ? <View style={styles.footer}>{footer}</View> : null}
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

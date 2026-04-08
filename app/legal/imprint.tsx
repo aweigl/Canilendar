@@ -114,7 +114,7 @@ export default function ImprintScreen() {
         {
           label: t("legal.emailAction"),
           onPress: () => {
-            void handleEmailPress();
+            handleEmailPress();
           },
           icon: "envelope.fill" as const,
         },
@@ -123,7 +123,7 @@ export default function ImprintScreen() {
               {
                 label: t("legal.openHostedAction"),
                 onPress: () => {
-                  void Linking.openURL(imprintUrl);
+                  Linking.openURL(imprintUrl);
                 },
                 icon: "arrow.right.circle.fill" as const,
               },

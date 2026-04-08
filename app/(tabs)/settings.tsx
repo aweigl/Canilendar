@@ -196,7 +196,7 @@ export default function SettingsScreen() {
           text: t("settings.account.signOut"),
           style: "destructive",
           onPress: () => {
-            void signOut();
+            signOut();
           },
         },
       ],
@@ -213,7 +213,7 @@ export default function SettingsScreen() {
           text: t("settings.account.deleteAction"),
           style: "destructive",
           onPress: () => {
-            void confirmDeleteAccount();
+            confirmDeleteAccount();
           },
         },
       ],
@@ -241,7 +241,7 @@ export default function SettingsScreen() {
         {
           text: t("settings.account.manageSubscription"),
           onPress: () => {
-            void Linking.openURL(APPLE_SUBSCRIPTIONS_URL);
+            Linking.openURL(APPLE_SUBSCRIPTIONS_URL);
           },
         },
         { text: t("common.cancel"), style: "cancel" },
@@ -762,7 +762,7 @@ export default function SettingsScreen() {
               <AppButton
                 label={t("legal.privacyChoicesAction")}
                 onPress={() => {
-                  void Linking.openURL(privacyChoicesUrl);
+                  Linking.openURL(privacyChoicesUrl);
                 }}
                 variant="ghost"
               />

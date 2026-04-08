@@ -1,4 +1,2 @@
-- Business relationship (warum hilft es dem dogwalker?)
-- onboarding -> paywall with trial 7 days
 - ask for review after first 3 days
 - onBoading flow UI:https://youtu.be/COblC3XvuZo?t=591
