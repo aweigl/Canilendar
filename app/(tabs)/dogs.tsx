@@ -163,6 +163,10 @@ export default function DogsScreen() {
       </View>
       {isEditing ? (
         <DogEditForm
+          style={{
+            paddingLeft: Spacing.lg,
+            paddingRight: Spacing.lg,
+          }}
           editingDogId={editingDogId}
           form={form}
           setForm={setForm}
@@ -172,6 +176,10 @@ export default function DogsScreen() {
       ) : (
         <>
           <DogTable
+            style={{
+              paddingLeft: Spacing.lg,
+              paddingRight: Spacing.lg,
+            }}
             dogs={dogs}
             editDog={beginEditDog}
             deleteDog={handleDelete}
@@ -193,7 +201,6 @@ export default function DogsScreen() {
               },
             ]}
           >
-            {/* <IconSymbol name="dog.plus" size={30} color={palette.onAccent} /> */}
             <IconSymbol name="user.plus" size={28} color={palette.onAccent} />
           </Pressable>
         </>

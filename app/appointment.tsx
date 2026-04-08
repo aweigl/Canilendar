@@ -3,18 +3,19 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import * as Haptics from "expo-haptics";
 import { Stack, router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { usePostHog } from "posthog-react-native";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Platform, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { usePostHog } from "posthog-react-native";
 
 import { LoadingView } from "@/components/loading-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { AppButton } from "@/components/ui/app-button";
 import { ChoiceChip } from "@/components/ui/choice-chip";
-import { DogOptionCard } from "@/components/ui/dog-option-card";
+import { DogEditForm } from "@/components/ui/dog-edit-form";
+import { DogTable, DogTableRow } from "@/components/ui/dog-table";
 import { InputField } from "@/components/ui/input-field";
 import { ToggleSwitch } from "@/components/ui/toggle-switch";
 import { Colors, Radius, Spacing } from "@/constants/theme";
@@ -74,6 +75,7 @@ export default function AppointmentScreen() {
   const [selectedDogId, setSelectedDogId] = useState<string | null>(
     appointmentDog?.id ?? dogs[0]?.id ?? null,
   );
+
   const [dogForm, setDogForm] = useState({
     name: appointmentDog?.name ?? dogs[0]?.name ?? EMPTY_DOG_FORM.name,
     address:
@@ -89,7 +91,9 @@ export default function AppointmentScreen() {
     appointment?.hasPickupTime ?? false,
   );
   const [appointmentTime, setAppointmentTime] = useState(
-    appointment?.hasPickupTime ? initialStartAt : getDefaultPickupTime(initialStartAt),
+    appointment?.hasPickupTime
+      ? initialStartAt
+      : getDefaultPickupTime(initialStartAt),
   );
   const [notes, setNotes] = useState(appointment?.notes ?? "");
   const [isRecurring, setIsRecurring] = useState(
@@ -155,6 +159,17 @@ export default function AppointmentScreen() {
       notes: selectedDog.notes ?? "",
     });
   }, [dogMode, dogs, selectedDogId]);
+
+  const dogTableDogs = useMemo(() => {
+    return dogs.map((item) => ({
+      ...item,
+      selected: item.id === selectedDogId,
+    }));
+  }, [dogs, selectedDogId]);
+
+  const selectedDog = useMemo(() => {
+    return dogTableDogs.find((item) => !!item.selected);
+  }, [dogTableDogs]);
 
   if (!isLoaded) {
     return <LoadingView />;
@@ -294,12 +309,15 @@ export default function AppointmentScreen() {
       return;
     }
 
-    posthog.capture(appointment ? "appointment_updated" : "appointment_created", {
-      is_recurring: isRecurring,
-      has_pickup_time: hasPickupTime,
-      reminder_minutes_before: reminderMinutesBefore,
-      dog_mode: dogMode,
-    });
+    posthog.capture(
+      appointment ? "appointment_updated" : "appointment_created",
+      {
+        is_recurring: isRecurring,
+        has_pickup_time: hasPickupTime,
+        reminder_minutes_before: reminderMinutesBefore,
+        dog_mode: dogMode,
+      },
+    );
 
     await triggerNotification(Haptics.NotificationFeedbackType.Success);
     router.back();
@@ -329,13 +347,15 @@ export default function AppointmentScreen() {
     );
   }
 
+  const isEditingAppointment = !!appointment;
+
   return (
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: palette.background }]}
     >
       <Stack.Screen
         options={{
-          title: appointment
+          title: isEditingAppointment
             ? t("appointment.screenTitleEdit")
             : t("appointment.screenTitleNew"),
         }}
@@ -373,106 +393,50 @@ export default function AppointmentScreen() {
           </ThemedText>
         </ThemedView>
 
-        <ThemedView
-          style={[
-            styles.section,
-            {
-              backgroundColor: palette.surfaceRaised,
-              borderColor: palette.border,
-            },
-          ]}
-        >
-          <View style={styles.sectionBlock}>
-            <ThemedText type="sectionTitle" style={styles.sectionTitle}>
-              {t("appointment.dogDetails")}
-            </ThemedText>
-            <View style={styles.toggleRow}>
-              <ChoiceChip
-                label={t("appointment.savedDog")}
-                onPress={() => setDogMode("existing")}
-                selected={dogMode === "existing"}
-              />
-              <ChoiceChip
-                label={t("appointment.newDog")}
-                onPress={() => setDogMode("new")}
-                selected={dogMode === "new"}
-              />
-            </View>
-
-            {dogMode === "existing" ? (
-              <View style={styles.savedDogs}>
-                {dogs.length === 0 ? (
-                  <ThemedText
-                    lightColor={palette.textMuted}
-                    darkColor={palette.textMuted}
-                  >
-                    {t("appointment.noSavedDogs")}
-                  </ThemedText>
-                ) : (
-                  <>
-                    <ThemedText
-                      lightColor={palette.textMuted}
-                      darkColor={palette.textMuted}
-                      type="caption"
-                    >
-                      {t("appointment.savedDogsHelp")}
-                    </ThemedText>
-                    {dogs.map((dog) => (
-                      <DogOptionCard
-                        key={dog.id}
-                        dog={dog}
-                        onPress={() => setSelectedDogId(dog.id)}
-                        selected={selectedDogId === dog.id}
-                      />
-                    ))}
-                  </>
-                )}
-              </View>
-            ) : null}
-          </View>
-
-          <View
+        {isEditingAppointment && selectedDog ? (
+          <DogTableRow dog={{ ...selectedDog, selected: false }} index={0} />
+        ) : (
+          <ThemedView
             style={[
-              styles.sectionBlock,
-              styles.sectionBlockSeparated,
-              { borderColor: palette.border },
-            ]}>
-            <InputField
-              label={t("appointment.dogName")}
-              onChangeText={(value) =>
-                setDogForm((current) => ({ ...current, name: value }))
-              }
-              placeholder={t("appointment.placeholders.dogName")}
-              value={dogForm.name}
-            />
-            <InputField
-              label={t("appointment.pickupAddress")}
-              onChangeText={(value) =>
-                setDogForm((current) => ({ ...current, address: value }))
-              }
-              placeholder={t("appointment.placeholders.pickupAddress")}
-              value={dogForm.address}
-            />
-            <InputField
-              keyboardType="phone-pad"
-              label={t("appointment.ownerPhone")}
-              onChangeText={(value) =>
-                setDogForm((current) => ({ ...current, ownerPhone: value }))
-              }
-              placeholder={t("appointment.placeholders.ownerPhone")}
-              value={dogForm.ownerPhone}
-            />
-            <InputField
-              label={t("appointment.dogNotes")}
-              multiline
-              onChangeText={(value) =>
-                setDogForm((current) => ({ ...current, notes: value }))
-              }
-              placeholder={t("appointment.placeholders.dogNotes")}
-              value={dogForm.notes}
-            />
-          </View>
-        </ThemedView>
+              styles.section,
+              {
+                backgroundColor: palette.surfaceRaised,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <View style={styles.sectionBlock}>
+              <ThemedText type="sectionTitle" style={styles.sectionTitle}>
+                {t("appointment.dogDetails")}
+              </ThemedText>
+              <View style={styles.toggleRow}>
+                <ChoiceChip
+                  label={t("appointment.savedDog")}
+                  onPress={() => setDogMode("existing")}
+                  selected={dogMode === "existing"}
+                />
+                <ChoiceChip
+                  label={t("appointment.newDog")}
+                  onPress={() => setDogMode("new")}
+                  selected={dogMode === "new"}
+                />
+              </View>
+            </View>
+            {dogMode === "new" ? (
+              <DogEditForm
+                editingDogId={selectedDogId}
+                form={dogForm}
+                setForm={setDogForm}
+              />
+            ) : (
+              <DogTable
+                dogs={dogTableDogs}
+                withSearch={false}
+                onRowClick={setSelectedDogId}
+              />
+            )}
+          </ThemedView>
+        )}
 
         <ThemedView
           style={[
@@ -503,7 +467,8 @@ export default function AppointmentScreen() {
               styles.sectionBlock,
               styles.sectionBlockSeparated,
               { borderColor: palette.border },
-            ]}>
+            ]}
+          >
             <View style={styles.row}>
               <View style={styles.copy}>
                 <ThemedText style={styles.inputLabel}>
@@ -559,7 +524,8 @@ export default function AppointmentScreen() {
               styles.sectionBlock,
               styles.sectionBlockSeparated,
               { borderColor: palette.border },
-            ]}>
+            ]}
+          >
             <View style={styles.row}>
               <View style={styles.copy}>
                 <ThemedText style={styles.inputLabel}>
@@ -602,7 +568,8 @@ export default function AppointmentScreen() {
               styles.sectionBlock,
               styles.sectionBlockSeparated,
               { borderColor: palette.border },
-            ]}>
+            ]}
+          >
             <InputField
               label={t("appointment.appointmentNotes")}
               multiline
@@ -681,8 +648,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   sectionBlockSeparated: {
-    borderTopWidth: 1,
-    paddingTop: Spacing.lg,
+    marginTop: Spacing.lg,
   },
   toggleRow: {
     flexDirection: "row",

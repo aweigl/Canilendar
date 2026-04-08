@@ -111,7 +111,7 @@ export function IconSymbol({
       absoluteStrokeWidth
       color={String(color)}
       size={size}
-      style={style}
+      style={[style, { pointerEvents: "none" }]}
       strokeWidth={STROKE_WIDTH_BY_WEIGHT[weight]}
     />
   );

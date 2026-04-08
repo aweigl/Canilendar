@@ -58,16 +58,13 @@ export function OnboardingShell({
         >
           <View style={[styles.row, { marginBottom: Spacing.sm }]}>
             {step > 1 ? (
-              <IconButton
-                onPress={goBack}
-                icon={
-                  <IconSymbol
-                    name="arrow.left.circle.fill"
-                    size={32}
-                    color={palette.accent}
-                  />
-                }
-              />
+              <IconButton onPress={goBack}>
+                <IconSymbol
+                  name="arrow.left.circle.fill"
+                  size={32}
+                  color={palette.accent}
+                />
+              </IconButton>
             ) : (
               <View />
             )}

@@ -1,7 +1,7 @@
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useTranslation } from "react-i18next";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { ThemedText } from "../themed-text";
 import { ThemedView } from "../themed-view";
 import { AppButton } from "./app-button";
@@ -10,6 +10,7 @@ import { InputField } from "./input-field";
 export const DogEditForm = ({
   editingDogId,
   form,
+  style,
   setForm,
   handleSave,
   cancelEdit,
@@ -21,6 +22,7 @@ export const DogEditForm = ({
     ownerPhone: string;
     notes: string;
   };
+  style?: StyleProp<ViewStyle>;
   setForm: React.Dispatch<
     React.SetStateAction<{
       name: string;
@@ -29,8 +31,8 @@ export const DogEditForm = ({
       notes: string;
     }>
   >;
-  cancelEdit: () => void;
-  handleSave: () => void;
+  cancelEdit?: () => void;
+  handleSave?: () => void;
 }) => {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme ?? "light"];
@@ -39,7 +41,10 @@ export const DogEditForm = ({
 
   return (
     <ScrollView
-      contentContainerStyle={[styles.content, { paddingBottom: 32 }]}
+      contentContainerStyle={[
+        style,
+        { gap: Spacing.xl, paddingTop: Spacing.md, paddingBottom: Spacing.md },
+      ]}
       showsVerticalScrollIndicator={false}
     >
       <ThemedView
@@ -88,29 +93,29 @@ export const DogEditForm = ({
           placeholder={t("dogs.placeholders.notes")}
           value={form.notes}
         />
-        <AppButton
-          style={{ marginTop: Spacing.lg }}
-          label={t("dogs.saveChanges")}
-          icon={"square.and.pencil"}
-          onPress={handleSave}
-        />
-        <AppButton
-          variant="secondary"
-          icon="cancel.fill.circle"
-          onPress={cancelEdit}
-          label={t("dogs.cancel")}
-          style={{ marginTop: Spacing.lg }}
-        />
+        {handleSave ? (
+          <AppButton
+            style={{ marginTop: Spacing.lg }}
+            label={t("dogs.saveChanges")}
+            icon={"square.and.pencil"}
+            onPress={handleSave}
+          />
+        ) : null}
+        {cancelEdit ? (
+          <AppButton
+            variant="secondary"
+            icon="cancel.fill.circle"
+            onPress={cancelEdit}
+            label={t("dogs.cancel")}
+            style={{ marginTop: Spacing.lg }}
+          />
+        ) : null}
       </ThemedView>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  content: {
-    gap: Spacing.xl,
-    padding: 24,
-  },
   editor: {
     borderRadius: Radius.card,
     borderWidth: 1,
