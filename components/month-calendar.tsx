@@ -1,19 +1,20 @@
-import { addMonths, subMonths } from 'date-fns';
-import { Pressable, StyleSheet, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
+import { addMonths, subMonths } from "date-fns";
+import { useTranslation } from "react-i18next";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
   formatDayNumber,
   formatMonthLabel,
-  getWeekdayShortLabels,
   getMonthGrid,
+  getWeekdayShortLabels,
   isCurrentMonthDay,
   toDateKey,
-} from '@/lib/date';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+} from "@/lib/date";
+import { DAY_ACCENTS } from "./week-table";
 
 type MonthCalendarProps = {
   selectedDate: Date;
@@ -23,16 +24,6 @@ type MonthCalendarProps = {
   onChangeMonth: (date: Date) => void;
 };
 
-const DAY_ACCENTS = [
-  { strong: '#B86A46', soft: '#F0D7C8' },
-  { strong: '#9A7A28', soft: '#ECDDAD' },
-  { strong: '#5B7C62', soft: '#D9E6DB' },
-  { strong: '#347E72', soft: '#D1E8E3' },
-  { strong: '#5E7FB1', soft: '#D7E1F0' },
-  { strong: '#8B6BA7', soft: '#E1D6EA' },
-  { strong: '#B35F6D', soft: '#F0D4DA' },
-] as const;
-
 export function MonthCalendar({
   selectedDate,
   visibleMonth,
@@ -41,7 +32,7 @@ export function MonthCalendar({
   onChangeMonth,
 }: MonthCalendarProps) {
   useTranslation();
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const weeks = getMonthGrid(visibleMonth);
   const weekdayLabels = getWeekdayShortLabels();
@@ -51,7 +42,8 @@ export function MonthCalendar({
       style={[
         styles.container,
         { borderColor: palette.border, backgroundColor: palette.surfaceRaised },
-      ]}>
+      ]}
+    >
       <View style={styles.header}>
         <Pressable
           accessibilityRole="button"
@@ -59,11 +51,14 @@ export function MonthCalendar({
           style={({ pressed }) => [
             styles.navButton,
             {
-              backgroundColor: pressed ? palette.surfaceAccent : palette.surface,
+              backgroundColor: pressed
+                ? palette.surfaceAccent
+                : palette.surface,
               borderColor: pressed ? palette.borderStrong : palette.border,
             },
-          ]}>
-          <ThemedText style={styles.navLabel}>{'<'}</ThemedText>
+          ]}
+        >
+          <ThemedText style={styles.navLabel}>{"<"}</ThemedText>
         </Pressable>
         <ThemedText type="sectionTitle" style={styles.monthLabel}>
           {formatMonthLabel(visibleMonth)}
@@ -74,18 +69,25 @@ export function MonthCalendar({
           style={({ pressed }) => [
             styles.navButton,
             {
-              backgroundColor: pressed ? palette.surfaceAccent : palette.surface,
+              backgroundColor: pressed
+                ? palette.surfaceAccent
+                : palette.surface,
               borderColor: pressed ? palette.borderStrong : palette.border,
             },
-          ]}>
-          <ThemedText style={styles.navLabel}>{'>'}</ThemedText>
+          ]}
+        >
+          <ThemedText style={styles.navLabel}>{">"}</ThemedText>
         </Pressable>
       </View>
 
       <View style={styles.weekdayRow}>
         {weekdayLabels.map((label) => (
           <View key={label} style={styles.weekdayCell}>
-            <ThemedText lightColor={palette.textSubtle} darkColor={palette.textSubtle} style={styles.weekdayLabel}>
+            <ThemedText
+              lightColor={palette.textSubtle}
+              darkColor={palette.textSubtle}
+              style={styles.weekdayLabel}
+            >
               {label}
             </ThemedText>
           </View>
@@ -112,12 +114,27 @@ export function MonthCalendar({
                     borderColor: accent.strong,
                     borderWidth: 1.5,
                   },
-                  !isSelected && pressed && { backgroundColor: palette.surfaceAccent },
-                ]}>
+                  !isSelected &&
+                    pressed && { backgroundColor: palette.surfaceAccent },
+                ]}
+              >
                 <ThemedText
-                  lightColor={isSelected ? accent.strong : isInCurrentMonth ? palette.text : palette.textSubtle}
-                  darkColor={isSelected ? accent.strong : isInCurrentMonth ? palette.text : palette.textSubtle}
-                  style={styles.dayNumber}>
+                  lightColor={
+                    isSelected
+                      ? accent.strong
+                      : isInCurrentMonth
+                        ? palette.text
+                        : palette.textSubtle
+                  }
+                  darkColor={
+                    isSelected
+                      ? accent.strong
+                      : isInCurrentMonth
+                        ? palette.text
+                        : palette.textSubtle
+                  }
+                  style={styles.dayNumber}
+                >
                   {formatDayNumber(date)}
                 </ThemedText>
                 <View
@@ -146,16 +163,16 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   header: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   navButton: {
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: Radius.control,
     borderWidth: 1,
     height: 36,
-    justifyContent: 'center',
+    justifyContent: "center",
     width: 36,
   },
   navLabel: {
@@ -166,7 +183,7 @@ const styles = StyleSheet.create({
     fontSize: 21,
   },
   weekdayRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 2,
   },
   weekdayCell: {
@@ -175,15 +192,15 @@ const styles = StyleSheet.create({
   weekdayLabel: {
     fontFamily: Fonts.rounded,
     fontSize: 12,
-    textAlign: 'center',
-    textTransform: 'uppercase',
+    textAlign: "center",
+    textTransform: "uppercase",
   },
   weekRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   dayCell: {
-    alignItems: 'center',
-    borderColor: 'transparent',
+    alignItems: "center",
+    borderColor: "transparent",
     borderRadius: Radius.control,
     borderWidth: 1,
     flex: 1,

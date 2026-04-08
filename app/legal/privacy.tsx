@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Alert, Linking } from "react-native";
 import { useTranslation } from "react-i18next";
+import { Alert, Linking } from "react-native";
 
 import { LegalDocumentScreen } from "@/components/legal/legal-document-screen";
 import { ThemedText } from "@/components/themed-text";
@@ -30,9 +30,9 @@ export default function PrivacyScreen() {
             {
               title: "Verantwortliche Stelle",
               paragraphs: [
-                `${legalProfile.controllerName}, ${legalProfile.businessName}`,
+                `${legalProfile.controllerName}`,
                 `${legalProfile.streetAddress}, ${legalProfile.postalCode} ${legalProfile.city}, ${legalProfile.country}`,
-                `Kontakt: ${legalProfile.email} und ${legalProfile.phone}`,
+                `Kontakt: ${legalProfile.email}`,
               ],
             },
             {
@@ -75,7 +75,8 @@ export default function PrivacyScreen() {
               ],
             },
             {
-              title: "Pflicht zur Bereitstellung und automatisierte Entscheidungen",
+              title:
+                "Pflicht zur Bereitstellung und automatisierte Entscheidungen",
               paragraphs: [
                 "Die Bereitstellung der Account- und Kaufdaten ist erforderlich, wenn du Sign in with Apple oder Pro-Abos nutzen mochtest. Ohne diese Daten konnen diese Funktionen nicht bereitgestellt werden.",
                 "Es findet keine automatisierte Entscheidungsfindung einschliesslich Profiling im Sinne von Art. 22 DSGVO statt.",
@@ -102,9 +103,9 @@ export default function PrivacyScreen() {
             {
               title: "Controller",
               paragraphs: [
-                `${legalProfile.controllerName}, ${legalProfile.businessName}`,
+                `${legalProfile.controllerName}`,
                 `${legalProfile.streetAddress}, ${legalProfile.postalCode} ${legalProfile.city}, ${legalProfile.country}`,
-                `Contact: ${legalProfile.email} and ${legalProfile.phone}`,
+                `Contact: ${legalProfile.email}`,
               ],
             },
             {

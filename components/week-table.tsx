@@ -1,5 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleSheet, View } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  View,
+  type GestureResponderEvent,
+} from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
@@ -23,6 +28,7 @@ type WeekTableProps = {
   getOccurrencesForDate: (date: Date) => AppointmentOccurrence[];
   onSelectDate: (date: Date) => void;
   onChangeWeek: (date: Date) => void;
+  onEditOccurrence?: (occurrence: AppointmentOccurrence) => void;
 };
 
 const MAX_VISIBLE_ROWS = 3;
@@ -52,11 +58,25 @@ export function WeekTable({
   getOccurrencesForDate,
   onSelectDate,
   onChangeWeek,
+  onEditOccurrence,
 }: WeekTableProps) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
   const weekDays = getWeekDays(visibleWeekStart);
+
+  function handleOccurrencePress(event: GestureResponderEvent, date: Date) {
+    event.stopPropagation();
+    onSelectDate(date);
+  }
+
+  function handleOccurrenceLongPress(
+    event: GestureResponderEvent,
+    occurrence: AppointmentOccurrence,
+  ) {
+    event.stopPropagation();
+    onEditOccurrence?.(occurrence);
+  }
 
   return (
     <ThemedView
@@ -219,26 +239,45 @@ export function WeekTable({
                               ]}
                             >
                               {occurrence ? (
-                                <View style={styles.cellContent}>
-                                  <ThemedText
-                                    numberOfLines={1}
-                                    type="defaultSemiBold"
-                                    style={styles.cellTitle}
-                                  >
-                                    {occurrence.dog.name}
-                                  </ThemedText>
-                                  <ThemedText
-                                    lightColor={palette.textSubtle}
-                                    darkColor={palette.textSubtle}
-                                    numberOfLines={1}
-                                    style={styles.cellMeta}
-                                  >
-                                    {describePickupTime(
-                                      occurrence.appointment,
-                                      occurrence.startAt,
-                                    )}
-                                  </ThemedText>
-                                </View>
+                                <Pressable
+                                  accessibilityHint="Tap to select this day. Long press to edit this appointment."
+                                  accessibilityRole="button"
+                                  delayLongPress={350}
+                                  onLongPress={(event) =>
+                                    handleOccurrenceLongPress(event, occurrence)
+                                  }
+                                  onPress={(event) =>
+                                    handleOccurrencePress(event, date)
+                                  }
+                                  style={({ pressed }) => [
+                                    styles.cellPressable,
+                                    pressed && {
+                                      backgroundColor: palette.surfaceAccent,
+                                      borderRadius: 0,
+                                    },
+                                  ]}
+                                >
+                                  <View style={styles.cellContent}>
+                                    <ThemedText
+                                      numberOfLines={1}
+                                      type="defaultSemiBold"
+                                      style={styles.cellTitle}
+                                    >
+                                      {occurrence.dog.name}
+                                    </ThemedText>
+                                    <ThemedText
+                                      lightColor={palette.textSubtle}
+                                      darkColor={palette.textSubtle}
+                                      numberOfLines={1}
+                                      style={styles.cellMeta}
+                                    >
+                                      {describePickupTime(
+                                        occurrence.appointment,
+                                        occurrence.startAt,
+                                      )}
+                                    </ThemedText>
+                                  </View>
+                                </Pressable>
                               ) : null}
                             </View>
                           );
@@ -366,6 +405,9 @@ const styles = StyleSheet.create({
   tableCell: {
     flex: 1,
     minHeight: 42,
+  },
+  cellPressable: {
+    flex: 1,
     justifyContent: "center",
     paddingHorizontal: 10,
     paddingVertical: 8,

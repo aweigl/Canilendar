@@ -172,6 +172,14 @@ export default function HomeScreen() {
                 setSelectedDate(date);
                 setVisibleMonth(date);
               }}
+              onEditOccurrence={(occurrence) => {
+                setSelectedDate(occurrence.startAt);
+                setVisibleMonth(occurrence.startAt);
+                router.push({
+                  pathname: "/appointment",
+                  params: { appointmentId: occurrence.appointment.id },
+                } as never);
+              }}
             />
           )}
         </View>
