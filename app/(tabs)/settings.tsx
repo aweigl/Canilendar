@@ -536,14 +536,13 @@ export default function SettingsScreen() {
                   styles.cardTitle,
                   {
                     marginTop: Spacing.md,
-                    marginBottom: Spacing.md,
                   },
                 ]}
               >
                 {t("settings.dailySummary")}
               </ThemedText>
               <ThemedText
-                style={{ marginTop: Spacing.md, marginBottom: Spacing.md }}
+                style={{ marginTop: Spacing.md }}
                 lightColor={palette.support}
                 darkColor={palette.support}
               >
@@ -557,6 +556,33 @@ export default function SettingsScreen() {
               }
             />
           </View>
+
+          {settings.dailySummaryEnabled ? (
+            <View style={[styles.timePickerWrap, { marginBottom: Spacing.xl }]}>
+              <ThemedText
+                style={[
+                  styles.inputLabel,
+                  { marginBottom: Spacing.sm, marginTop: Spacing.sm },
+                ]}
+              >
+                {t("settings.summaryTime")}
+              </ThemedText>
+              <DateTimePicker
+                display={Platform.OS === "ios" ? "compact" : "default"}
+                mode="time"
+                onChange={(_, value) => {
+                  if (!value) {
+                    return;
+                  }
+
+                  updateSettings({
+                    dailySummaryTime: formatTimeInputValue(value),
+                  });
+                }}
+                value={parseTimeValue(settings.dailySummaryTime)}
+              />
+            </View>
+          ) : null}
 
           <ThemedView
             style={[
@@ -598,38 +624,6 @@ export default function SettingsScreen() {
               ))}
             </View>
           </ThemedView>
-
-          {settings.dailySummaryEnabled ? (
-            <View
-              style={[
-                styles.timePickerWrap,
-                { marginBottom: Spacing.md, marginTop: Spacing.md },
-              ]}
-            >
-              <ThemedText
-                style={[
-                  styles.inputLabel,
-                  { marginBottom: Spacing.sm, marginTop: Spacing.sm },
-                ]}
-              >
-                {t("settings.summaryTime")}
-              </ThemedText>
-              <DateTimePicker
-                display={Platform.OS === "ios" ? "compact" : "default"}
-                mode="time"
-                onChange={(_, value) => {
-                  if (!value) {
-                    return;
-                  }
-
-                  updateSettings({
-                    dailySummaryTime: formatTimeInputValue(value),
-                  });
-                }}
-                value={parseTimeValue(settings.dailySummaryTime)}
-              />
-            </View>
-          ) : null}
         </ThemedView>
 
         <ThemedView

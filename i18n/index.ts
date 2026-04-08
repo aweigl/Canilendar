@@ -54,12 +54,13 @@ const resources = {
         eyebrow: "Canilendar",
         title: "Dog walks, calm days, zero chaos.",
         description:
-          "Sign in with Apple to unlock your planner, keep purchases tied to your Apple identity, and continue setup on this device.",
-        valuePointOne: "Save each dog once, then schedule walks in seconds.",
+          "Sign in with Apple to unlock the planner that helps dog walkers stay on time, avoid overbooking, and keep client days under control.",
+        valuePointOne:
+          "Save each client dog once, then book repeat walks in seconds.",
         valuePointTwo:
-          "See your day in one agenda with recurring appointments.",
+          "See pickups, recurring appointments, and free capacity in one working agenda.",
         valuePointThree:
-          "Keep premium simple: one Pro plan unlocks unlimited dogs and bookings.",
+          "Keep admin light while your route grows with unlimited dogs and bookings in Pro.",
         appleUnavailable:
           "Sign in with Apple needs an iPhone or iPad development build.",
         signInErrorTitle: "Apple sign-in failed",
@@ -411,13 +412,13 @@ const resources = {
         eyebrow: "Canilendar",
         title: "Gassi-Runden, ruhige Tage, kein Chaos.",
         description:
-          "Melde dich mit Apple an, um deinen Planer freizuschalten, Kaufe an deine Apple-Identitat zu binden und das Setup auf diesem Gerat fortzusetzen.",
+          "Melde dich mit Apple an, um den Planer fur professionelle Gassi-Services freizuschalten, Uberbuchungen zu vermeiden und Kundentermine sauber im Blick zu behalten.",
         valuePointOne:
-          "Speichere jeden Hund einmal und plane Spaziergange dann in Sekunden.",
+          "Speichere jeden Kundenhund einmal und plane wiederkehrende Runden dann in Sekunden.",
         valuePointTwo:
-          "Sieh deinen Tag in einer Agenda mit wiederkehrenden Terminen.",
+          "Sieh Abholungen, wiederkehrende Termine und freie Kapazitat in einer Arbeitsagenda.",
         valuePointThree:
-          "Halte Premium einfach: Ein Pro-Abo schaltet unbegrenzt Hunde und Termine frei.",
+          "Halte den Verwaltungsaufwand klein, auch wenn deine Route mit Pro unbegrenzt wachst.",
         appleUnavailable:
           "Mit Apple anmelden braucht einen iPhone- oder iPad-Development-Build.",
         signInErrorTitle: "Apple-Anmeldung fehlgeschlagen",
@@ -774,13 +775,13 @@ const resources = {
         eyebrow: "Canilendar",
         title: "Promenades calmes, journees fluides, zero chaos.",
         description:
-          "Connectez-vous avec Apple pour debloquer votre agenda, lier vos achats a votre identite Apple et poursuivre la configuration sur cet appareil.",
+          "Connectez-vous avec Apple pour debloquer l agenda qui aide les promeneurs de chiens a rester a l heure, eviter la surcharge et garder les journees clients sous controle.",
         valuePointOne:
-          "Enregistrez chaque chien une fois, puis planifiez les promenades en quelques secondes.",
+          "Enregistrez chaque chien client une fois, puis planifiez les promenades recurrentes en quelques secondes.",
         valuePointTwo:
-          "Retrouvez votre journee dans un seul agenda avec les rendez-vous recurrents.",
+          "Retrouvez les prises en charge, les rendez-vous recurrents et la capacite restante dans un seul agenda de travail.",
         valuePointThree:
-          "Gardez le premium simple : une offre Pro debloque les chiens et rendez-vous illimites.",
+          "Gardez l administratif leger pendant que votre tournee grandit avec Pro et ses chiens et rendez-vous illimites.",
         appleUnavailable:
           "La connexion Apple necessite une build iPhone ou iPad de developpement.",
         signInErrorTitle: "Echec de la connexion Apple",
@@ -1142,12 +1143,13 @@ const resources = {
         eyebrow: "Canilendar",
         title: "Paseos tranquilos, dias claros, cero caos.",
         description:
-          "Inicia sesion con Apple para desbloquear tu agenda, vincular las compras a tu identidad de Apple y seguir con la configuracion en este dispositivo.",
+          "Inicia sesion con Apple para desbloquear la agenda que ayuda a los paseadores a llegar a tiempo, evitar sobrecargas y controlar mejor cada dia con clientes.",
         valuePointOne:
-          "Guarda cada perro una vez y programa paseos en segundos.",
-        valuePointTwo: "Ve tu dia en una sola agenda con citas recurrentes.",
+          "Guarda cada perro cliente una vez y programa paseos recurrentes en segundos.",
+        valuePointTwo:
+          "Ve recogidas, citas recurrentes y capacidad libre en una sola agenda de trabajo.",
         valuePointThree:
-          "Manten premium simple: un plan Pro desbloquea perros y citas ilimitados.",
+          "Manten la gestion ligera mientras tu ruta crece con perros y citas ilimitados en Pro.",
         appleUnavailable:
           "Iniciar sesion con Apple necesita una build de desarrollo para iPhone o iPad.",
         signInErrorTitle: "Fallo al iniciar sesion con Apple",

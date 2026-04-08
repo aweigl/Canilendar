@@ -5,6 +5,7 @@ import {
   DAILY_APPOINTMENT_LIMIT_MAX,
   DAILY_APPOINTMENT_LIMIT_MIN,
   DEFAULT_ONBOARDING_CHECKLIST,
+  DEFAULT_REVIEW_PROMPT_STATE,
   DEFAULT_SETTINGS,
   type Appointment,
   type AuthSession,
@@ -21,6 +22,7 @@ const FALLBACK_STATE: PersistedAppState = {
   appointments: [],
   settings: DEFAULT_SETTINGS,
   onboarding: DEFAULT_ONBOARDING_CHECKLIST,
+  reviewPrompt: DEFAULT_REVIEW_PROMPT_STATE,
 };
 
 function clampDailyAppointmentLimit(value: unknown) {
@@ -128,6 +130,10 @@ function normalizePersistedState(parsed: Partial<PersistedAppState>): PersistedA
     onboarding: {
       ...DEFAULT_ONBOARDING_CHECKLIST,
       ...(parsed.onboarding ?? {}),
+    },
+    reviewPrompt: {
+      ...DEFAULT_REVIEW_PROMPT_STATE,
+      ...(parsed.reviewPrompt ?? {}),
     },
   };
 }

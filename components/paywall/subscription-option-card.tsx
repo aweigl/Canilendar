@@ -9,8 +9,10 @@ type SubscriptionOptionCardProps = {
   price: string;
   cadence: string;
   description: string;
+  note?: string;
   selected: boolean;
   featured?: boolean;
+  badgeLabel?: string;
   onPress: () => void;
 };
 
@@ -19,8 +21,10 @@ export function SubscriptionOptionCard({
   price,
   cadence,
   description,
+  note,
   selected,
   featured = false,
+  badgeLabel,
   onPress,
 }: SubscriptionOptionCardProps) {
   const colorScheme = useColorScheme() ?? "light";
@@ -48,7 +52,7 @@ export function SubscriptionOptionCard({
             {description}
           </ThemedText>
         </View>
-        {featured ? (
+        {featured || badgeLabel ? (
           <View
             style={[styles.badge, { backgroundColor: palette.supportSoft }]}
           >
@@ -57,7 +61,7 @@ export function SubscriptionOptionCard({
               lightColor={palette.support}
               darkColor={palette.support}
             >
-              Best value
+              {badgeLabel ?? "Best value"}
             </ThemedText>
           </View>
         ) : null}
@@ -72,6 +76,15 @@ export function SubscriptionOptionCard({
           {cadence}
         </ThemedText>
       </View>
+      {note ? (
+        <ThemedText
+          lightColor={palette.textMuted}
+          darkColor={palette.textMuted}
+          type="caption"
+        >
+          {note}
+        </ThemedText>
+      ) : null}
     </Pressable>
   );
 }

@@ -12,7 +12,8 @@ export type PaywallTrigger =
   | "dog_limit"
   | "appointment_limit"
   | "settings"
-  | "onboarding";
+  | "onboarding"
+  | "onboarding_complete";
 export type ChecklistTarget = "dogs" | "settings";
 export type AuthProvider = "apple";
 
@@ -63,11 +64,19 @@ export type OnboardingChecklistState = {
   hasVisitedSettings: boolean;
 };
 
+export type ReviewPromptState = {
+  eligibleAfter: string | null;
+  eligibilityTrackedAt: string | null;
+  promptedAt: string | null;
+  lastCheckedAt: string | null;
+};
+
 export type PersistedAppState = {
   dogs: DogProfile[];
   appointments: Appointment[];
   settings: ReminderSettings;
   onboarding: OnboardingChecklistState;
+  reviewPrompt: ReviewPromptState;
 };
 
 export type AuthSession = {
@@ -146,4 +155,11 @@ export const DEFAULT_ONBOARDING_CHECKLIST: OnboardingChecklistState = {
   dismissed: false,
   hasVisitedDogs: false,
   hasVisitedSettings: false,
+};
+
+export const DEFAULT_REVIEW_PROMPT_STATE: ReviewPromptState = {
+  eligibleAfter: null,
+  eligibilityTrackedAt: null,
+  promptedAt: null,
+  lastCheckedAt: null,
 };

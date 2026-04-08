@@ -12,23 +12,14 @@ import {
   ThemeProvider,
   type Theme,
 } from "@react-navigation/native";
-import * as Notifications from "expo-notifications";
-import {
-  router,
-  Stack,
-  useGlobalSearchParams,
-  usePathname,
-  useSegments,
-} from "expo-router";
+import { Stack, useGlobalSearchParams, usePathname, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { PostHogProvider } from "posthog-react-native";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "react-native-reanimated";
 import { TamaguiProvider } from "tamagui";
-
-import { posthog } from "@/lib/posthog";
 
 import { LoadingView } from "@/components/loading-view";
 import { Colors } from "@/constants/theme";
@@ -40,9 +31,14 @@ import {
   CanilendarProvider,
   useCanilendar,
 } from "@/context/canilendar-context";
+import { useAppRouteGuards } from "@/hooks/use-app-route-guards";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useNotificationNavigation } from "@/hooks/use-notification-navigation";
+import { useReviewPrompt } from "@/hooks/use-review-prompt";
+import { useScreenTracking } from "@/hooks/use-screen-tracking";
 import "@/i18n";
 import { configureNotificationHandling } from "@/lib/notifications";
+import { posthog } from "@/lib/posthog";
 import tamaguiConfig from "@/tamagui.config";
 
 export const unstable_settings = {
@@ -129,21 +125,33 @@ function RootNavigation() {
     },
   };
   const { isAuthenticated, isReady, pendingPaywallTrigger } = useAppSession();
-  const { isLoaded, onboardingStatus } = useCanilendar();
+  const { isLoaded, onboardingStatus, reviewPrompt, updateReviewPrompt } =
+    useCanilendar();
   const pathname = usePathname();
   const params = useGlobalSearchParams();
   const segments = useSegments();
   const topSegment = (segments[0] ?? "") as string;
-  const previousPathname = useRef<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (previousPathname.current !== pathname) {
-      posthog.screen(pathname, {
-        previous_screen: previousPathname.current ?? null,
-      });
-      previousPathname.current = pathname;
-    }
-  }, [pathname, params]);
+  useScreenTracking(pathname, params);
+  useNotificationNavigation();
+  useAppRouteGuards({
+    isAuthenticated,
+    isLoaded,
+    isReady,
+    onboardingStatus,
+    pathname,
+    pendingPaywallTrigger,
+    topSegment,
+  });
+  useReviewPrompt({
+    isAuthenticated,
+    isLoaded,
+    isReady,
+    onboardingStatus,
+    pathname,
+    reviewPrompt,
+    topSegment,
+    updateReviewPrompt,
+  });
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
@@ -152,100 +160,6 @@ function RootNavigation() {
       });
     }
   }, [fontError, fontsLoaded]);
-
-  useEffect(() => {
-    function redirectFromNotification(
-      notification: Notifications.Notification,
-    ) {
-      const url = notification.request.content.data?.url;
-
-      if (typeof url === "string" && url.length > 0) {
-        router.push(url as never);
-      }
-    }
-
-    const lastResponse = Notifications.getLastNotificationResponse();
-    if (lastResponse?.notification) {
-      redirectFromNotification(lastResponse.notification);
-      void Notifications.clearLastNotificationResponseAsync();
-    }
-
-    const subscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        redirectFromNotification(response.notification);
-      },
-    );
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isReady || !isLoaded) {
-      return;
-    }
-
-    const isWelcomeRoute = topSegment === "welcome";
-    const isOnboardingRoute = topSegment === "onboarding";
-    const isPaywallRoute = topSegment === "paywall";
-    const isLegalRoute = topSegment === "legal";
-
-    if (!isAuthenticated) {
-      if (!isWelcomeRoute && !isLegalRoute) {
-        router.replace("/welcome" as never);
-      }
-      return;
-    }
-
-    if (onboardingStatus !== "complete") {
-      if (!isOnboardingRoute && !isLegalRoute) {
-        router.replace("/onboarding" as never);
-      }
-      return;
-    }
-
-    if (
-      isWelcomeRoute ||
-      isOnboardingRoute ||
-      (!pendingPaywallTrigger && isPaywallRoute)
-    ) {
-      router.replace("/(tabs)" as never);
-      return;
-    }
-  }, [
-    isAuthenticated,
-    isLoaded,
-    isReady,
-    onboardingStatus,
-    pendingPaywallTrigger,
-    topSegment,
-  ]);
-
-  useEffect(() => {
-    if (
-      !isReady ||
-      !isLoaded ||
-      !isAuthenticated ||
-      onboardingStatus !== "complete" ||
-      !pendingPaywallTrigger ||
-      pathname === "/paywall"
-    ) {
-      return;
-    }
-
-    router.push({
-      pathname: "/paywall",
-      params: { trigger: pendingPaywallTrigger },
-    } as never);
-  }, [
-    isAuthenticated,
-    isLoaded,
-    isReady,
-    onboardingStatus,
-    pathname,
-    pendingPaywallTrigger,
-  ]);
 
   if (!fontsLoaded && !fontError) {
     return null;
