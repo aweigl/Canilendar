@@ -63,6 +63,7 @@ export default function SettingsScreen() {
     notificationPermission,
     requestNotificationPermission,
     resetLocalData,
+    seedSampleData,
     refreshNotificationPermission,
     settings,
     updateSettings,
@@ -181,6 +182,18 @@ export default function SettingsScreen() {
         style: "destructive",
         onPress: () => {
           resetLocalData();
+        },
+      },
+    ]);
+  }
+
+  function handleSeedSampleData() {
+    Alert.alert(t("settings.devSeed.title"), t("settings.devSeed.body"), [
+      { text: t("common.cancel"), style: "cancel" },
+      {
+        text: t("settings.devSeed.confirm"),
+        onPress: () => {
+          seedSampleData();
         },
       },
     ]);
@@ -823,6 +836,12 @@ export default function SettingsScreen() {
               onPress={() => setIsShowingSplashPreview(true)}
               variant="secondary"
               icon="apple.logo"
+            />
+            <AppButton
+              label={t("settings.devSeed.button")}
+              onPress={handleSeedSampleData}
+              variant="secondary"
+              icon="square.stack.3d.up.fill"
             />
             <AppButton
               label={t("settings.devReset.button")}

@@ -3,22 +3,23 @@ import {
   ArrowLeftCircle,
   ArrowRightCircle,
   BellRing,
-  Camera,
   CalendarDays,
   CalendarPlus,
+  Camera,
   ChevronRight,
   CirclePlus,
   CircleX,
   CreditCard,
   Crown,
   Dog,
+  Images,
   Lock,
   Mail,
-  Images,
   PawPrint,
   Send,
   Settings,
   SquarePen,
+  SquareStack,
   Trash2,
   UserPlus,
   UserRoundPlus,
@@ -56,7 +57,8 @@ export type IconSymbolName =
   | "dog.plus"
   | "user.plus"
   | "camera.fill"
-  | "photo.fill";
+  | "photo.fill"
+  | "square.stack.3d.up.fill";
 
 type IconWeight = "regular" | "medium" | "semibold" | "bold";
 
@@ -88,6 +90,7 @@ const MAPPING = {
   "user.plus": UserPlus,
   "camera.fill": Camera,
   "photo.fill": Images,
+  "square.stack.3d.up.fill": SquareStack,
 } as IconMapping;
 
 const STROKE_WIDTH_BY_WEIGHT: Record<IconWeight, number> = {
@@ -111,6 +114,11 @@ export function IconSymbol({
   weight?: IconWeight;
 }) {
   const Icon = MAPPING[name];
+
+  if (!Icon) {
+    console.warn(`Icon with name ${name} not found! That should not happen.`);
+    return null;
+  }
 
   return (
     <Icon

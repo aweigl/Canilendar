@@ -270,10 +270,16 @@ const resources = {
           button: "Reset local data",
           confirm: "Reset",
         },
+        devSeed: {
+          title: "Load sample data?",
+          body: "This DEV action replaces the current local dogs, appointments, settings, and onboarding progress with sample data for layout testing.",
+          button: "Load sample data",
+          confirm: "Load",
+        },
         devTools: {
           title: "DEV Tools",
           description:
-            "Trigger a local test notification or clear locally saved app data on this simulator or device.",
+            "Trigger a local test notification, load sample data, or clear locally saved app data on this simulator or device.",
           showNotification: "Show notification",
           showNotificationLoading: "Showing notification...",
           showSplash: "Show splash screen",
@@ -658,10 +664,16 @@ const resources = {
           button: "Lokale Daten zurücksetzen",
           confirm: "Zurücksetzen",
         },
+        devSeed: {
+          title: "Beispieldaten laden?",
+          body: "Diese DEV-Aktion ersetzt die aktuell lokal gespeicherten Hunde, Termine, Einstellungen und den Onboarding-Fortschritt durch Beispieldaten für Layout-Tests.",
+          button: "Beispieldaten laden",
+          confirm: "Laden",
+        },
         devTools: {
           title: "DEV-Werkzeuge",
           description:
-            "Löse eine lokale Test-Benachrichtigung aus oder lösche lokal gespeicherte App-Daten auf diesem Simulator oder Gerät.",
+            "Löse eine lokale Test-Benachrichtigung aus, lade Beispieldaten oder lösche lokal gespeicherte App-Daten auf diesem Simulator oder Gerät.",
           showNotification: "Benachrichtigung zeigen",
           showNotificationLoading: "Benachrichtigung wird gezeigt...",
           showSplash: "Splash Screen zeigen",
@@ -1050,10 +1062,16 @@ const resources = {
           button: "Réinitialiser les données locales",
           confirm: "Réinitialiser",
         },
+        devSeed: {
+          title: "Charger des données de démonstration ?",
+          body: "Cette action DEV remplace les chiens, rendez-vous, réglages et la progression d’onboarding actuellement enregistrés localement par des données de démonstration pour tester les layouts.",
+          button: "Charger les données de démonstration",
+          confirm: "Charger",
+        },
         devTools: {
           title: "Outils DEV",
           description:
-            "Déclenchez une notification locale de test ou effacez les données enregistrées localement sur ce simulateur ou appareil.",
+            "Déclenchez une notification locale de test, chargez des données de démonstration ou effacez les données enregistrées localement sur ce simulateur ou appareil.",
           showNotification: "Afficher la notification",
           showNotificationLoading: "Affichage de la notification...",
           showSplash: "Afficher l’écran de lancement",
@@ -1442,10 +1460,16 @@ const resources = {
           button: "Reiniciar datos locales",
           confirm: "Reiniciar",
         },
+        devSeed: {
+          title: "Cargar datos de ejemplo?",
+          body: "Esta accion DEV sustituye los perros, citas, ajustes y el progreso del onboarding guardados localmente por datos de ejemplo para probar los layouts.",
+          button: "Cargar datos de ejemplo",
+          confirm: "Cargar",
+        },
         devTools: {
           title: "Herramientas DEV",
           description:
-            "Lanza una notificacion local de prueba o borra los datos guardados localmente en este simulador o dispositivo.",
+            "Lanza una notificacion local de prueba, carga datos de ejemplo o borra los datos guardados localmente en este simulador o dispositivo.",
           showNotification: "Mostrar notificacion",
           showNotificationLoading: "Mostrando notificacion...",
           showSplash: "Mostrar pantalla de inicio",

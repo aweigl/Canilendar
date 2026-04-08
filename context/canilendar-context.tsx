@@ -20,6 +20,7 @@ import {
   type DailyLimitValidationResult,
 } from "@/lib/canilendar-state";
 import { getMarkedDateKeys, getOccurrencesForDate } from "@/lib/date";
+import { createDevSampleState } from "@/lib/dev-sample-data";
 import { deleteDogPhoto } from "@/lib/dog-photos";
 import {
   getNotificationPermissionState,
@@ -80,6 +81,7 @@ type CanilendarContextValue = {
   completeOnboarding: () => void;
   updateReviewPrompt: (partial: Partial<ReviewPromptState>) => void;
   resetLocalData: () => void;
+  seedSampleData: () => void;
   refreshNotificationPermission: () => Promise<NotificationPermissionState>;
   requestNotificationPermission: () => Promise<NotificationPermissionState>;
 };
@@ -439,6 +441,22 @@ export function CanilendarProvider({
     setReviewPrompt(DEFAULT_REVIEW_PROMPT_STATE);
   }
 
+  function seedSampleData() {
+    dogs.forEach((dog) => {
+      if (dog.photoUri) {
+        deleteDogPhoto(dog.photoUri);
+      }
+    });
+
+    const sampleState = createDevSampleState();
+
+    setDogs(sampleState.dogs);
+    setAppointments(sampleState.appointments);
+    setSettings(sampleState.settings);
+    setOnboardingChecklist(sampleState.onboarding);
+    setReviewPrompt(sampleState.reviewPrompt);
+  }
+
   return (
     <CanilendarContext.Provider
       value={{
@@ -470,6 +488,7 @@ export function CanilendarProvider({
         completeOnboarding,
         updateReviewPrompt,
         resetLocalData,
+        seedSampleData,
         refreshNotificationPermission: refreshPermission,
         requestNotificationPermission: requestPermission,
       }}
