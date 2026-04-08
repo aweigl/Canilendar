@@ -9,9 +9,9 @@ import {
 import { Label, YStack } from "tamagui";
 
 import { ThemedText } from "@/components/themed-text";
+import { useKeyboardAwareScroll } from "@/components/ui/keyboard-aware-scroll-view";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useKeyboardAwareScroll } from "@/components/ui/keyboard-aware-scroll-view";
 
 type SupportedInputProps = Pick<
   TextInputProps,
@@ -34,7 +34,7 @@ type SupportedInputProps = Pick<
 >;
 
 type InputFieldProps = SupportedInputProps & {
-  label: string;
+  label?: string;
   hint?: string;
   error?: string;
   multiline?: boolean;
@@ -86,9 +86,11 @@ export function InputField({
 
   return (
     <YStack gap={Spacing.sm}>
-      <Label size="$2" style={[styles.label, { color: palette.textMuted }]}>
-        {label}
-      </Label>
+      {label ? (
+        <Label size="$2" style={[styles.label, { color: palette.textMuted }]}>
+          {label}
+        </Label>
+      ) : null}
       {helperText ? (
         <ThemedText
           lightColor={helperColor}

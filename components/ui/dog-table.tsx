@@ -40,8 +40,8 @@ export const DogTableRow = ({
       style={{
         backgroundColor: palette.background,
         borderRadius: 14,
-        borderWidth: 0.5,
-        borderColor: palette.border,
+        borderWidth: dog.selected ? 1 : 0.5,
+        borderColor: dog.selected ? palette.success : palette.border,
         padding: Spacing.md,
         alignItems: "center",
         gap: Spacing.md,
@@ -165,7 +165,7 @@ export function DogTable({
           paddingTop: Spacing.md,
           paddingBottom: Spacing.md,
           gap: Spacing.md,
-          marginTop: withSearch ? -35 : 0,
+          marginTop: 0,
         },
       ]}
     >
@@ -177,7 +177,6 @@ export function DogTable({
             borderWidth: 0.5,
             borderRadius: 8,
           }}
-          label={t("dogs.search.label")}
           placeholder={t("dogs.search.placeholder")}
           value={query}
           onChangeText={setQuery}

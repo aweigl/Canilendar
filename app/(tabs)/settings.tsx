@@ -77,7 +77,6 @@ export default function SettingsScreen() {
   const purchasesSupported = revenueCatPurchasesAreSupported();
   const hostedUiReady = revenueCatUiIsReady();
   const privacyChoicesUrl = getPrivacyChoicesUrl();
-  const contentBottomPadding = 0;
 
   useEffect(() => {
     if (isLoaded) {

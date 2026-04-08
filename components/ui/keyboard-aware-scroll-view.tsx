@@ -1,9 +1,9 @@
 import {
   createContext,
   forwardRef,
-  useEffect,
   useCallback,
   useContext,
+  useEffect,
   useImperativeHandle,
   useRef,
   type PropsWithChildren,
@@ -41,6 +41,9 @@ type KeyboardAwareScrollViewProps = PropsWithChildren<
 
 type ScrollResponderMethods = ScrollView & {
   scrollTo?: (options: { animated?: boolean; x?: number; y?: number }) => void;
+  measureInWindow?: (
+    callback: (x: number, y: number, width: number, height: number) => void,
+  ) => void;
 };
 
 export const KeyboardAwareScrollView = forwardRef<
@@ -53,6 +56,7 @@ export const KeyboardAwareScrollView = forwardRef<
     keyboardOffset = 96,
     keyboardDismissMode = Platform.OS === "ios" ? "interactive" : "on-drag",
     keyboardShouldPersistTaps = "handled",
+    style,
     ...rest
   },
   forwardedRef,
@@ -73,30 +77,45 @@ export const KeyboardAwareScrollView = forwardRef<
       return;
     }
 
-    scrollView.measureInWindow((scrollX, scrollY, scrollWidth, scrollHeight) => {
-      focusedInput.measureInWindow?.((inputX, inputY, inputWidth, inputHeight) => {
-        const visibleTop = scrollY + keyboardOffset / 2;
-        const visibleBottom = scrollY + scrollHeight - keyboardHeight - keyboardOffset;
-        const inputTop = inputY;
-        const inputBottom = inputY + inputHeight;
+    (scrollView as ScrollResponderMethods).measureInWindow?.(
+      (
+        scrollX: number,
+        scrollY: number,
+        _scrollWidth: number,
+        scrollHeight: number,
+      ) => {
+        focusedInput.measureInWindow?.(
+          (
+            inputX: number,
+            inputY: number,
+            inputWidth: number,
+            inputHeight: number,
+          ) => {
+            const visibleTop = scrollY + keyboardOffset / 2;
+            const visibleBottom =
+              scrollY + scrollHeight - keyboardHeight - keyboardOffset;
+            const inputTop = inputY;
+            const inputBottom = inputY + inputHeight;
 
-        let nextScrollY = scrollYRef.current;
+            let nextScrollY = scrollYRef.current;
 
-        if (inputBottom > visibleBottom) {
-          nextScrollY += inputBottom - visibleBottom;
-        } else if (inputTop < visibleTop) {
-          nextScrollY -= visibleTop - inputTop;
-        } else {
-          return;
-        }
+            if (inputBottom > visibleBottom) {
+              nextScrollY += inputBottom - visibleBottom;
+            } else if (inputTop < visibleTop) {
+              nextScrollY -= visibleTop - inputTop;
+            } else {
+              return;
+            }
 
-        (scrollView as ScrollResponderMethods).scrollTo?.({
-          animated: true,
-          x: scrollX,
-          y: Math.max(0, nextScrollY),
-        });
-      });
-    });
+            (scrollView as ScrollResponderMethods).scrollTo?.({
+              animated: true,
+              x: scrollX,
+              y: Math.max(0, nextScrollY),
+            });
+          },
+        );
+      },
+    );
   }, [keyboardOffset]);
 
   const scrollFocusedInput = useCallback<ScrollFocusedInput>(
@@ -111,8 +130,10 @@ export const KeyboardAwareScrollView = forwardRef<
   );
 
   useEffect(() => {
-    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
+    const showEvent =
+      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
+    const hideEvent =
+      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
 
     const showSubscription = Keyboard.addListener(showEvent, (event) => {
       keyboardHeightRef.current = event.endCoordinates.height;
@@ -144,6 +165,7 @@ export const KeyboardAwareScrollView = forwardRef<
         onScroll={handleScroll}
         ref={scrollRef}
         scrollEventThrottle={16}
+        style={[styles.scrollView, style]}
         {...rest}
       >
         {children}
@@ -151,3 +173,9 @@ export const KeyboardAwareScrollView = forwardRef<
     </KeyboardAwareScrollContext.Provider>
   );
 });
+
+const styles = {
+  scrollView: {
+    flex: 1,
+  },
+} as const;
