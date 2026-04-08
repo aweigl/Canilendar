@@ -13,6 +13,7 @@ const resources = {
       },
       common: {
         cancel: "Cancel",
+        closeKeyboard: "Close keyboard",
         delete: "Delete",
         edit: "Edit",
         enabled: "Enabled",
@@ -125,6 +126,9 @@ const resources = {
           pastAppointmentTitle: "Past appointment",
           pastAppointmentBody:
             "New appointments need to be scheduled in the future.",
+          saveFailedTitle: "Could not save appointment",
+          saveFailedBody:
+            "Try again in a moment. If the problem continues, review the dog details and selected time.",
           deleteTitle: "Delete appointment?",
           deleteBody:
             "This removes the appointment and its scheduled reminders.",
@@ -147,6 +151,7 @@ const resources = {
         notes: "Notes",
         createDog: "Create dog",
         saveChanges: "Save changes",
+        cancel: "Cancel",
         emptyTitle: "No dogs saved yet",
         emptyDescription:
           "Add your first dog so future appointments can be scheduled from a saved profile.",
@@ -177,6 +182,10 @@ const resources = {
           pickupAddress: "12 Bark Street",
           ownerPhone: "+49 123 456 789",
           notes: "Gate code, feeding note, leash routine...",
+        },
+        search: {
+          label: "Search dogs",
+          placeholder: "Search by dog name",
         },
       },
       settings: {
@@ -361,6 +370,9 @@ const resources = {
         beforeHours_other: "{{count}} hours before",
         beforeHoursMinutes: "{{hours}}h {{minutes}}m before",
       },
+      dog: {
+        selected: "Selected",
+      },
       dogCard: {
         selected: "Selected",
         savedDog: "Saved dog",
@@ -372,8 +384,8 @@ const resources = {
       languages: {
         en: "English",
         de: "Deutsch",
-        fr: "Francais",
-        es: "Espanol",
+        fr: "Français",
+        es: "Español",
       },
     },
   },
@@ -386,11 +398,12 @@ const resources = {
       },
       common: {
         cancel: "Abbrechen",
-        delete: "Loschen",
+        closeKeyboard: "Tastatur schließen",
+        delete: "Löschen",
         edit: "Bearbeiten",
-        enabled: "Aktiv",
+        enabled: "Aktiviert",
         system: "System",
-        useDevice: "Gerät verwenden",
+        useDevice: "Gerätesprache verwenden",
         light: "Hell",
         dark: "Dunkel",
         pickerDate: "Datum",
@@ -406,100 +419,103 @@ const resources = {
         },
       },
       home: {
-        badge: "Planer fur tagliche Gassi-Runden",
+        badge: "Planer für tägliche Gassi-Runden",
         description:
-          "Behalte Abholungen, wiederkehrende Spaziergange und die heutige Route im Blick, ohne deinen Handykalender halbfertig zu lassen.",
+          "Behalte Abholungen, wiederkehrende Spaziergänge und die Route des Tages im Blick, ohne deinen Handykalender halb gepflegt zu hinterlassen.",
         monthView: "Monat",
-        weekView: "Wochenplan",
-        weekTable: "Wochenplan",
+        weekView: "Wochenübersicht",
+        weekTable: "Wochenübersicht",
         weekCount_one: "{{count}} Hund",
         weekCount_other: "{{count}} Hunde",
-        weekEmpty: "Keine Spaziergange geplant",
+        weekEmpty: "Keine Spaziergänge geplant",
         weekMore_one: "+{{count}} weiterer Spaziergang",
-        weekMore_other: "+{{count}} weitere Spaziergange",
+        weekMore_other: "+{{count}} weitere Spaziergänge",
         newAppointment: "Neuer Termin",
         agenda: "Tagesplan",
-        emptyTitle: "Keine Eintrage fur diesen Tag",
+        emptyTitle: "Keine Einträge für diesen Tag",
         emptyDescription:
-          "Fuge fur dieses Datum einen Termin hinzu, dann erscheint er hier als Hundekarte.",
+          "Füge für dieses Datum einen Termin hinzu. Er erscheint dann hier als Hundekarte.",
       },
       welcome: {
         eyebrow: "Canilendar",
         title: "Gassi-Runden, ruhige Tage, kein Chaos.",
         description:
-          "Melde dich mit Apple an, um den Planer fur professionelle Gassi-Services freizuschalten, Uberbuchungen zu vermeiden und Kundentermine sauber im Blick zu behalten.",
+          "Melde dich mit Apple an, um den Planer freizuschalten, der professionellen Dogwalkern hilft, pünktlich zu bleiben, Überbuchungen zu vermeiden und Kundentermine zuverlässig zu organisieren.",
         valuePointOne:
-          "Speichere jeden Kundenhund einmal und plane wiederkehrende Runden dann in Sekunden.",
+          "Speichere jeden Kundenhund einmal und plane wiederkehrende Spaziergänge danach in wenigen Sekunden.",
         valuePointTwo:
-          "Sieh Abholungen, wiederkehrende Termine und freie Kapazitat in einer Arbeitsagenda.",
+          "Sieh Abholungen, wiederkehrende Termine und freie Kapazitäten in einer Arbeitsagenda.",
         valuePointThree:
-          "Halte den Verwaltungsaufwand klein, auch wenn deine Route mit Pro unbegrenzt wachst.",
+          "Halte den Verwaltungsaufwand klein, auch wenn deine Route mit Pro unbegrenzt wächst.",
         appleUnavailable:
-          "Mit Apple anmelden braucht einen iPhone- oder iPad-Development-Build.",
+          "„Mit Apple anmelden“ erfordert einen iPhone- oder iPad-Development-Build.",
         signInErrorTitle: "Apple-Anmeldung fehlgeschlagen",
         footer:
-          "Deine Termine bleiben in v1 auf diesem Gerat, und Kaufe bleiben mit deiner Apple-Anmeldung verknupft.",
+          "Deine Termine bleiben in v1 auf diesem Gerät und Käufe bleiben mit deiner Apple-Anmeldung verknüpft.",
       },
       appointment: {
         screenTitleNew: "Neuer Termin",
         screenTitleEdit: "Termin bearbeiten",
-        eyebrow: "Planungsdetails",
-        titleNew: "Neuen Termin anlegen",
+        eyebrow: "Termindetails",
+        titleNew: "Neuen Termin erstellen",
         titleEdit: "Termin bearbeiten",
         description:
           "Erfasse Hund, Abholdetails, Uhrzeit, Wiederholung und Erinnerung an einem Ort.",
-        dogDetails: "Hundedetails",
+        dogDetails: "Hundedaten",
         savedDog: "Gespeicherter Hund",
         newDog: "Neuer Hund",
         noSavedDogs:
-          'Noch keine Hunde gespeichert. Wechsle zu "Neuer Hund", um das erste Profil anzulegen.',
+          'Es sind noch keine Hunde gespeichert. Wechsle zu "Neuer Hund", um das erste Profil anzulegen.',
         savedDogsHelp:
-          "Wahle einen gespeicherten Hund. Adresse, Telefonnummer und Notizen in jeder Karte gehoren zu diesem Profil.",
+          "Wähle einen gespeicherten Hund. Adresse, Telefonnummer und Notizen in jeder Karte gehören zu diesem Profil.",
         dogName: "Hundename",
         pickupAddress: "Abholadresse",
-        ownerPhone: "Telefon Besitzer",
-        dogNotes: "Notizen zum Hund",
+        ownerPhone: "Telefonnummer des Besitzers",
+        dogNotes: "Hinweise zum Hund",
         pickupTimeEnabled:
-          "Fugt eine konkrete Abholzeit hinzu und aktiviert Erinnerungen fur diesen Termin.",
+          "Fügt eine konkrete Abholzeit hinzu und aktiviert Erinnerungen für diesen Termin.",
         pickupTimeDisabled:
-          "StandardmaBig deaktiviert. Dieser Termin bleibt ohne zeitbasierte Erinnerung im Tagesplan.",
-        repeatWeekly: "Wochentlich wiederholen",
-        recurringOn: "Erscheint an jedem ausgewahlten Wochentag.",
+          "Standardmäßig deaktiviert. Dieser Termin bleibt ohne zeitbasierte Erinnerung im Tagesplan.",
+        repeatWeekly: "Wöchentlich wiederholen",
+        recurringOn: "Erscheint an jedem ausgewählten Wochentag.",
         oneTime: "Bleibt ein einmaliger Termin.",
-        reminderLeadTime: "Erinnerung vorher",
+        reminderLeadTime: "Erinnerungsvorlauf",
         reminderDisabled:
-          "Aktiviere eine Abholzeit, wenn du vor dem Spaziergang erinnert werden mochtest.",
+          "Aktiviere eine Abholzeit, wenn du vor dem Spaziergang erinnert werden möchtest.",
         noPickupTime: "Keine Abholzeit",
         appointmentNotes: "Notizen zum Termin",
         reminderPreview:
           "Erinnerungszeit: {{time}} mit {{count}} Minuten Vorlauf.",
         saveChanges: "Anderungen speichern",
-        createAppointment: "Termin erstellen",
-        deleteAppointment: "Termin loschen",
+        createAppointment: "Termin anlegen",
+        deleteAppointment: "Termin löschen",
         placeholders: {
           dogName: "Milo",
           pickupAddress: "Bellenweg 12",
           ownerPhone: "+49 123 456 789",
           dogNotes: "Torcode, Halsband-Hinweis, Futtererinnerung...",
           appointmentNotes:
-            "Besitzer am Seiteneingang treffen, extra Handtuch mitbringen...",
+            "Besitzer am Seiteneingang treffen, zusätzliches Handtuch mitbringen...",
         },
         alerts: {
-          missingDogDetailsTitle: "Hundedetails fehlen",
+          missingDogDetailsTitle: "Hundedaten fehlen",
           missingDogDetailsBody:
-            "Fuge zuerst Hundename, Adresse und Telefonnummer des Besitzers hinzu.",
-          chooseDogTitle: "Hund auswahlen",
+            "Füge zuerst Hundename, Adresse und Telefonnummer des Besitzers hinzu.",
+          chooseDogTitle: "Hund auswählen",
           chooseDogBody:
-            "Wahle einen gespeicherten Hund oder wechsle zu einem neuen Hundprofil.",
+            "Wähle einen gespeicherten Hund oder wechsle zu einem neuen Hundprofil.",
           dayLimitTitle: "Tageslimit erreicht",
           dayLimitBody:
-            "Damit wurde dein Tageslimit von {{limit}} Hunden am {{dates}} uberschritten.",
-          repeatDaysTitle: "Wiederholungstage auswahlen",
+            "Damit würde dein Tageslimit von {{limit}} Hunden am {{dates}} überschritten.",
+          repeatDaysTitle: "Wiederholungstage auswählen",
           repeatDaysBody:
-            "Wahle mindestens einen Wochentag fur den wiederkehrenden Spaziergang.",
+            "Wähle mindestens einen Wochentag für den wiederkehrenden Spaziergang.",
           pastAppointmentTitle: "Termin in der Vergangenheit",
-          pastAppointmentBody: "Neue Termine mussen in der Zukunft liegen.",
-          deleteTitle: "Termin loschen?",
+          pastAppointmentBody: "Neue Termine müssen in der Zukunft liegen.",
+          saveFailedTitle: "Termin konnte nicht gespeichert werden",
+          saveFailedBody:
+            "Bitte versuche es in einem Moment erneut. Wenn das Problem bestehen bleibt, prüfe die Hundedaten und die gewählte Zeit.",
+          deleteTitle: "Termin löschen?",
           deleteBody:
             "Dadurch werden der Termin und seine Erinnerungen entfernt.",
         },
@@ -508,43 +524,44 @@ const resources = {
         eyebrow: "Gespeicherte Hundeprofile",
         title: "Hunde",
         description:
-          "Halte Kundendetails wiederverwendbar, damit Termine in Sekunden angelegt werden konnen.",
+          "Halte Kundendetails wiederverwendbar, damit Termine in wenigen Sekunden angelegt werden können.",
         photoLabel: "Foto",
         photoHint:
-          "Fuge optional ein Foto aus der Kamera oder deiner Mediathek hinzu.",
+          "Füge optional ein Foto aus der Kamera oder deiner Mediathek hinzu.",
         addFromCamera: "Foto aufnehmen",
-        chooseFromLibrary: "Aus Mediathek wahlen",
+        chooseFromLibrary: "Aus Mediathek wählen",
         removePhoto: "Foto entfernen",
-        addDog: "Hund hinzufugen",
+        addDog: "Hund hinzufügen",
         editorAddTitle: "Hundeprofil anlegen",
         editorEditTitle: "Hundeprofil bearbeiten",
         notes: "Notizen",
         createDog: "Hund erstellen",
         saveChanges: "Anderungen speichern",
+        cancel: "Abbrechen",
         emptyTitle: "Noch keine Hunde gespeichert",
         emptyDescription:
-          "Fuge deinen ersten Hund hinzu, damit zukunftige Termine aus einem gespeicherten Profil geplant werden konnen.",
+          "Füge deinen ersten Hund hinzu, damit zukünftige Termine aus einem gespeicherten Profil geplant werden können.",
         upcomingAppointments_one: "{{count}} kommender Termin",
         upcomingAppointments_other: "{{count}} kommende Termine",
         alerts: {
-          missingDogDetailsTitle: "Hundedetails fehlen",
+          missingDogDetailsTitle: "Hundedaten fehlen",
           missingDogDetailsBody:
-            "Bitte Name, Adresse und Telefonnummer des Besitzers eintragen.",
-          deleteTitle: "{{name}} loschen?",
+            "Bitte trage Name, Adresse und Telefonnummer des Besitzers ein.",
+          deleteTitle: "{{name}} löschen?",
           deleteBody:
-            "Das funktioniert nur, wenn fur den Hund keine Termine geplant sind.",
+            "Das funktioniert nur, wenn für diesen Hund keine Termine geplant sind.",
           stillScheduledTitle: "Hund ist noch eingeplant",
           stillScheduledBody:
-            "Entferne oder ubertrage zuerst die Termine dieses Hundes, bevor du das Profil loschst.",
+            "Entferne oder übertrage zuerst die Termine dieses Hundes, bevor du das Profil löschst.",
           cameraPermissionTitle: "Kamerazugriff erforderlich",
           cameraPermissionBody:
-            "Erlaube den Kamerazugriff, wenn du fur dieses Hundeprofil ein Foto aufnehmen mochtest.",
-          libraryPermissionTitle: "Mediathekszugriff erforderlich",
+            "Erlaube den Kamerazugriff, wenn du für dieses Hundeprofil ein Foto aufnehmen möchtest.",
+          libraryPermissionTitle: "Zugriff auf die Mediathek erforderlich",
           libraryPermissionBody:
-            "Erlaube den Zugriff auf die Mediathek, wenn du ein bestehendes Hundefoto auswahlen mochtest.",
+            "Erlaube den Zugriff auf die Mediathek, wenn du ein bestehendes Hundefoto auswählen möchtest.",
           photoProcessingTitle: "Foto konnte nicht verwendet werden",
           photoProcessingBody:
-            "Versuche ein anderes Foto oder probiere es gleich noch einmal.",
+            "Versuche es mit einem anderen Foto oder probiere es gleich noch einmal.",
         },
         placeholders: {
           dogName: "Milo",
@@ -552,9 +569,13 @@ const resources = {
           ownerPhone: "+49 123 456 789",
           notes: "Torcode, Futterhinweis, Leinenroutine...",
         },
+        search: {
+          label: "Hunde suchen",
+          placeholder: "Nach Hundenamen suchen",
+        },
       },
       settings: {
-        eyebrow: "Planer-Einstellungen",
+        eyebrow: "Einstellungen",
         title: "Einstellungen",
         description:
           "Lege fest, wie Canilendar dich an den kommenden Tag erinnert.",
@@ -563,50 +584,50 @@ const resources = {
         notificationsDenied:
           "Benachrichtigungen sind in den Systemeinstellungen blockiert.",
         notificationsUnknown:
-          "Canilendar fragt nach, wenn du einen Termin speicherst oder Aktivieren tippst.",
+          "Canilendar fragt nach, wenn du einen Termin speicherst oder auf „Aktivieren“ tippst.",
         enableReminders: "Erinnerungen aktivieren",
         refreshStatus: "Status aktualisieren",
         refreshingStatus: "Aktualisiere...",
-        openSystemSettings: "Systemeinstellungen offnen",
+        openSystemSettings: "Systemeinstellungen öffnen",
         dailySummary: "Tageszusammenfassung",
         dailySummaryDescription:
           "Jeden Morgen eine Erinnerung mit den Terminen des Tages.",
         summaryTime: "Zeit der Zusammenfassung",
         language: "Sprache",
         languageDescription:
-          "Wahle eine feste Sprache oder nutze die Sprache deines Telefons. Nicht unterstutzte Gerätesprachen fallen auf Englisch zuruck.",
+          "Wähle eine feste Sprache oder nutze die Sprache deines Telefons. Nicht unterstützte Gerätesprachen fallen auf Englisch zurück.",
         languageCurrent:
           "Gerätesprache: {{language}}. Aktuelle App-Sprache: {{currentLanguage}}.",
-        appearance: "Erscheinungsbild",
+        appearance: "Darstellung",
         appearanceSystem:
           "Canilendar folgt der Darstellungseinstellung deines Geräts.",
         appearanceLight: "Canilendar bleibt immer im hellen Modus.",
         appearanceDark: "Canilendar bleibt immer im dunklen Modus.",
         defaultReminder: "Standard-Erinnerung",
         defaultReminderDescription:
-          "Neue Termine starten mit dieser Vorlaufzeit. Du kannst sie pro Termin uberschreiben.",
+          "Neue Termine starten mit dieser Vorlaufzeit. Du kannst sie für jeden Termin individuell anpassen.",
         dailyAppointmentLimit: "Termine pro Tag",
         dailyAppointmentLimitDescription:
           "Begrenze jeden Tag auf maximal {{count}} Hundetermine.",
         account: {
           title: "Konto",
           description:
-            "Die Apple-Anmeldung schaltet deinen Planer frei und verknupft Kaufe in RevenueCat mit derselben Identitat.",
+            "Die Apple-Anmeldung schaltet deinen Planer frei und verknüpft Käufe in RevenueCat mit derselben Identität.",
           signedInAs: "Angemeldet als {{value}}",
           revenueCatReference: "RevenueCat-Referenz: {{value}}",
           signOut: "Abmelden",
           signOutTitle: "Abmelden?",
           signOutBody:
-            "Du kannst dich jederzeit wieder mit Apple anmelden. Deine lokalen Planerdaten bleiben auf diesem Gerat an dieses Apple-Konto gebunden.",
-          deleteAction: "Konto loschen",
-          deleteTitle: "Konto loschen?",
+            "Du kannst dich jederzeit wieder mit Apple anmelden. Deine lokalen Planerdaten bleiben auf diesem Gerät mit diesem Apple-Konto verknüpft.",
+          deleteAction: "Konto löschen",
+          deleteTitle: "Konto löschen?",
           deleteBody:
-            "Dadurch werden deine lokalen Planerdaten entfernt, die Apple-Anmeldung auf diesem Gerat geloscht und geplante Erinnerungen aufgehoben. Apple und RevenueCat konnen Kaufnachweise weiter speichern, soweit das fur Abrechnung, Betrugspravention oder gesetzliche Aufbewahrungspflichten erforderlich ist.",
-          deletingAccount: "Konto wird geloscht...",
-          deleteFailedTitle: "Konto-Loschung fehlgeschlagen",
-          deleteSuccessTitle: "Konto geloscht",
+            "Dadurch werden deine lokalen Planerdaten entfernt, die Apple-Anmeldung auf diesem Gerät gelöscht und geplante Erinnerungen aufgehoben. Apple und RevenueCat können Kaufnachweise weiter speichern, soweit dies für Abrechnung, Betrugsprävention oder gesetzliche Aufbewahrungspflichten erforderlich ist.",
+          deletingAccount: "Konto wird gelöscht...",
+          deleteFailedTitle: "Konto-Löschung fehlgeschlagen",
+          deleteSuccessTitle: "Konto gelöscht",
           deleteSuccessBody:
-            "Canilendar hat die lokalen Kontodaten auf diesem Gerat entfernt. Wenn noch ein aktives Abo besteht, verwalte oder kundige es in den Apple-Aboeinstellungen.",
+            "Canilendar hat die lokalen Kontodaten auf diesem Gerät entfernt. Wenn noch ein aktives Abo besteht, verwalte oder kündige es in den Apple-Aboeinstellungen.",
           manageSubscription: "Abo verwalten",
         },
         pro: {
@@ -614,50 +635,50 @@ const resources = {
           description:
             "Upgrade nur, wenn du mehr als den ersten kostenlosen Hund und Termin brauchst.",
           active: "Canilendar Pro ist aktiv.",
-          unavailable: "Kaufe sind in diesem Build noch nicht eingerichtet.",
+          unavailable: "Käufe sind in diesem Build noch nicht eingerichtet.",
           freeTier: "Du nutzt den kostenlosen Tarif mit 1 Hund und 1 Termin.",
           upgrade: "Auf Pro upgraden",
-          restore: "Kaufe wiederherstellen",
+          restore: "Käufe wiederherstellen",
           restoring: "Stelle wieder her...",
           restoreFailedTitle: "Wiederherstellung fehlgeschlagen",
           restoreSuccessTitle: "Wiederherstellung abgeschlossen",
           restoreSuccessBody: "Dein Abo-Status wurde aktualisiert.",
-          customerCenter: "Customer Center offnen",
+          customerCenter: "Customer Center öffnen",
           customerCenterTitle: "Customer Center",
           currentOffering:
             "Aktuelles Angebot: {{identifier}} mit {{count}} Paketoptionen.",
           expoGo:
-            "Dieser Build lauft im Expo-Go-Vorschaumodus. Verwende `npx expo run:ios`, um echte RevenueCat-Kaufe, Wiederherstellungen und das Customer Center zu testen.",
+            "Dieser Build läuft im Expo-Go-Vorschaumodus. Verwende `npx expo run:ios`, um echte RevenueCat-Käufe, Wiederherstellungen und das Customer Center zu testen.",
           hostedUi:
-            "Die gehostete RevenueCat-Paywall und das Customer Center brauchen einen iOS-Development-Build oder Produktions-Build. In Expo Go sind sie nicht verfugbar.",
+            "Die gehostete RevenueCat-Paywall und das Customer Center benötigen einen iOS-Development-Build oder einen Produktions-Build. In Expo Go sind sie nicht verfügbar.",
         },
         devReset: {
-          title: "Lokale Daten zurucksetzen?",
+          title: "Lokale Daten zurücksetzen?",
           body: "Diese DEV-Aktion entfernt alle Hunde, Termine, Einstellungen und den Onboarding-Fortschritt von diesem Simulator.",
-          button: "Lokale Daten zurucksetzen",
-          confirm: "Zurucksetzen",
+          button: "Lokale Daten zurücksetzen",
+          confirm: "Zurücksetzen",
         },
         devTools: {
           title: "DEV-Werkzeuge",
           description:
-            "Los eine lokale Test-Benachrichtigung aus oder losche lokal gespeicherte App-Daten auf diesem Simulator oder Gerat.",
+            "Löse eine lokale Test-Benachrichtigung aus oder lösche lokal gespeicherte App-Daten auf diesem Simulator oder Gerät.",
           showNotification: "Benachrichtigung zeigen",
           showNotificationLoading: "Benachrichtigung wird gezeigt...",
           showSplash: "Splash Screen zeigen",
         },
         storage: "Speicher",
         storageDescription:
-          "Termine, Hunde und Erinnerungs-Einstellungen werden in v1 nur auf diesem Gerät gespeichert.",
+          "Termine, Hunde und Erinnerungseinstellungen werden in v1 nur auf diesem Gerät gespeichert.",
         alerts: {
           notificationsOffTitle: "Benachrichtigungen sind aus",
           notificationsOffBody:
-            "Offne die Systemeinstellungen fur Canilendar, wenn du Banner und Tageszusammenfassungen erhalten mochtest.",
+            "Öffne die Systemeinstellungen für Canilendar, wenn du Banner und Tageszusammenfassungen erhalten möchtest.",
         },
       },
       legal: {
         sectionTitle: "Rechtliches",
         sectionDescription:
-          "Impressum, Datenschutzerklarung und Konto-Löschung",
+          "Impressum, Datenschutzerklärung und Konto-Löschung jederzeit erreichbar.",
         imprintEyebrow: "Impressum",
         imprintTitle: "Impressum",
         imprintDescription:
@@ -666,12 +687,12 @@ const resources = {
         privacyTitle: "Datenschutz",
         privacyDescription:
           "Wie Canilendar Konto-, Abo-, Erinnerungs- und Planerdaten verarbeitet.",
-        openHostedAction: "Gehostete Version offnen",
+        openHostedAction: "Gehostete Version öffnen",
         privacyChoicesAction: "Datenschutz-Einstellungen",
         emailAction: "Rechtliche Stelle mailen",
-        emailUnavailableTitle: "E-Mail konnte nicht geoffnet werden",
+        emailUnavailableTitle: "E-Mail konnte nicht geöffnet werden",
         emailUnavailableBody:
-          "Auf diesem Gerat ist keine Mail-App eingerichtet. Schreib uns bitte an {{email}}.",
+          "Auf diesem Gerät ist keine Mail-App eingerichtet. Schreibe uns bitte an {{email}}.",
         cookieBannerNote:
           "Der aktuelle native iOS-Build zeigt kein generisches Cookie-Banner, weil keine optionalen Analyse- oder Marketing-Tracker aktiv sind.",
       },
@@ -680,13 +701,13 @@ const resources = {
           eyebrow: "Erster Termin",
           title: "Trage den ersten Spaziergang in den Kalender ein",
           descriptionWithDog:
-            "{{name}} wird aus dem eben gespeicherten Profil ubernommen.",
+            "{{name}} wird aus dem eben gespeicherten Profil übernommen.",
           descriptionWithoutDog:
-            "Wir verknupfen diesen Termin mit dem Hund, den du gerade angelegt hast.",
+            "Wir verknüpfen diesen Termin mit dem Hund, den du gerade angelegt hast.",
           missingDogTitle: "Hund fehlt",
           missingDogBody: "Lege zuerst das Hundeprofil an.",
           pickupTimeEnabled:
-            "Fur diesen Spaziergang ist eine konkrete Abholzeit aktiviert.",
+            "Für diesen Spaziergang ist eine konkrete Abholzeit aktiviert.",
           pickupTimeDisabled:
             "Lass das aus, wenn die Abholung irgendwann am Morgen passiert.",
           oneTime: "Der erste Termin bleibt ein einmaliger Spaziergang.",
@@ -702,18 +723,18 @@ const resources = {
             "Dein erster Hund und dein erster Termin sind schon gespeichert, deshalb lohnt sich das Aktivieren jetzt sofort.",
           deniedTitle: "Benachrichtigungen sind aus",
           deniedBody:
-            "Du kannst das Setup jetzt trotzdem abschliessen und Erinnerungen spater in den Einstellungen aktivieren.",
+            "Du kannst das Setup jetzt trotzdem abschließen und Erinnerungen später in den Einstellungen aktivieren.",
           appointmentAlertsTitle: "Termin-Erinnerungen",
           appointmentAlertsBody: "Erhalte vor der Abholzeit einen Hinweis.",
           dailySummaryTitle: "Tageszusammenfassung",
           dailySummaryBody:
             "Sieh den Tag mit einer morgendlichen Erinnerung im Voraus.",
-          maybeLater: "Vielleicht spater",
+          maybeLater: "Vielleicht später",
         },
       },
       notifications: {
-        openAppointment: "Termin offnen",
-        openAgenda: "Tagesplan offnen",
+        openAppointment: "Termin öffnen",
+        openAgenda: "Tagesplan öffnen",
         channelName: "Termine",
         appointmentSubtitle: "Termin um {{time}}",
         reminderPrefix: "Erinnerung {{offset}}",
@@ -739,19 +760,22 @@ const resources = {
         beforeHours_other: "{{count}} Stunden vorher",
         beforeHoursMinutes: "{{hours}} Std. {{minutes}} Min. vorher",
       },
+      dog: {
+        selected: "Ausgewählt",
+      },
       dogCard: {
-        selected: "Ausgewahlt",
+        selected: "Ausgewählt",
         savedDog: "Gespeicherter Hund",
         pickup: "Abholung: {{value}}",
         owner: "Besitzer: {{value}}",
         notes: "Notizen: {{value}}",
-        noNotes: "Fur diesen Hund sind keine weiteren Notizen gespeichert.",
+        noNotes: "Für diesen Hund sind keine weiteren Notizen gespeichert.",
       },
       languages: {
         en: "English",
         de: "Deutsch",
-        fr: "Francais",
-        es: "Espanol",
+        fr: "Français",
+        es: "Español",
       },
     },
   },
@@ -760,14 +784,15 @@ const resources = {
       tabs: {
         calendar: "Calendrier",
         dogs: "Chiens",
-        settings: "Reglages",
+        settings: "Réglages",
       },
       common: {
         cancel: "Annuler",
+        closeKeyboard: "Fermer le clavier",
         delete: "Supprimer",
         edit: "Modifier",
-        enabled: "Active",
-        system: "Systeme",
+        enabled: "Activé",
+        system: "Système",
         useDevice: "Utiliser l'appareil",
         light: "Clair",
         dark: "Sombre",
@@ -786,206 +811,214 @@ const resources = {
       home: {
         badge: "Planificateur quotidien de promenades",
         description:
-          "Gardez le controle des prises en charge, des promenades recurrentes et de l'itineraire du jour sans laisser le calendrier de votre telephone inacheve.",
+          "Gardez le contrôle des prises en charge, des promenades récurrentes et de l’itinéraire du jour sans laisser le calendrier de votre téléphone à moitié rempli.",
         monthView: "Mois",
-        weekView: "Tableau semaine",
-        weekTable: "Tableau semaine",
+        weekView: "Vue hebdomadaire",
+        weekTable: "Vue hebdomadaire",
         weekCount_one: "{{count}} chien",
         weekCount_other: "{{count}} chiens",
-        weekEmpty: "Aucune promenade prevue",
+        weekEmpty: "Aucune promenade prévue",
         weekMore_one: "+{{count}} promenade de plus",
         weekMore_other: "+{{count}} promenades de plus",
         newAppointment: "Nouveau rendez-vous",
         agenda: "Agenda",
-        emptyTitle: "Aucune entree pour ce jour",
+        emptyTitle: "Aucune entrée pour ce jour",
         emptyDescription:
-          "Ajoutez un rendez-vous a cette date et il apparaitra ici sous forme de fiche chien.",
+          "Ajoutez un rendez-vous à cette date et il apparaîtra ici sous forme de fiche chien.",
       },
       welcome: {
         eyebrow: "Canilendar",
-        title: "Promenades calmes, journees fluides, zero chaos.",
+        title: "Promenades calmes, journées fluides, zéro chaos.",
         description:
-          "Connectez-vous avec Apple pour debloquer l agenda qui aide les promeneurs de chiens a rester a l heure, eviter la surcharge et garder les journees clients sous controle.",
+          "Connectez-vous avec Apple pour débloquer l’agenda qui aide les dogwalkers à rester à l’heure, éviter les surcharges et garder chaque journée client sous contrôle.",
         valuePointOne:
-          "Enregistrez chaque chien client une fois, puis planifiez les promenades recurrentes en quelques secondes.",
+          "Enregistrez chaque chien client une seule fois, puis planifiez les promenades récurrentes en quelques secondes.",
         valuePointTwo:
-          "Retrouvez les prises en charge, les rendez-vous recurrents et la capacite restante dans un seul agenda de travail.",
+          "Retrouvez les prises en charge, les rendez-vous récurrents et la capacité restante dans un seul agenda de travail.",
         valuePointThree:
-          "Gardez l administratif leger pendant que votre tournee grandit avec Pro et ses chiens et rendez-vous illimites.",
+          "Gardez l’administratif léger pendant que votre tournée se développe avec Pro et ses chiens et rendez-vous illimités.",
         appleUnavailable:
-          "La connexion Apple necessite une build iPhone ou iPad de developpement.",
+          "La connexion Apple nécessite une build iPhone ou iPad de développement.",
         signInErrorTitle: "Echec de la connexion Apple",
         footer:
-          "Vos rendez-vous restent sur cet appareil en v1, et vos achats restent lies a votre connexion Apple.",
+          "Vos rendez-vous restent sur cet appareil en v1 et vos achats restent liés à votre connexion Apple.",
       },
       appointment: {
         screenTitleNew: "Nouveau rendez-vous",
         screenTitleEdit: "Modifier le rendez-vous",
-        eyebrow: "Details de planification",
+        eyebrow: "Détails de planification",
         titleNew: "Nouveau rendez-vous",
         titleEdit: "Modifier le rendez-vous",
         description:
-          "Rassemblez le chien, les details de prise en charge, l heure, la recurrence et le rappel au meme endroit.",
+          "Rassemblez le chien, les détails de prise en charge, l’heure, la récurrence et le rappel au même endroit.",
         dogDetails: "Details du chien",
-        savedDog: "Chien enregistre",
+        savedDog: "Chien enregistré",
         newDog: "Nouveau chien",
         noSavedDogs:
-          'Aucun chien enregistre pour le moment. Passez a "Nouveau chien" pour creer le premier profil.',
+          'Aucun chien enregistré pour le moment. Passez à "Nouveau chien" pour créer le premier profil.',
         savedDogsHelp:
-          "Choisissez un chien enregistre. L'adresse, le telephone du proprietaire et les notes affiches sur chaque fiche appartiennent a ce profil.",
+          "Choisissez un chien enregistré. L’adresse, le téléphone du propriétaire et les notes affichés sur chaque fiche appartiennent à ce profil.",
         dogName: "Nom du chien",
         pickupAddress: "Adresse de prise en charge",
-        ownerPhone: "Telephone du proprietaire",
+        ownerPhone: "Téléphone du propriétaire",
         dogNotes: "Notes sur le chien",
         pickupTimeEnabled:
-          "Ajoute une heure de prise en charge precise et active les rappels.",
+          "Ajoute une heure de prise en charge précise et active les rappels.",
         pickupTimeDisabled:
-          "Desactive par defaut. Cette promenade reste dans le plan du jour sans rappel horaire.",
-        repeatWeekly: "Repeter chaque semaine",
-        recurringOn: "S affiche a chaque jour selectionne.",
+          "Désactivé par défaut. Cette promenade reste dans le planning du jour sans rappel horaire.",
+        repeatWeekly: "Répéter chaque semaine",
+        recurringOn: "S’affiche à chaque jour sélectionné.",
         oneTime: "Reste un rendez-vous unique.",
-        reminderLeadTime: "Delai du rappel",
+        reminderLeadTime: "Délai du rappel",
         reminderDisabled:
-          "Activez l heure de prise en charge pour envoyer un rappel avant la promenade.",
-        noPickupTime: "Pas d heure de prise en charge",
+          "Activez l’heure de prise en charge si vous voulez un rappel avant la promenade.",
+        noPickupTime: "Pas d’heure de prise en charge",
         appointmentNotes: "Notes du rendez-vous",
         reminderPreview:
-          "Heure du rappel : {{time}} avec {{count}} minutes d avance.",
+          "Heure du rappel : {{time}} avec {{count}} minutes d’avance.",
         saveChanges: "Enregistrer les modifications",
-        createAppointment: "Creer le rendez-vous",
+        createAppointment: "Créer le rendez-vous",
         deleteAppointment: "Supprimer le rendez-vous",
         placeholders: {
           dogName: "Milo",
           pickupAddress: "12 rue des Abois",
           ownerPhone: "+33 1 23 45 67 89",
-          dogNotes: "Code du portail, collier, rappel alimentation...",
+          dogNotes: "Code du portail, consigne pour le collier, rappel de repas...",
           appointmentNotes:
-            "Retrouver le proprietaire a l'entree laterale, apporter une serviette supplementaire...",
+            "Retrouver le propriétaire à l’entrée latérale, apporter une serviette supplémentaire...",
         },
         alerts: {
           missingDogDetailsTitle: "Informations du chien manquantes",
           missingDogDetailsBody:
-            "Ajoutez d'abord le nom du chien, l'adresse et le numero du proprietaire.",
+            "Ajoutez d’abord le nom du chien, l’adresse et le numéro du propriétaire.",
           chooseDogTitle: "Choisissez un chien",
           chooseDogBody:
-            "Selectionnez un chien existant ou passez a un nouveau profil.",
-          dayLimitTitle: "Limite journaliere atteinte",
+            "Sélectionnez un chien existant ou passez à un nouveau profil.",
+          dayLimitTitle: "Limite journalière atteinte",
           dayLimitBody:
-            "Cela depasserait votre limite quotidienne de {{limit}} chiens le {{dates}}.",
-          repeatDaysTitle: "Choisissez les jours de repetition",
+            "Cela dépasserait votre limite quotidienne de {{limit}} chiens le {{dates}}.",
+          repeatDaysTitle: "Choisissez les jours de répétition",
           repeatDaysBody:
-            "Selectionnez au moins un jour pour la promenade recurrente.",
-          pastAppointmentTitle: "Rendez-vous passe",
+            "Sélectionnez au moins un jour pour la promenade récurrente.",
+          pastAppointmentTitle: "Rendez-vous passé",
           pastAppointmentBody:
-            "Les nouveaux rendez-vous doivent etre planifies dans le futur.",
+            "Les nouveaux rendez-vous doivent être planifiés dans le futur.",
+          saveFailedTitle: "Impossible d'enregistrer le rendez-vous",
+          saveFailedBody:
+            "Réessayez dans un instant. Si le problème persiste, vérifiez les informations du chien et l'heure choisie.",
           deleteTitle: "Supprimer le rendez-vous ?",
-          deleteBody: "Cela supprime le rendez-vous et ses rappels planifies.",
+          deleteBody: "Cela supprime le rendez-vous et ses rappels planifiés.",
         },
       },
       dogs: {
-        eyebrow: "Profils de chiens enregistres",
+        eyebrow: "Profils de chiens enregistrés",
         title: "Chiens",
         description:
-          "Gardez les details des clients reutilisables pour ajouter des rendez-vous en quelques secondes.",
+          "Gardez les informations client réutilisables pour ajouter des rendez-vous en quelques secondes.",
         photoLabel: "Photo",
         photoHint:
-          "Ajoutez une photo facultative depuis l'appareil photo ou la phototheque.",
+          "Ajoutez une photo facultative depuis l’appareil photo ou la photothèque.",
         addFromCamera: "Prendre une photo",
-        chooseFromLibrary: "Choisir depuis la phototheque",
+        chooseFromLibrary: "Choisir dans la photothèque",
         removePhoto: "Supprimer la photo",
         addDog: "Ajouter un chien",
         editorAddTitle: "Ajouter un profil de chien",
         editorEditTitle: "Modifier le profil du chien",
         notes: "Notes",
-        createDog: "Creer le chien",
+        createDog: "Créer le chien",
         saveChanges: "Enregistrer les modifications",
-        emptyTitle: "Aucun chien enregistre",
+        cancel: "Annuler",
+        emptyTitle: "Aucun chien enregistré",
         emptyDescription:
-          "Ajoutez votre premier chien pour planifier les prochains rendez-vous depuis un profil enregistre.",
+          "Ajoutez votre premier chien pour planifier les prochains rendez-vous depuis un profil enregistré.",
         upcomingAppointments_one: "{{count}} rendez-vous a venir",
         upcomingAppointments_other: "{{count}} rendez-vous a venir",
         alerts: {
           missingDogDetailsTitle: "Informations du chien manquantes",
           missingDogDetailsBody:
-            "Veuillez ajouter un nom, une adresse et un numero de telephone.",
+            "Veuillez ajouter un nom, une adresse et un numéro de téléphone.",
           deleteTitle: "Supprimer {{name}} ?",
           deleteBody:
-            "Cela fonctionne seulement si le chien n a aucun rendez-vous planifie.",
+            "Cela fonctionne uniquement si ce chien n’a aucun rendez-vous planifié.",
           stillScheduledTitle: "Chien encore programme",
           stillScheduledBody:
-            "Retirez ou reattribuez les rendez-vous de ce chien avant de supprimer le profil.",
-          cameraPermissionTitle: "Acces a l'appareil photo requis",
+            "Retirez ou réattribuez les rendez-vous de ce chien avant de supprimer le profil.",
+          cameraPermissionTitle: "Accès à l’appareil photo requis",
           cameraPermissionBody:
-            "Autorisez l'appareil photo si vous voulez prendre une photo pour ce profil de chien.",
-          libraryPermissionTitle: "Acces a la phototheque requis",
+            "Autorisez l’appareil photo si vous voulez prendre une photo pour ce profil de chien.",
+          libraryPermissionTitle: "Accès à la photothèque requis",
           libraryPermissionBody:
-            "Autorisez la phototheque si vous voulez choisir une photo existante du chien.",
+            "Autorisez la photothèque si vous voulez choisir une photo existante du chien.",
           photoProcessingTitle: "Impossible d'utiliser la photo",
           photoProcessingBody:
-            "Essayez une autre photo ou reessayez dans un instant.",
+            "Essayez une autre photo ou réessayez dans un instant.",
         },
         placeholders: {
           dogName: "Milo",
           pickupAddress: "12 rue des Abois",
           ownerPhone: "+33 1 23 45 67 89",
-          notes: "Code du portail, note d alimentation, routine de laisse...",
+          notes: "Code du portail, consigne de repas, routine de laisse...",
+        },
+        search: {
+          label: "Rechercher un chien",
+          placeholder: "Rechercher par nom de chien",
         },
       },
       settings: {
-        eyebrow: "Preferences du planificateur",
-        title: "Reglages",
+        eyebrow: "Préférences du planificateur",
+        title: "Réglages",
         description:
-          "Ajustez la facon dont Canilendar vous rappelle la journee a venir.",
+          "Ajustez la manière dont Canilendar vous rappelle la journée à venir.",
         notifications: "Notifications",
-        notificationsEnabled: "Les rappels locaux sont actives.",
+        notificationsEnabled: "Les rappels locaux sont activés.",
         notificationsDenied:
-          "Les notifications sont bloquees dans les reglages du systeme.",
+          "Les notifications sont bloquées dans les réglages du système.",
         notificationsUnknown:
-          "Canilendar demandera votre autorisation lors de la sauvegarde d un rendez-vous ou si vous activez les rappels.",
+          "Canilendar demandera votre autorisation lors de l’enregistrement d’un rendez-vous ou si vous activez les rappels.",
         enableReminders: "Activer les rappels",
         refreshStatus: "Actualiser le statut",
         refreshingStatus: "Actualisation...",
-        openSystemSettings: "Ouvrir les reglages systeme",
-        dailySummary: "Resume quotidien",
+        openSystemSettings: "Ouvrir les réglages système",
+        dailySummary: "Résumé quotidien",
         dailySummaryDescription:
           "Un rappel chaque matin avec les rendez-vous du jour.",
-        summaryTime: "Heure du resume",
+        summaryTime: "Heure du résumé",
         language: "Langue",
         languageDescription:
-          "Choisissez une langue fixe ou utilisez la langue de votre telephone. Les langues non prises en charge reviennent a l'anglais.",
+          "Choisissez une langue fixe ou utilisez la langue de votre téléphone. Les langues non prises en charge reviennent à l’anglais.",
         languageCurrent:
-          "Langue de l'appareil : {{language}}. Langue actuelle de l'application : {{currentLanguage}}.",
+          "Langue de l’appareil : {{language}}. Langue actuelle de l’application : {{currentLanguage}}.",
         appearance: "Apparence",
         appearanceSystem:
-          "Canilendar suit l'apparence definie sur votre appareil.",
+          "Canilendar suit l’apparence définie sur votre appareil.",
         appearanceLight: "Canilendar reste toujours en mode clair.",
         appearanceDark: "Canilendar reste toujours en mode sombre.",
-        defaultReminder: "Rappel par defaut de l'evenement",
+        defaultReminder: "Rappel par défaut de l’événement",
         defaultReminderDescription:
-          "Les nouveaux rendez-vous commencent avec ce delai de rappel. Vous pouvez le remplacer pour chaque rendez-vous.",
+          "Les nouveaux rendez-vous commencent avec ce délai de rappel. Vous pouvez le modifier pour chaque rendez-vous.",
         dailyAppointmentLimit: "Rendez-vous par jour",
         dailyAppointmentLimitDescription:
-          "Limitez chaque jour a {{count}} rendez-vous chien. Vous pouvez aller jusqu'a 15.",
+          "Limitez chaque jour à {{count}} rendez-vous chien. Vous pouvez aller jusqu’à 15.",
         account: {
           title: "Compte",
           description:
-            "La connexion Apple debloque votre agenda et lie les achats a la meme identite dans RevenueCat.",
-          signedInAs: "Connecte en tant que {{value}}",
-          revenueCatReference: "Reference RevenueCat : {{value}}",
+            "La connexion Apple débloque votre agenda et relie les achats à la même identité dans RevenueCat.",
+          signedInAs: "Connecté en tant que {{value}}",
+          revenueCatReference: "Référence RevenueCat : {{value}}",
           signOut: "Se deconnecter",
           signOutTitle: "Se deconnecter ?",
           signOutBody:
-            "Vous pourrez vous reconnecter avec Apple a tout moment. Vos donnees locales restent associees a ce compte Apple sur cet appareil.",
+            "Vous pourrez vous reconnecter avec Apple à tout moment. Vos données locales restent associées à ce compte Apple sur cet appareil.",
           deleteAction: "Supprimer le compte",
           deleteTitle: "Supprimer le compte ?",
           deleteBody:
-            "Cela supprime vos donnees locales, efface la session Apple sur cet appareil et annule les rappels planifies. Apple et RevenueCat peuvent toutefois conserver des justificatifs d'achat pour la facturation, la prevention de la fraude ou des obligations legales.",
+            "Cela supprime vos données locales, efface la session Apple sur cet appareil et annule les rappels planifiés. Apple et RevenueCat peuvent toutefois conserver des justificatifs d’achat pour la facturation, la prévention de la fraude ou des obligations légales.",
           deletingAccount: "Suppression du compte...",
-          deleteFailedTitle: "Echec de la suppression du compte",
-          deleteSuccessTitle: "Compte supprime",
+          deleteFailedTitle: "Échec de la suppression du compte",
+          deleteSuccessTitle: "Compte supprimé",
           deleteSuccessBody:
-            "Canilendar a supprime les donnees locales du compte sur cet appareil. Si un abonnement est encore actif, gerez-le ou annulez-le dans les reglages d'abonnement Apple.",
-          manageSubscription: "Gerer l'abonnement",
+            "Canilendar a supprimé les données locales du compte sur cet appareil. Si un abonnement est encore actif, gérez-le ou annulez-le dans les réglages d’abonnement Apple.",
+          manageSubscription: "Gérer l’abonnement",
         },
         pro: {
           title: "Canilendar Pro",
@@ -993,119 +1026,118 @@ const resources = {
             "Passez a la version Pro seulement quand vous avez besoin de plus que le premier chien et rendez-vous gratuits.",
           active: "Canilendar Pro est actif.",
           unavailable:
-            "Les achats ne sont pas encore configures dans cette version.",
+            "Les achats ne sont pas encore configurés dans cette version.",
           freeTier:
-            "Vous utilisez l'offre gratuite avec 1 chien et 1 rendez-vous inclus.",
+            "Vous utilisez l’offre gratuite avec 1 chien et 1 rendez-vous inclus.",
           upgrade: "Passer a Pro",
           restore: "Restaurer les achats",
           restoring: "Restauration...",
-          restoreFailedTitle: "Echec de la restauration",
-          restoreSuccessTitle: "Restauration terminee",
-          restoreSuccessBody: "Le statut de votre abonnement a ete actualise.",
+          restoreFailedTitle: "Échec de la restauration",
+          restoreSuccessTitle: "Restauration terminée",
+          restoreSuccessBody: "Le statut de votre abonnement a été actualisé.",
           customerCenter: "Ouvrir le Customer Center",
           customerCenterTitle: "Customer Center",
           currentOffering:
-            "Offre actuelle : {{identifier}} avec {{count}} options de forfait.",
+            "Offre actuelle : {{identifier}} avec {{count}} options de formule.",
           expoGo:
-            "Cette version fonctionne en mode apercu Expo Go. Utilisez `npx expo run:ios` pour tester les vrais achats RevenueCat, les restaurations et le Customer Center.",
+            "Cette version fonctionne en mode aperçu Expo Go. Utilisez `npx expo run:ios` pour tester les vrais achats RevenueCat, les restaurations et le Customer Center.",
           hostedUi:
-            "L'interface Paywall hebergee de RevenueCat et le Customer Center necessitent une build iOS de developpement ou de production. Ils ne sont pas disponibles dans Expo Go.",
+            "L’interface Paywall hébergée de RevenueCat et le Customer Center nécessitent une build iOS de développement ou de production. Ils ne sont pas disponibles dans Expo Go.",
         },
         devReset: {
-          title: "Reinitialiser les donnees locales ?",
-          body: "Cette action DEV supprime tous les chiens, rendez-vous, reglages et la progression d'onboarding enregistres sur ce simulateur.",
-          button: "Reinitialiser les donnees locales",
-          confirm: "Reinitialiser",
+          title: "Réinitialiser les données locales ?",
+          body: "Cette action DEV supprime tous les chiens, rendez-vous, réglages et la progression d’onboarding enregistrés sur ce simulateur.",
+          button: "Réinitialiser les données locales",
+          confirm: "Réinitialiser",
         },
         devTools: {
           title: "Outils DEV",
           description:
-            "Declenchez une notification locale de test ou effacez les donnees enregistrees localement sur ce simulateur ou appareil.",
+            "Déclenchez une notification locale de test ou effacez les données enregistrées localement sur ce simulateur ou appareil.",
           showNotification: "Afficher la notification",
           showNotificationLoading: "Affichage de la notification...",
-          showSplash: "Afficher l'ecran de lancement",
+          showSplash: "Afficher l’écran de lancement",
         },
         storage: "Stockage",
         storageDescription:
-          "Les rendez-vous, chiens et preferences de rappel sont stockes uniquement sur cet appareil dans v1.",
+          "Les rendez-vous, les chiens et les préférences de rappel sont stockés uniquement sur cet appareil dans v1.",
         alerts: {
-          notificationsOffTitle: "Les notifications sont desactivees",
+          notificationsOffTitle: "Les notifications sont désactivées",
           notificationsOffBody:
-            "Ouvrez les reglages systeme de Canilendar si vous voulez des bannieres de rappel et des resumes quotidiens.",
+            "Ouvrez les réglages système de Canilendar si vous voulez des bannières de rappel et des résumés quotidiens.",
         },
       },
       legal: {
-        sectionTitle: "Mentions legales",
+        sectionTitle: "Mentions légales",
         sectionDescription:
-          "Gardez les mentions legales, la politique de confidentialite et la suppression du compte accessibles a tout moment.",
-        imprintEyebrow: "Mentions legales",
-        imprintTitle: "Mentions legales",
+          "Gardez les mentions légales, la politique de confidentialité et la suppression du compte accessibles à tout moment.",
+        imprintEyebrow: "Mentions légales",
+        imprintTitle: "Mentions légales",
         imprintDescription:
-          "Informations sur l'editeur et les moyens de contact de Canilendar.",
-        privacyEyebrow: "Confidentialite",
-        privacyTitle: "Politique de confidentialite",
+          "Informations sur l’éditeur et les moyens de contact de Canilendar.",
+        privacyEyebrow: "Confidentialité",
+        privacyTitle: "Politique de confidentialité",
         privacyDescription:
-          "Comment Canilendar traite les donnees de compte, d'abonnement, de rappel et d'agenda.",
-        openHostedAction: "Ouvrir la version hebergee",
-        privacyChoicesAction: "Choix de confidentialite",
+          "Comment Canilendar traite les données de compte, d’abonnement, de rappel et d’agenda.",
+        openHostedAction: "Ouvrir la version hébergée",
+        privacyChoicesAction: "Choix de confidentialité",
         emailAction: "Contacter le service legal",
         emailUnavailableTitle: "Impossible d'ouvrir l'e-mail",
         emailUnavailableBody:
-          "Aucune application e-mail n'est configuree sur cet appareil. Ecrivez-nous a {{email}}.",
+          "Aucune application e-mail n’est configurée sur cet appareil. Écrivez-nous à {{email}}.",
         cookieBannerNote:
-          "La version native iOS actuelle n'affiche pas de banniere cookies generique car aucun tracker marketing ou analytique optionnel n'est actif.",
+          "La version native iOS actuelle n’affiche pas de bannière cookies générique car aucun tracker marketing ou analytique optionnel n’est actif.",
       },
       onboarding: {
         appointment: {
           eyebrow: "Premier rendez-vous",
-          title: "Ajoutez la premiere promenade au calendrier",
+          title: "Ajoutez la première promenade au calendrier",
           descriptionWithDog:
-            "{{name}} sera repris depuis le profil que vous venez d'enregistrer.",
+            "{{name}} sera repris depuis le profil que vous venez d’enregistrer.",
           descriptionWithoutDog:
-            "Nous associerons ce rendez-vous au chien que vous venez d'ajouter.",
+            "Nous associerons ce rendez-vous au chien que vous venez d’ajouter.",
           missingDogTitle: "Chien manquant",
-          missingDogBody: "Creez d'abord le profil du chien.",
+          missingDogBody: "Créez d’abord le profil du chien.",
           pickupTimeEnabled:
-            "Une heure de prise en charge precise est activee pour cette promenade.",
+            "Une heure de prise en charge précise est activée pour cette promenade.",
           pickupTimeDisabled:
-            "Laissez cette option desactivee si la prise en charge se fait dans la matinee.",
+            "Laissez cette option désactivée si la prise en charge se fait dans la matinée.",
           oneTime: "Le premier rendez-vous reste une promenade unique.",
           reminderDisabled:
-            "Aucun rappel lie a l'heure ne sera planifie tant que vous n'aurez pas active une heure.",
+            "Aucun rappel lié à l’heure ne sera planifié tant que vous n’aurez pas activé une heure.",
           save: "Enregistrer le rendez-vous",
           pastAppointmentBody:
-            "Le premier rendez-vous doit etre prevu dans le futur.",
+            "Le premier rendez-vous doit être prévu dans le futur.",
         },
         reminders: {
           eyebrow: "Rappels",
-          title: "Activez les notifications quand vous etes pret",
+          title: "Activez les notifications quand vous êtes prêt",
           description:
-            "Votre premier chien et votre premier rendez-vous sont deja enregistres, donc activer les rappels maintenant est deja utile.",
-          deniedTitle: "Les notifications sont desactivees",
+            "Votre premier chien et votre premier rendez-vous sont déjà enregistrés. Activer les rappels maintenant apporte donc une valeur immédiate.",
+          deniedTitle: "Les notifications sont désactivées",
           deniedBody:
-            "Vous pouvez quand meme terminer la configuration maintenant et activer les rappels plus tard dans les reglages.",
+            "Vous pouvez quand même terminer la configuration maintenant et activer les rappels plus tard dans les réglages.",
           appointmentAlertsTitle: "Alertes de rendez-vous",
-          appointmentAlertsBody:
-            "Recevez un rappel avant l'heure de prise en charge.",
-          dailySummaryTitle: "Resume quotidien",
+          appointmentAlertsBody: "Recevez un rappel avant l’heure de prise en charge.",
+          dailySummaryTitle: "Résumé quotidien",
           dailySummaryBody:
-            "Voyez la journee a venir avec un seul rappel matinal.",
-          maybeLater: "Peut-etre plus tard",
+            "Préparez la journée à venir avec un seul rappel matinal.",
+          maybeLater: "Peut-être plus tard",
         },
       },
       notifications: {
         openAppointment: "Ouvrir le rendez-vous",
         openAgenda: "Ouvrir l'agenda",
         channelName: "Rendez-vous",
-        appointmentSubtitle: "Rendez-vous a {{time}}",
+        appointmentSubtitle: "Rendez-vous à {{time}}",
         reminderPrefix: "Rappel {{offset}}",
         todayTitle: "Aujourd'hui dans Canilendar",
         noAppointmentsToday:
-          "Vous n'avez aucun rendez-vous canin prevu aujourd'hui.",
+          "Vous n’avez aucun rendez-vous canin prévu aujourd’hui.",
         devTestTitle: "Milo",
         devTestSubtitle: "Rendez-vous a 09:00",
         devTestBody:
-          "12 rue des Abois • Rappel 30 minutes avant • Retrouver le proprietaire a l'entree laterale.",
+          "12 rue des Abois • Rappel 30 minutes avant • Retrouver le propriétaire à l’entrée latérale.",
         summarySubtitle_one: "{{date}} • {{count}} rendez-vous",
         summarySubtitle_other: "{{date}} • {{count}} rendez-vous",
         summaryMore_one: "{{headline}} • +{{count}} autre",
@@ -1122,19 +1154,22 @@ const resources = {
         beforeHours_other: "{{count}} heures avant",
         beforeHoursMinutes: "{{hours}} h {{minutes}} min avant",
       },
+      dog: {
+        selected: "Sélectionné",
+      },
       dogCard: {
-        selected: "Selectionne",
-        savedDog: "Chien enregistre",
+        selected: "Sélectionné",
+        savedDog: "Chien enregistré",
         pickup: "Prise en charge : {{value}}",
-        owner: "Proprietaire : {{value}}",
+        owner: "Propriétaire : {{value}}",
         notes: "Notes : {{value}}",
         noNotes: "Aucune note supplementaire enregistree pour ce chien.",
       },
       languages: {
         en: "English",
         de: "Deutsch",
-        fr: "Francais",
-        es: "Espanol",
+        fr: "Français",
+        es: "Español",
       },
     },
   },
@@ -1147,6 +1182,7 @@ const resources = {
       },
       common: {
         cancel: "Cancelar",
+        closeKeyboard: "Cerrar teclado",
         delete: "Eliminar",
         edit: "Editar",
         enabled: "Activo",
@@ -1262,6 +1298,9 @@ const resources = {
           pastAppointmentTitle: "Cita pasada",
           pastAppointmentBody:
             "Las nuevas citas deben programarse en el futuro.",
+          saveFailedTitle: "No se pudo guardar la cita",
+          saveFailedBody:
+            "Vuelve a intentarlo en un momento. Si el problema continúa, revisa los datos del perro y la hora seleccionada.",
           deleteTitle: "Eliminar cita?",
           deleteBody: "Esto elimina la cita y sus recordatorios programados.",
         },
@@ -1283,6 +1322,7 @@ const resources = {
         notes: "Notas",
         createDog: "Crear perro",
         saveChanges: "Guardar cambios",
+        cancel: "Cancelar",
         emptyTitle: "Todavia no hay perros guardados",
         emptyDescription:
           "Agrega tu primer perro para programar futuras citas desde un perfil guardado.",
@@ -1313,6 +1353,10 @@ const resources = {
           pickupAddress: "Calle Ladrido 12",
           ownerPhone: "+34 612 345 678",
           notes: "Codigo de puerta, nota de comida, rutina de correa...",
+        },
+        search: {
+          label: "Buscar perros",
+          placeholder: "Buscar por nombre del perro",
         },
       },
       settings: {
@@ -1500,6 +1544,9 @@ const resources = {
         beforeHours_one: "{{count}} hora antes",
         beforeHours_other: "{{count}} horas antes",
         beforeHoursMinutes: "{{hours}} h {{minutes}} min antes",
+      },
+      dog: {
+        selected: "Seleccionado",
       },
       dogCard: {
         selected: "Seleccionado",
