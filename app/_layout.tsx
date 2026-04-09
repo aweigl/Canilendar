@@ -76,7 +76,13 @@ function AppStack() {
         name="debug/apple-signin-preview"
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          headerShown: false,
+          title: t("settings.title"),
+        }}
+      />
       <Stack.Screen
         name="appointment"
         options={{
