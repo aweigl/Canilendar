@@ -45,8 +45,8 @@ const DOG_SEEDS: DogSeed[] = [
     notes: "Can stay off leash in enclosed areas.",
   },
   {
-    id: "dog_milo",
-    name: "Milo",
+    id: "dog_Eddi",
+    name: "Eddi",
     address: "Reichenberger Str. 89, 10999 Berlin",
     ownerPhone: "+49 151 23456784",
     notes: "Needs medication reminder in the evening.",
@@ -97,10 +97,13 @@ function buildDogs(timestamp: string): DogProfile[] {
   }));
 }
 
-function buildAppointments(dogs: DogProfile[], timestamp: string): Appointment[] {
+function buildAppointments(
+  dogs: DogProfile[],
+  timestamp: string,
+): Appointment[] {
   const today = startOfDay(new Date());
 
-  const [bella, bruno, luna, milo, emma, rocky, nala, otto] = dogs;
+  const [bella, bruno, luna, Eddi, emma, rocky, nala, otto] = dogs;
 
   return [
     {
@@ -147,7 +150,7 @@ function buildAppointments(dogs: DogProfile[], timestamp: string): Appointment[]
     },
     {
       id: "appt_04",
-      dogId: milo.id,
+      dogId: Eddi.id,
       startAt: atLocalTime(today, 12, 0).toISOString(),
       hasPickupTime: true,
       endAt: atLocalTime(today, 12, 45).toISOString(),
@@ -259,7 +262,7 @@ function buildAppointments(dogs: DogProfile[], timestamp: string): Appointment[]
     },
     {
       id: "appt_12",
-      dogId: milo.id,
+      dogId: Eddi.id,
       startAt: atLocalTime(addDays(today, 5), 18, 0).toISOString(),
       hasPickupTime: true,
       endAt: atLocalTime(addDays(today, 5), 18, 40).toISOString(),

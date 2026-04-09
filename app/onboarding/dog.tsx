@@ -7,7 +7,7 @@ import { Alert, StyleSheet } from "react-native";
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedView } from "@/components/themed-view";
 import { AppButton } from "@/components/ui/app-button";
-import { DogAvatar } from "@/components/ui/dog-avatar";
+import { DogPhotoUploader } from "@/components/ui/dog-photo-uploader";
 import { InputField } from "@/components/ui/input-field";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useCanilendar } from "@/context/canilendar-context";
@@ -37,6 +37,7 @@ export default function OnboardingDogScreen() {
   );
   const [photoBusy, setPhotoBusy] = useState(false);
   const isEditing = useMemo(() => Boolean(seededDog), [seededDog]);
+  const [isFormVisible, setIsFormVisible] = useState(Boolean(seededDog));
   const originalPhotoUriRef = useRef<string | null>(
     seededDog?.photoUri ?? null,
   );
@@ -46,6 +47,9 @@ export default function OnboardingDogScreen() {
     originalPhotoUriRef.current = seededDog?.photoUri ?? null;
     latestPhotoUriRef.current = seededDog?.photoUri ?? null;
     setPhotoUri(seededDog?.photoUri ?? null);
+    if (seededDog?.id) {
+      setIsFormVisible(true);
+    }
   }, [seededDog?.id, seededDog?.photoUri]);
 
   useEffect(() => {
@@ -144,95 +148,99 @@ export default function OnboardingDogScreen() {
     router.push("/onboarding/appointment");
   }
 
+  function handlePrimaryAction() {
+    if (!isFormVisible) {
+      setIsFormVisible(true);
+      return;
+    }
+
+    handleContinue();
+  }
+
   return (
     <OnboardingShell
       step={2}
       totalSteps={5}
       eyebrow="First dog"
-      title="Save your first dog profile."
-      description="This becomes the profile you can reuse in future appointments from the Dogs tab."
+      title="Add your first dog."
+      description="A reusable profile for every future walk."
+      heroIcon="dog.plus"
+      heroTone="support"
+      illustration="dog"
+      footer={
+        <AppButton
+          label={
+            isFormVisible
+              ? isEditing
+                ? "Save and continue"
+                : "Create dog"
+              : "Create dog"
+          }
+          onPress={handlePrimaryAction}
+          icon="pawprint.fill"
+        />
+      }
     >
-      <ThemedView
-        style={[
-          styles.card,
-          { backgroundColor: palette.surface, borderColor: palette.border },
-        ]}
-      >
+      {isFormVisible ? (
         <ThemedView
           style={[
-            styles.photoCard,
+            styles.card,
             {
-              backgroundColor: palette.surfaceRaised,
+              backgroundColor: palette.surface,
               borderColor: palette.border,
             },
           ]}
         >
-          <DogAvatar
-            name={name.trim() || t("appointment.dogName")}
-            photoUri={photoUri}
-            size={96}
-          />
-          <AppButton
-            disabled={photoBusy}
-            icon="camera.fill"
-            label={t("dogs.addFromCamera")}
-            onPress={() => {
-              handlePickPhoto("camera");
-            }}
-            variant="secondary"
-          />
-          <AppButton
-            disabled={photoBusy}
-            icon="photo.fill"
-            label={t("dogs.chooseFromLibrary")}
-            onPress={() => {
-              handlePickPhoto("library");
-            }}
-            variant="secondary"
-          />
-          {photoUri ? (
-            <AppButton
-              disabled={photoBusy}
-              icon="cancel.fill.circle"
-              label={t("dogs.removePhoto")}
-              onPress={handleRemovePhoto}
-              variant="ghost"
+          <ThemedView
+            style={[
+              styles.photoCard,
+              {
+                backgroundColor: palette.surfaceRaised,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <DogPhotoUploader
+              busy={photoBusy}
+              name={name}
+              onPickFromCamera={() => {
+                handlePickPhoto("camera");
+              }}
+              onPickFromLibrary={() => {
+                handlePickPhoto("library");
+              }}
+              onRemove={handleRemovePhoto}
+              photoUri={photoUri}
             />
-          ) : null}
+          </ThemedView>
+          <InputField
+            label="Dog name"
+            onChangeText={setName}
+            placeholder="Eddi"
+            value={name}
+          />
+          <InputField
+            label="Pickup address"
+            onChangeText={setAddress}
+            placeholder="12 Bark Street"
+            value={address}
+          />
+          <InputField
+            keyboardType="phone-pad"
+            label="Owner phone"
+            onChangeText={setOwnerPhone}
+            placeholder="+49 123 456 789"
+            value={ownerPhone}
+          />
+          <InputField
+            label="Notes"
+            multiline
+            onChangeText={setNotes}
+            placeholder="Gate code, leash note, feeding routine..."
+            value={notes}
+          />
         </ThemedView>
-        <InputField
-          label="Dog name"
-          onChangeText={setName}
-          placeholder="Milo"
-          value={name}
-        />
-        <InputField
-          label="Pickup address"
-          onChangeText={setAddress}
-          placeholder="12 Bark Street"
-          value={address}
-        />
-        <InputField
-          keyboardType="phone-pad"
-          label="Owner phone"
-          onChangeText={setOwnerPhone}
-          placeholder="+49 123 456 789"
-          value={ownerPhone}
-        />
-        <InputField
-          label="Notes"
-          multiline
-          onChangeText={setNotes}
-          placeholder="Gate code, leash note, feeding routine..."
-          value={notes}
-        />
-      </ThemedView>
-
-      <AppButton
-        label={isEditing ? "Save and continue" : "Create dog"}
-        onPress={handleContinue}
-        icon="pawprint.fill"
-      />
+      ) : null}
     </OnboardingShell>
   );
 }
@@ -245,10 +253,8 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   photoCard: {
-    alignItems: "stretch",
     borderRadius: Radius.controlLarge,
     borderWidth: 1,
-    gap: Spacing.sm,
     padding: Spacing.md,
   },
 });

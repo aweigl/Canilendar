@@ -24,6 +24,7 @@ import { PostHogProvider } from "posthog-react-native";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import "react-native-reanimated";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { TamaguiProvider } from "tamagui";
 
 import { LoadingView } from "@/components/loading-view";
@@ -73,6 +74,10 @@ function AppStack() {
       />
       <Stack.Screen
         name="onboarding/success"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="debug/apple-signin-preview"
         options={{ headerShown: false }}
       />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -244,9 +249,11 @@ export default function RootLayout() {
         },
       }}
     >
-      <AppSessionProvider>
-        <AppProviders />
-      </AppSessionProvider>
+      <SafeAreaProvider>
+        <AppSessionProvider>
+          <AppProviders />
+        </AppSessionProvider>
+      </SafeAreaProvider>
     </PostHogProvider>
   );
 }

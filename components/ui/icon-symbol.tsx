@@ -2,12 +2,15 @@ import {
   Apple,
   ArrowLeftCircle,
   ArrowRightCircle,
+  BadgeCheck,
   BellRing,
+  Bone,
   CalendarDays,
   CalendarPlus,
   Camera,
   ChevronRight,
   CirclePlus,
+  CircleStar,
   CircleX,
   CreditCard,
   Crown,
@@ -16,8 +19,10 @@ import {
   Lock,
   Mail,
   PawPrint,
+  PartyPopper,
   Send,
   Settings,
+  Sparkles,
   SquarePen,
   SquareStack,
   Trash2,
@@ -58,7 +63,12 @@ export type IconSymbolName =
   | "user.plus"
   | "camera.fill"
   | "photo.fill"
-  | "square.stack.3d.up.fill";
+  | "square.stack.3d.up.fill"
+  | "sparkles"
+  | "bone.fill"
+  | "badge.check.fill"
+  | "party.popper.fill"
+  | "star.circle.fill";
 
 type IconWeight = "regular" | "medium" | "semibold" | "bold";
 
@@ -91,6 +101,11 @@ const MAPPING = {
   "camera.fill": Camera,
   "photo.fill": Images,
   "square.stack.3d.up.fill": SquareStack,
+  sparkles: Sparkles,
+  "bone.fill": Bone,
+  "badge.check.fill": BadgeCheck,
+  "party.popper.fill": PartyPopper,
+  "star.circle.fill": CircleStar,
 } as IconMapping;
 
 const STROKE_WIDTH_BY_WEIGHT: Record<IconWeight, number> = {

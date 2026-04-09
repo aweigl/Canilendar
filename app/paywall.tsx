@@ -71,14 +71,6 @@ export default function PaywallScreen() {
             },
           ]}
         >
-          <ThemedText
-            type="eyebrow"
-            lightColor={palette.accent}
-            darkColor={palette.accent}
-            style={styles.marginTopBottom}
-          >
-            Canilendar Pro
-          </ThemedText>
           <ThemedText type="title" style={styles.marginTopBottom}>
             {getHeroTitle(activeTrigger, selectedIntroOfferLabel)}
           </ThemedText>

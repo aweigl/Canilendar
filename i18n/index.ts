@@ -105,7 +105,7 @@ const resources = {
         createAppointment: "Create appointment",
         deleteAppointment: "Delete appointment",
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "12 Bark Street",
           ownerPhone: "+49 123 456 789",
           dogNotes: "Gate code, collar note, feeding reminder...",
@@ -174,11 +174,10 @@ const resources = {
           libraryPermissionBody:
             "Allow photo-library access if you want to choose an existing dog photo.",
           photoProcessingTitle: "Could not use photo",
-          photoProcessingBody:
-            "Try another photo or try again in a moment.",
+          photoProcessingBody: "Try another photo or try again in a moment.",
         },
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "12 Bark Street",
           ownerPhone: "+49 123 456 789",
           notes: "Gate code, feeding note, leash routine...",
@@ -276,6 +275,12 @@ const resources = {
           button: "Load sample data",
           confirm: "Load",
         },
+        devRestartOnboarding: {
+          title: "Restart onboarding?",
+          body: "This DEV action marks onboarding as incomplete and sends you back to the onboarding flow without clearing your signed-in session or saved dogs and appointments.",
+          button: "Restart onboarding",
+          confirm: "Restart",
+        },
         devTools: {
           title: "DEV Tools",
           description:
@@ -283,6 +288,7 @@ const resources = {
           showNotification: "Show notification",
           showNotificationLoading: "Showing notification...",
           showSplash: "Show splash screen",
+          previewAppleSignIn: "Preview Apple sign-in",
         },
         storage: "Storage",
         storageDescription:
@@ -356,7 +362,7 @@ const resources = {
         reminderPrefix: "Reminder {{offset}}",
         todayTitle: "Today in Canilendar",
         noAppointmentsToday: "You have no dog appointments scheduled today.",
-        devTestTitle: "Milo",
+        devTestTitle: "Eddi",
         devTestSubtitle: "Appointment at 9:00 AM",
         devTestBody:
           "12 Bark Street • Reminder 30 minutes before • Meet owner at side entrance.",
@@ -496,7 +502,7 @@ const resources = {
         createAppointment: "Termin anlegen",
         deleteAppointment: "Termin löschen",
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "Bellenweg 12",
           ownerPhone: "+49 123 456 789",
           dogNotes: "Torcode, Halsband-Hinweis, Futtererinnerung...",
@@ -570,7 +576,7 @@ const resources = {
             "Versuche es mit einem anderen Foto oder probiere es gleich noch einmal.",
         },
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "Bellenweg 12",
           ownerPhone: "+49 123 456 789",
           notes: "Torcode, Futterhinweis, Leinenroutine...",
@@ -670,6 +676,12 @@ const resources = {
           button: "Beispieldaten laden",
           confirm: "Laden",
         },
+        devRestartOnboarding: {
+          title: "Onboarding neu starten?",
+          body: "Diese DEV-Aktion markiert das Onboarding wieder als unvollständig und bringt dich zurück in den Onboarding-Flow, ohne deine Anmeldung oder gespeicherte Hunde und Termine zu löschen.",
+          button: "Onboarding neu starten",
+          confirm: "Neu starten",
+        },
         devTools: {
           title: "DEV-Werkzeuge",
           description:
@@ -677,6 +689,7 @@ const resources = {
           showNotification: "Benachrichtigung zeigen",
           showNotificationLoading: "Benachrichtigung wird gezeigt...",
           showSplash: "Splash Screen zeigen",
+          previewAppleSignIn: "Apple-Anmeldung ansehen",
         },
         storage: "Speicher",
         storageDescription:
@@ -752,7 +765,7 @@ const resources = {
         reminderPrefix: "Erinnerung {{offset}}",
         todayTitle: "Heute in Canilendar",
         noAppointmentsToday: "Heute sind keine Hundetermine geplant.",
-        devTestTitle: "Milo",
+        devTestTitle: "Eddi",
         devTestSubtitle: "Termin um 09:00",
         devTestBody:
           "Bellenweg 12 • Erinnerung 30 Minuten vorher • Besitzer am Seiteneingang treffen.",
@@ -892,10 +905,11 @@ const resources = {
         createAppointment: "Créer le rendez-vous",
         deleteAppointment: "Supprimer le rendez-vous",
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "12 rue des Abois",
           ownerPhone: "+33 1 23 45 67 89",
-          dogNotes: "Code du portail, consigne pour le collier, rappel de repas...",
+          dogNotes:
+            "Code du portail, consigne pour le collier, rappel de repas...",
           appointmentNotes:
             "Retrouver le propriétaire à l’entrée latérale, apporter une serviette supplémentaire...",
         },
@@ -966,7 +980,7 @@ const resources = {
             "Essayez une autre photo ou réessayez dans un instant.",
         },
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "12 rue des Abois",
           ownerPhone: "+33 1 23 45 67 89",
           notes: "Code du portail, consigne de repas, routine de laisse...",
@@ -1068,6 +1082,12 @@ const resources = {
           button: "Charger les données de démonstration",
           confirm: "Charger",
         },
+        devRestartOnboarding: {
+          title: "Redémarrer l’onboarding ?",
+          body: "Cette action DEV remet l’onboarding à l’état incomplet et te renvoie vers le parcours d’onboarding sans effacer ta session connectée ni tes chiens et rendez-vous enregistrés.",
+          button: "Redémarrer l’onboarding",
+          confirm: "Redémarrer",
+        },
         devTools: {
           title: "Outils DEV",
           description:
@@ -1075,6 +1095,7 @@ const resources = {
           showNotification: "Afficher la notification",
           showNotificationLoading: "Affichage de la notification...",
           showSplash: "Afficher l’écran de lancement",
+          previewAppleSignIn: "Prévisualiser la connexion Apple",
         },
         storage: "Stockage",
         storageDescription:
@@ -1136,7 +1157,8 @@ const resources = {
           deniedBody:
             "Vous pouvez quand même terminer la configuration maintenant et activer les rappels plus tard dans les réglages.",
           appointmentAlertsTitle: "Alertes de rendez-vous",
-          appointmentAlertsBody: "Recevez un rappel avant l’heure de prise en charge.",
+          appointmentAlertsBody:
+            "Recevez un rappel avant l’heure de prise en charge.",
           dailySummaryTitle: "Résumé quotidien",
           dailySummaryBody:
             "Préparez la journée à venir avec un seul rappel matinal.",
@@ -1152,7 +1174,7 @@ const resources = {
         todayTitle: "Aujourd'hui dans Canilendar",
         noAppointmentsToday:
           "Vous n’avez aucun rendez-vous canin prévu aujourd’hui.",
-        devTestTitle: "Milo",
+        devTestTitle: "Eddi",
         devTestSubtitle: "Rendez-vous a 09:00",
         devTestBody:
           "12 rue des Abois • Rappel 30 minutes avant • Retrouver le propriétaire à l’entrée latérale.",
@@ -1292,7 +1314,7 @@ const resources = {
         createAppointment: "Crear cita",
         deleteAppointment: "Eliminar cita",
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "Calle Ladrido 12",
           ownerPhone: "+34 612 345 678",
           dogNotes:
@@ -1367,7 +1389,7 @@ const resources = {
             "Prueba con otra foto o vuelve a intentarlo en un momento.",
         },
         placeholders: {
-          dogName: "Milo",
+          dogName: "Eddi",
           pickupAddress: "Calle Ladrido 12",
           ownerPhone: "+34 612 345 678",
           notes: "Codigo de puerta, nota de comida, rutina de correa...",
@@ -1466,6 +1488,12 @@ const resources = {
           button: "Cargar datos de ejemplo",
           confirm: "Cargar",
         },
+        devRestartOnboarding: {
+          title: "Reiniciar onboarding?",
+          body: "Esta accion DEV marca el onboarding como incompleto y te devuelve al flujo de onboarding sin borrar tu sesion iniciada ni los perros y citas guardados.",
+          button: "Reiniciar onboarding",
+          confirm: "Reiniciar",
+        },
         devTools: {
           title: "Herramientas DEV",
           description:
@@ -1473,6 +1501,7 @@ const resources = {
           showNotification: "Mostrar notificacion",
           showNotificationLoading: "Mostrando notificacion...",
           showSplash: "Mostrar pantalla de inicio",
+          previewAppleSignIn: "Previsualizar inicio con Apple",
         },
         storage: "Almacenamiento",
         storageDescription:
@@ -1549,7 +1578,7 @@ const resources = {
         reminderPrefix: "Recordatorio {{offset}}",
         todayTitle: "Hoy en Canilendar",
         noAppointmentsToday: "No tienes citas de perros programadas para hoy.",
-        devTestTitle: "Milo",
+        devTestTitle: "Eddi",
         devTestSubtitle: "Cita a las 09:00",
         devTestBody:
           "Calle Ladrido 12 • Recordatorio 30 minutos antes • Encontrarse con el propietario en la entrada lateral.",

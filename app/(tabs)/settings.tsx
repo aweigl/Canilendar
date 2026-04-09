@@ -63,6 +63,7 @@ export default function SettingsScreen() {
     notificationPermission,
     requestNotificationPermission,
     resetLocalData,
+    restartOnboarding,
     seedSampleData,
     refreshNotificationPermission,
     settings,
@@ -196,6 +197,23 @@ export default function SettingsScreen() {
         },
       },
     ]);
+  }
+
+  function handleRestartOnboarding() {
+    Alert.alert(
+      t("settings.devRestartOnboarding.title"),
+      t("settings.devRestartOnboarding.body"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("settings.devRestartOnboarding.confirm"),
+          onPress: () => {
+            restartOnboarding();
+            router.replace("/onboarding" as never);
+          },
+        },
+      ],
+    );
   }
 
   function handleSignOut() {
@@ -835,6 +853,18 @@ export default function SettingsScreen() {
               onPress={() => setIsShowingSplashPreview(true)}
               variant="secondary"
               icon="apple.logo"
+            />
+            <AppButton
+              label={t("settings.devTools.previewAppleSignIn")}
+              onPress={() => router.push("/debug/apple-signin-preview")}
+              variant="secondary"
+              icon="apple.logo"
+            />
+            <AppButton
+              label={t("settings.devRestartOnboarding.button")}
+              onPress={handleRestartOnboarding}
+              variant="secondary"
+              icon="sparkles"
             />
             <AppButton
               label={t("settings.devSeed.button")}

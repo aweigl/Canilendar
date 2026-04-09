@@ -79,6 +79,7 @@ type CanilendarContextValue = {
   markChecklistStepSeen: (target: ChecklistTarget) => void;
   dismissHomeChecklist: () => void;
   completeOnboarding: () => void;
+  restartOnboarding: () => void;
   updateReviewPrompt: (partial: Partial<ReviewPromptState>) => void;
   resetLocalData: () => void;
   seedSampleData: () => void;
@@ -420,6 +421,11 @@ export function CanilendarProvider({
     setReviewPrompt(nextState.reviewPrompt);
   }
 
+  function restartOnboarding() {
+    setOnboardingChecklist(DEFAULT_ONBOARDING_CHECKLIST);
+    setReviewPrompt(DEFAULT_REVIEW_PROMPT_STATE);
+  }
+
   function updateReviewPrompt(partial: Partial<ReviewPromptState>) {
     setReviewPrompt((current) => ({
       ...current,
@@ -486,6 +492,7 @@ export function CanilendarProvider({
         markChecklistStepSeen,
         dismissHomeChecklist,
         completeOnboarding,
+        restartOnboarding,
         updateReviewPrompt,
         resetLocalData,
         seedSampleData,
