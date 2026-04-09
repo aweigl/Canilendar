@@ -2,7 +2,6 @@ import { env, getHostedLegalUrl } from "@/lib/env";
 
 export const APPLE_SUBSCRIPTIONS_URL =
   "https://apps.apple.com/account/subscriptions";
-const PLACEHOLDER_PREFIX = "YOUR_";
 
 export const legalProfile = {
   appName: "Canilendar",
@@ -20,21 +19,6 @@ export const legalProfile = {
     "BFDI - Bundesbeauftragte für den Datenschutz und die Informationsfreiheit",
   lastUpdated: "2026-04-05",
 } as const;
-
-function hasPlaceholder(value: string) {
-  return value.startsWith(PLACEHOLDER_PREFIX);
-}
-
-export function legalProfileNeedsAttention() {
-  return [
-    legalProfile.controllerName,
-    legalProfile.streetAddress,
-    legalProfile.postalCode,
-    legalProfile.city,
-    legalProfile.email,
-    legalProfile.supervisoryAuthority,
-  ].some(hasPlaceholder);
-}
 
 export function getImprintUrl() {
   return getHostedLegalUrl(env.imprintUrl);

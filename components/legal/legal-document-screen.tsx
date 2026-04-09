@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   content: {
     gap: Spacing.lg,
     padding: 20,
+    paddingTop: 0,
     paddingBottom: 48,
   },
   hero: {
