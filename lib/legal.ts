@@ -12,7 +12,6 @@ export const legalProfile = {
   city: "Köln",
   country: "Deutschland",
   email: "info@aaron-weigl.de",
-  website: "YOUR_PUBLIC_WEBSITE",
   managingDirector: "",
   commercialRegister: "",
   vatId: "",
@@ -33,7 +32,6 @@ export function legalProfileNeedsAttention() {
     legalProfile.postalCode,
     legalProfile.city,
     legalProfile.email,
-    legalProfile.website,
     legalProfile.supervisoryAuthority,
   ].some(hasPlaceholder);
 }

@@ -17,7 +17,7 @@ export default function ImprintScreen() {
   const imprintUrl = getImprintUrl();
   const warning = legalProfileNeedsAttention()
     ? isGerman
-      ? "Ersetze alle YOUR_* Platzhalter in `lib/legal.ts` und hinterlege eine offentliche HTTPS-URL fur dein Impressum, bevor du die App veroffentlichst."
+      ? "Ersetze alle YOUR_* Platzhalter in `lib/legal.ts` und hinterlege vor der Veröffentlichung eine öffentliche HTTPS-URL für dein Impressum."
       : "Replace every YOUR_* placeholder in `lib/legal.ts` and configure a public HTTPS imprint URL before releasing the app."
     : null;
 
@@ -36,21 +36,19 @@ export default function ImprintScreen() {
             },
             {
               title: "Kontakt",
-              paragraphs: [
-                `E-Mail: ${legalProfile.email}`,
-                `Webseite: ${legalProfile.website}`,
-              ],
+              paragraphs: [`E-Mail: ${legalProfile.email}`],
             },
             {
-              title: "Plattform der EU-Kommission zur Online-Streitbeilegung",
+              title: "Hinweis zur Verbraucherstreitbeilegung",
               paragraphs: [
-                "Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: https://consumer-redress.ec.europa.eu.",
+                "Die frühere EU-Plattform zur Online-Streitbeilegung (ODR-Plattform) wurde zum 20. Juli 2025 eingestellt.",
+                "Informationen zu außergerichtlichen Streitbeilegungsstellen findest du jetzt unter: https://consumer-redress.ec.europa.eu.",
               ],
             },
             {
               title: "Haftung für Inhalte",
               paragraphs: [
-                "Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen App nach den allgemeinen Gesetzen verantwortlich.",
+                "Als Diensteanbieter sind wir nach den allgemeinen gesetzlichen Vorschriften für eigene Inhalte in dieser App verantwortlich.",
               ],
             },
           ]
@@ -66,10 +64,7 @@ export default function ImprintScreen() {
             },
             {
               title: "Contact",
-              paragraphs: [
-                `Email: ${legalProfile.email}`,
-                `Website: ${legalProfile.website}`,
-              ],
+              paragraphs: [`Email: ${legalProfile.email}`],
             },
           ],
     [isGerman],
@@ -109,7 +104,7 @@ export default function ImprintScreen() {
       description={t("legal.imprintDescription")}
       sections={sections}
       warning={warning}
-      warningTitle={isGerman ? "Vor dem Release prufen" : "Before release"}
+      warningTitle={isGerman ? "Vor dem Release prüfen" : "Before release"}
       actions={[
         {
           label: t("legal.emailAction"),

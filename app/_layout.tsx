@@ -47,10 +47,6 @@ import { configureNotificationHandling } from "@/lib/notifications";
 import { posthog } from "@/lib/posthog";
 import tamaguiConfig from "@/tamagui.config";
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
-
 configureNotificationHandling();
 SplashScreen.preventAutoHideAsync().catch(() => {
   // Expo Go / reload paths do not always register a native splash screen.

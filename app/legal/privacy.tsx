@@ -19,7 +19,7 @@ export default function PrivacyScreen() {
   const privacyChoicesUrl = getPrivacyChoicesUrl();
   const warning = legalProfileNeedsAttention()
     ? isGerman
-      ? "Prufe alle Kontaktdaten, die zustandige Aufsichtsbehorde und deine tatsachlichen Verarbeitungen in `lib/legal.ts`, bevor du diese Datenschutzerklarung produktiv nutzt."
+      ? "Prüfe alle Kontaktdaten, die zuständige Aufsichtsbehörde und deine tatsächlichen Verarbeitungsvorgänge in `lib/legal.ts`, bevor du diese Datenschutzerklärung produktiv nutzt."
       : "Review all controller details, the competent authority, and your real processing activities in `lib/legal.ts` before using this privacy policy in production."
     : null;
 
@@ -39,64 +39,64 @@ export default function PrivacyScreen() {
               title: "Welche Daten Canilendar verarbeitet",
               bullets: [
                 "Lokal gespeicherte Planerdaten wie Hundeprofile, Hundefotos, Adressen, Telefonnummern, Terminnotizen, wiederkehrende Termine und Erinnerungseinstellungen.",
-                "Apple-Anmeldedaten: Apple User ID sowie gegebenenfalls E-Mail-Adresse und Name, soweit Apple diese bei der ersten Anmeldung ubermittelt.",
-                "RevenueCat-Abodaten: pseudonyme App User ID, Kaufstatus, Entitlements und Wiederherstellungsinformationen fur In-App-Kaufe.",
-                "Benachrichtigungsstatus und Metadaten fur lokale Erinnerungen auf dem Gerat.",
-                "Kamera- oder Mediathekszugriff nur dann, wenn du freiwillig ein Foto zu einem Hundeprofil hinzufugst.",
+                "Apple-Anmeldedaten: Apple User ID sowie gegebenenfalls E-Mail-Adresse und Name, soweit Apple diese bei der ersten Anmeldung übermittelt.",
+                "RevenueCat-Abodaten: pseudonyme App User ID, Kaufstatus, Entitlements und Wiederherstellungsinformationen für In-App-Käufe.",
+                "Benachrichtigungsstatus und Metadaten für lokale Erinnerungen auf dem Gerät.",
+                "Kamera- oder Mediathekszugriff nur dann, wenn du freiwillig ein Foto zu einem Hundeprofil hinzufügst.",
               ],
             },
             {
               title: "Zwecke und Rechtsgrundlagen",
               bullets: [
-                "Bereitstellung der App und Speicherung deiner Planerdaten auf dem Gerat auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO.",
-                "Durchfuhrung und Wiederherstellung von In-App-Kaufen uber Apple und RevenueCat auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO.",
-                "Lokale Erinnerungen nur, wenn du Benachrichtigungen auf dem Gerat erlaubst; insoweit stutzt sich die Verarbeitung auf deine Einwilligung bzw. Geratefreigabe.",
+                "Bereitstellung der App und Speicherung deiner Planerdaten auf dem Gerät auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO.",
+                "Durchführung und Wiederherstellung von In-App-Käufen über Apple und RevenueCat auf Grundlage von Art. 6 Abs. 1 lit. b DSGVO.",
+                "Lokale Erinnerungen nur, wenn du Benachrichtigungen auf dem Gerät erlaubst; insoweit stützt sich die Verarbeitung auf deine Einwilligung bzw. Gerätefreigabe.",
                 "Aufbewahrung von abrechnungs- und steuerrechtlich erforderlichen Nachweisen auf Grundlage von Art. 6 Abs. 1 lit. c DSGVO.",
               ],
             },
             {
-              title: "Empfanger und Dienstleister",
+              title: "Empfänger und Dienstleister",
               bullets: [
-                "Apple fur Sign in with Apple, App Store Abwicklung und Aboverwaltung.",
-                "RevenueCat als Auftragsverarbeiter fur Abo-Status, Kaufwiederherstellung und Customer Center.",
+                "Apple für Sign in with Apple, App-Store-Abwicklung und Aboverwaltung.",
+                "RevenueCat als Auftragsverarbeiter für Abo-Status, Kaufwiederherstellung und Customer Center.",
                 "Keine Werbe-, Marketing- oder Analyse-SDKs im aktuellen nativen iOS-Build.",
               ],
             },
             {
               title: "Drittlandtransfers",
               paragraphs: [
-                "Soweit Apple oder RevenueCat Daten in Staaten ausserhalb der EU bzw. des EWR verarbeiten, erfolgt dies nur auf Grundlage eines zulassigen Transfermechanismus wie Angemessenheitsbeschluss, Standardvertragsklauseln oder einer anderen gesetzlichen Grundlage.",
+                "Soweit Apple oder RevenueCat Daten in Staaten außerhalb der EU bzw. des EWR verarbeiten, erfolgt dies nur auf Grundlage eines zulässigen Transfermechanismus wie Angemessenheitsbeschluss, Standardvertragsklauseln oder einer anderen gesetzlichen Grundlage.",
               ],
             },
             {
               title: "Speicherdauer",
               paragraphs: [
-                "Planerdaten bleiben lokal auf deinem Gerat, bis du sie loschst oder die Account-Loschung in der App ausfuhrst.",
-                "Apple- und RevenueCat-Kaufnachweise konnen langer gespeichert werden, soweit dies fur Abrechnung, Missbrauchspravention oder gesetzliche Aufbewahrungspflichten erforderlich ist.",
+                "Planerdaten bleiben lokal auf deinem Gerät, bis du sie löschst oder die Account-Löschung in der App ausführst.",
+                "Apple- und RevenueCat-Kaufnachweise können länger gespeichert werden, soweit dies für Abrechnung, Missbrauchsprävention oder gesetzliche Aufbewahrungspflichten erforderlich ist.",
               ],
             },
             {
               title:
                 "Pflicht zur Bereitstellung und automatisierte Entscheidungen",
               paragraphs: [
-                "Die Bereitstellung der Account- und Kaufdaten ist erforderlich, wenn du Sign in with Apple oder Pro-Abos nutzen mochtest. Ohne diese Daten konnen diese Funktionen nicht bereitgestellt werden.",
-                "Es findet keine automatisierte Entscheidungsfindung einschliesslich Profiling im Sinne von Art. 22 DSGVO statt.",
+                "Die Bereitstellung der Account- und Kaufdaten ist erforderlich, wenn du Sign in with Apple oder Pro-Abos nutzen möchtest. Ohne diese Daten können diese Funktionen nicht bereitgestellt werden.",
+                "Es findet keine automatisierte Entscheidungsfindung einschließlich Profiling im Sinne von Art. 22 DSGVO statt.",
               ],
             },
             {
               title: "Deine Rechte",
               bullets: [
-                "Auskunft, Berichtigung, Loschung, Einschrankung der Verarbeitung und Datenubertragbarkeit nach Massgabe der DSGVO.",
-                "Widerruf erteilter Einwilligungen mit Wirkung fur die Zukunft, etwa uber die Gerateeinstellungen fur Benachrichtigungen.",
-                "Beschwerde bei der zustandigen Datenschutzaufsichtsbehorde: " +
+                "Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Datenübertragbarkeit nach Maßgabe der DSGVO.",
+                "Widerruf erteilter Einwilligungen mit Wirkung für die Zukunft, etwa über die Geräteeinstellungen für Benachrichtigungen.",
+                "Beschwerde bei der zuständigen Datenschutzaufsichtsbehörde: " +
                   legalProfile.supervisoryAuthority,
               ],
             },
             {
               title: "Cookies und Tracking",
               paragraphs: [
-                "Der aktuelle native iOS-Build verwendet keine nicht notwendigen Cookies oder vergleichbare Tracking-Technologien fur Werbung oder Analytics. Deshalb wird derzeit kein generisches Cookie-Banner angezeigt.",
-                "Falls spatere Versionen optionale Analytics-, Marketing- oder Tracking-SDKs einfuhren, wird Canilendar dafur vor Aktivierung eine gesonderte Einwilligung einholen.",
+                "Der aktuelle native iOS-Build verwendet keine nicht notwendigen Cookies oder vergleichbare Tracking-Technologien für Werbung oder Analytics. Deshalb wird derzeit kein generisches Cookie-Banner angezeigt.",
+                "Falls spätere Versionen optionale Analytics-, Marketing- oder Tracking-SDKs einführen, wird Canilendar dafür vor der Aktivierung eine gesonderte Einwilligung einholen.",
               ],
             },
           ]
@@ -242,7 +242,7 @@ export default function PrivacyScreen() {
       description={t("legal.privacyDescription")}
       sections={sections}
       warning={warning}
-      warningTitle={isGerman ? "Vor dem Release prufen" : "Before release"}
+      warningTitle={isGerman ? "Vor dem Release prüfen" : "Before release"}
       actions={actions}
       footer={
         <ThemedText type="caption">

@@ -708,13 +708,13 @@ const resources = {
         imprintTitle: "Impressum",
         imprintDescription:
           "Angaben zum Anbieter und zu den Kontaktwegen von Canilendar.",
-        privacyEyebrow: "Datenschutz",
-        privacyTitle: "Datenschutz",
+        privacyEyebrow: "Datenschutzerklärung",
+        privacyTitle: "Datenschutzerklärung",
         privacyDescription:
           "Wie Canilendar Konto-, Abo-, Erinnerungs- und Planerdaten verarbeitet.",
         openHostedAction: "Gehostete Version öffnen",
-        privacyChoicesAction: "Datenschutz-Einstellungen",
-        emailAction: "Rechtliche Stelle mailen",
+        privacyChoicesAction: "Datenschutzeinstellungen",
+        emailAction: "Rechtskontakt anschreiben",
         emailUnavailableTitle: "E-Mail konnte nicht geöffnet werden",
         emailUnavailableBody:
           "Auf diesem Gerät ist keine Mail-App eingerichtet. Schreibe uns bitte an {{email}}.",

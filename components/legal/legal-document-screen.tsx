@@ -21,11 +21,11 @@ type LegalDocumentScreenProps = {
   sections: LegalSection[];
   warning?: string | null;
   warningTitle?: string;
-  actions?: Array<{
+  actions?: {
     label: string;
     onPress: () => void;
     icon?: "arrow.right.circle.fill" | "envelope.fill";
-  }>;
+  }[];
   footer?: ReactNode;
 };
 
@@ -35,7 +35,6 @@ export function LegalDocumentScreen({
   description,
   sections,
   warning,
-  warningTitle = "Release Checklist",
   actions = [],
   footer,
 }: LegalDocumentScreenProps) {
@@ -74,32 +73,6 @@ export function LegalDocumentScreen({
             {description}
           </ThemedText>
         </ThemedView>
-
-        {warning ? (
-          <ThemedView
-            style={[
-              styles.warningCard,
-              {
-                backgroundColor: palette.dangerSoft,
-                borderColor: palette.danger,
-              },
-            ]}
-          >
-            <ThemedText
-              type="sectionTitle"
-              lightColor={palette.onDanger}
-              darkColor={palette.onDanger}
-            >
-              {warningTitle}
-            </ThemedText>
-            <ThemedText
-              lightColor={palette.onDanger}
-              darkColor={palette.onDanger}
-            >
-              {warning}
-            </ThemedText>
-          </ThemedView>
-        ) : null}
 
         {actions.length > 0 ? (
           <View style={styles.actions}>
