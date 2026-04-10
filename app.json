@@ -10,10 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "infoPlist": {
-        "NSUserNotificationsUsageDescription": "Canilendar uses notifications to remind you about your dog walking appointments and daily schedule."
+      "bundleIdentifier": "com.aweigl.canilendar",
+      "entitlements": {
+        "com.apple.developer.applesignin": ["Default"]
       },
-      "bundleIdentifier": "com.anonymous.canilendar"
+      "infoPlist": {
+        "NSUserNotificationsUsageDescription": "Canilendar uses notifications to remind you about your dog walking appointments and daily schedule.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +25,8 @@
         "foregroundImage": "./assets/images/favicon_2.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "output": "static",
@@ -55,6 +60,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0d129f7e-f089-44e6-bf5f-51a3eb55cf76"
+      }
     }
   }
 }
