@@ -1,15 +1,15 @@
-import { StyleSheet, type ViewStyle } from 'react-native';
-import { Button } from 'tamagui';
+import { StyleSheet, type ViewStyle } from "react-native";
+import { Button } from "tamagui";
 
-import { ThemedText } from '@/components/themed-text';
-import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { IconSymbol, type IconSymbolName } from '@/components/ui/icon-symbol';
+import { ThemedText } from "@/components/themed-text";
+import { IconSymbol, type IconSymbolName } from "@/components/ui/icon-symbol";
+import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 type AppButtonProps = {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+  variant?: "primary" | "secondary" | "ghost" | "danger";
   disabled?: boolean;
   style?: ViewStyle;
   icon?: IconSymbolName;
@@ -18,12 +18,12 @@ type AppButtonProps = {
 export function AppButton({
   label,
   onPress,
-  variant = 'primary',
+  variant = "primary",
   disabled = false,
   style,
   icon,
 }: AppButtonProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
 
   const variants = {
@@ -40,15 +40,15 @@ export function AppButton({
       borderColor: palette.border,
     },
     ghost: {
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       backgroundPressed: palette.surfaceAccent,
       textColor: palette.textMuted,
-      borderColor: 'transparent',
+      borderColor: "transparent",
     },
     danger: {
       backgroundColor: palette.danger,
       backgroundPressed: palette.onDanger,
-      textColor: palette.onDanger,
+      textColor: palette.dangerSoft,
       borderColor: palette.danger,
     },
   } as const;
@@ -61,26 +61,39 @@ export function AppButton({
       disabled={disabled}
       onPress={onPress}
       pressStyle={{
-        background: disabled ? palette.surfaceMuted : currentVariant.backgroundPressed,
+        background: disabled
+          ? palette.surfaceMuted
+          : currentVariant.backgroundPressed,
       }}
       unstyled
       style={[
         styles.button,
         {
-          backgroundColor: disabled ? palette.surfaceMuted : currentVariant.backgroundColor,
+          backgroundColor: disabled
+            ? palette.surfaceMuted
+            : currentVariant.backgroundColor,
           borderColor: currentVariant.borderColor,
           borderRadius: Radius.controlLarge,
           borderWidth: 1,
           opacity: disabled ? 0.6 : 1,
-          shadowColor: variant === 'ghost' ? 'transparent' : palette.shadow,
+          shadowColor: variant === "ghost" ? "transparent" : palette.shadow,
         },
         style,
-      ]}>
-      {icon ? <IconSymbol name={icon} size={18} color={iconColor} style={styles.icon} /> : null}
+      ]}
+    >
+      {icon ? (
+        <IconSymbol
+          name={icon}
+          size={18}
+          color={iconColor}
+          style={styles.icon}
+        />
+      ) : null}
       <ThemedText
         lightColor={iconColor}
         darkColor={iconColor}
-        style={styles.label}>
+        style={styles.label}
+      >
         {label}
       </ThemedText>
     </Button>
@@ -89,9 +102,9 @@ export function AppButton({
 
 const styles = StyleSheet.create({
   button: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
     minHeight: 54,
     paddingHorizontal: Spacing.lg,
     shadowOffset: {

@@ -1,31 +1,23 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { Animated, Easing, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import {
   OnboardingIllustration,
   type OnboardingIllustrationVariant,
 } from "@/components/onboarding/onboarding-illustration";
 import { ThemedText } from "@/components/themed-text";
-import { type IconSymbolName } from "@/components/ui/icon-symbol";
 import { KeyboardAwareScrollView } from "@/components/ui/keyboard-aware-scroll-view";
 import { Colors, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { posthog } from "@/lib/posthog";
-import { router } from "expo-router";
-import { IconButton } from "../ui/icon-button";
-import { IconSymbol } from "../ui/icon-symbol";
-
-type OnboardingTone = "accent" | "support" | "info" | "success";
 
 type OnboardingShellProps = {
   step: number;
-  totalSteps: number;
-  eyebrow: string;
   title: string;
   description: string;
-  heroIcon: IconSymbolName;
-  heroTone?: OnboardingTone;
   illustration: OnboardingIllustrationVariant;
   children?: ReactNode;
   footer?: ReactNode;
@@ -33,19 +25,17 @@ type OnboardingShellProps = {
 
 export function OnboardingShell({
   step,
-  totalSteps,
-  eyebrow,
   title,
   description,
-  heroIcon,
-  heroTone = "accent",
   illustration,
   children,
   footer,
 }: OnboardingShellProps) {
   const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
   const entrance = useRef(new Animated.Value(0)).current;
+  const contentTopPadding = insets.top + 42;
 
   useEffect(() => {
     const reveal = Animated.timing(entrance, {
@@ -62,36 +52,21 @@ export function OnboardingShell({
     };
   }, [entrance]);
 
-  const goBack = () => {
-    posthog.capture("onboarding_back", {
-      step,
-    });
-    router.back();
-  };
-
   return (
     <SafeAreaView
+      edges={step > 1 ? ["left", "right", "bottom"] : undefined}
       style={[styles.safeArea, { backgroundColor: palette.background }]}
     >
       <KeyboardAwareScrollView
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[
+          styles.content,
+          {
+            paddingTop: contentTopPadding,
+          },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.mainContent}>
-          <View style={styles.topBar}>
-            {step > 1 ? (
-              <IconButton onPress={goBack}>
-                <IconSymbol
-                  name="arrow.left.circle.fill"
-                  size={32}
-                  color={palette.accent}
-                />
-              </IconButton>
-            ) : (
-              <View style={styles.topBarSpacer} />
-            )}
-          </View>
-
           <Animated.View
             style={[
               styles.illustrationWrap,
@@ -153,14 +128,6 @@ const styles = StyleSheet.create({
   },
   mainContent: {
     gap: Spacing.lg,
-  },
-  topBar: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: Spacing.sm,
-  },
-  topBarSpacer: {
-    width: 36,
   },
   illustrationWrap: {
     width: "100%",

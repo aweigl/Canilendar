@@ -70,7 +70,9 @@ export function DogPhotoUploader({
         style={({ pressed }) => [
           styles.panel,
           {
-            backgroundColor: hasPhoto ? palette.surfaceMuted : palette.surfaceRaised,
+            backgroundColor: hasPhoto
+              ? palette.surfaceMuted
+              : palette.surfaceRaised,
             borderColor: hasPhoto ? palette.borderStrong : palette.border,
             opacity: busy ? 0.72 : 1,
             transform: [{ scale: pressed ? 0.985 : 1 }],
@@ -79,10 +81,14 @@ export function DogPhotoUploader({
       >
         {hasPhoto ? (
           <>
-            <Image source={photoUri} contentFit="cover" style={StyleSheet.absoluteFillObject} />
+            <Image
+              source={photoUri}
+              contentFit="cover"
+              style={StyleSheet.absoluteFillObject}
+            />
             <View style={styles.imageShade} />
             <Pressable
-              accessibilityLabel={t("dogs.chooseFromLibrary")}
+              accessibilityLabel={t("dogs.changePhoto")}
               accessibilityRole="button"
               disabled={busy}
               onPress={openSourcePicker}
@@ -94,11 +100,7 @@ export function DogPhotoUploader({
                 },
               ]}
             >
-              <IconSymbol
-                name="camera.fill"
-                size={16}
-                color={palette.accent}
-              />
+              <IconSymbol name="camera.fill" size={16} color={palette.accent} />
             </Pressable>
             <View style={styles.photoFooter}>
               <ThemedText
@@ -113,7 +115,7 @@ export function DogPhotoUploader({
                 lightColor={palette.onAccent}
                 darkColor={palette.onAccent}
               >
-                Tap to change photo
+                {t("dogs.changePhotoHint")}
               </ThemedText>
             </View>
           </>
@@ -128,22 +130,15 @@ export function DogPhotoUploader({
                 },
               ]}
             >
-              <IconSymbol
-                name="camera.fill"
-                size={24}
-                color={palette.accent}
-              />
+              <IconSymbol name="camera.fill" size={24} color={palette.accent} />
             </View>
-            <ThemedText type="sectionTitle" style={styles.emptyTitle}>
-              Add dog photo
-            </ThemedText>
             <ThemedText
-              type="caption"
               lightColor={palette.textMuted}
               darkColor={palette.textMuted}
-              style={styles.emptyBody}
+              type="subtitle"
+              style={styles.emptyTitle}
             >
-              Optional, but helpful when you’re moving fast.
+              {t("dogs.addPhotoTitle")}
             </ThemedText>
           </View>
         )}

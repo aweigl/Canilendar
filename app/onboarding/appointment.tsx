@@ -202,23 +202,19 @@ export default function OnboardingAppointmentScreen() {
   return (
     <OnboardingShell
       step={3}
-      totalSteps={5}
-      eyebrow={t("onboarding.appointment.eyebrow")}
-      title="Book the first walk."
+      title={t("onboarding.appointment.title")}
       description={
         dog
-          ? `${dog.name} is ready. Pick the day, time, and repeat pattern.`
-          : "Pick the day, time, and repeat pattern."
+          ? t("onboarding.appointment.descriptionWithDog", { name: dog.name })
+          : t("onboarding.appointment.descriptionWithoutDog")
       }
-      heroIcon="calendar.badge.plus"
-      heroTone="info"
       illustration="appointment"
       footer={
         <AppButton
           label={
             isFormVisible
               ? t("onboarding.appointment.save")
-              : "Create appointment"
+              : t("onboarding.appointment.createCta")
           }
           onPress={handlePrimaryAction}
           icon="calendar.badge.plus"
@@ -232,7 +228,15 @@ export default function OnboardingAppointmentScreen() {
             { backgroundColor: palette.surface, borderColor: palette.border },
           ]}
         >
-          <View style={(styles.pickerGroup, { marginBottom: Spacing.md })}>
+          <View
+            style={[
+              styles.section,
+              styles.sectionCard,
+              {
+                backgroundColor: palette.surfaceRaised,
+              },
+            ]}
+          >
             <ThemedText type="sectionTitle">
               {t("common.pickerDate")}
             </ThemedText>
@@ -245,102 +249,131 @@ export default function OnboardingAppointmentScreen() {
             />
           </View>
 
-          <View style={styles.switchRow}>
-            <View style={styles.switchCopy}>
-              <ThemedText type="sectionTitle">
-                {t("common.pickupTime")}
-              </ThemedText>
-              <ThemedText
-                lightColor={palette.textMuted}
-                darkColor={palette.textMuted}
-                type="caption"
-              >
-                {hasPickupTime
-                  ? t("onboarding.appointment.pickupTimeEnabled")
-                  : t("onboarding.appointment.pickupTimeDisabled")}
-              </ThemedText>
-            </View>
-            <ToggleSwitch
-              checked={hasPickupTime}
-              onCheckedChange={setHasPickupTime}
-            />
-          </View>
-
-          {hasPickupTime ? (
-            <View style={(styles.pickerGroup, { marginBottom: Spacing.sm })}>
-              <DateTimePicker
-                style={{ marginBottom: Spacing.sm }}
-                display={Platform.OS === "ios" ? "compact" : "default"}
-                mode="time"
-                onChange={handleAppointmentTimeChange}
-                value={appointmentTime}
-              />
-              <View>
-                <ThemedText style={{ marginBottom: Spacing.sm }} type="eyebrow">
-                  {t("appointment.reminderLeadTime")}
+          <View
+            style={[
+              styles.section,
+              styles.sectionCard,
+              {
+                backgroundColor: palette.surfaceRaised,
+              },
+            ]}
+          >
+            <View style={styles.switchRow}>
+              <View style={styles.switchCopy}>
+                <ThemedText type="sectionTitle">
+                  {t("common.pickupTime")}
                 </ThemedText>
-                <View style={styles.chips}>
-                  {REMINDER_OPTIONS.map((minutes) => (
-                    <ChoiceChip
-                      key={minutes}
-                      label={`${minutes} min`}
-                      onPress={() => setReminderMinutesBefore(minutes)}
-                      selected={reminderMinutesBefore === minutes}
-                    />
-                  ))}
+                <ThemedText
+                  lightColor={palette.textMuted}
+                  darkColor={palette.textMuted}
+                  type="caption"
+                >
+                  {hasPickupTime
+                    ? t("onboarding.appointment.pickupTimeEnabled")
+                    : t("onboarding.appointment.pickupTimeDisabled")}
+                </ThemedText>
+              </View>
+              <ToggleSwitch
+                checked={hasPickupTime}
+                onCheckedChange={setHasPickupTime}
+              />
+            </View>
+
+            {hasPickupTime ? (
+              <View style={styles.subsection}>
+                <DateTimePicker
+                  style={styles.timePicker}
+                  display={Platform.OS === "ios" ? "compact" : "default"}
+                  mode="time"
+                  onChange={handleAppointmentTimeChange}
+                  value={appointmentTime}
+                />
+                <View style={styles.reminderGroup}>
+                  <ThemedText style={styles.groupLabel} type="eyebrow">
+                    {t("appointment.reminderLeadTime")}
+                  </ThemedText>
+                  <View style={styles.chips}>
+                    {REMINDER_OPTIONS.map((minutes) => (
+                      <ChoiceChip
+                        key={minutes}
+                        label={`${minutes} min`}
+                        onPress={() => setReminderMinutesBefore(minutes)}
+                        selected={reminderMinutesBefore === minutes}
+                      />
+                    ))}
+                  </View>
                 </View>
               </View>
-            </View>
-          ) : null}
-
-          <View style={styles.switchRow}>
-            <View style={styles.switchCopy}>
-              <ThemedText type="sectionTitle">
-                {t("appointment.repeatWeekly")}
-              </ThemedText>
-              <ThemedText
-                lightColor={palette.textMuted}
-                darkColor={palette.textMuted}
-                type="caption"
-              >
-                {isRecurring
-                  ? t("appointment.recurringOn")
-                  : t("onboarding.appointment.oneTime")}
-              </ThemedText>
-            </View>
-            <ToggleSwitch
-              checked={isRecurring}
-              onCheckedChange={setIsRecurring}
-            />
+            ) : null}
           </View>
 
-          {isRecurring ? (
-            <View style={styles.chips}>
-              {WEEKDAY_OPTIONS.map((option) => (
-                <ChoiceChip
-                  key={option.value}
-                  label={t(
-                    `common.weekdayShort.${getWeekdayTranslationKey(option.value)}`,
-                  )}
-                  onPress={() => toggleWeekday(option.value)}
-                  selected={recurrenceWeekdays.includes(option.value)}
-                />
-              ))}
-            </View>
-          ) : null}
-          <ThemedText
-            lightColor={palette.support}
-            darkColor={palette.support}
-            type="caption"
-            style={{ marginTop: Spacing.sm }}
+          <View
+            style={[
+              styles.section,
+              styles.sectionCard,
+              {
+                backgroundColor: palette.surfaceRaised,
+              },
+            ]}
           >
-            {hasPickupTime
-              ? t("appointment.reminderPreview", {
-                  time: formatTimeInputValue(appointmentTime),
-                  count: reminderMinutesBefore,
-                })
-              : t("onboarding.appointment.reminderDisabled")}
-          </ThemedText>
+            <View style={styles.switchRow}>
+              <View style={styles.switchCopy}>
+                <ThemedText type="sectionTitle">
+                  {t("appointment.repeatWeekly")}
+                </ThemedText>
+                <ThemedText
+                  lightColor={palette.textMuted}
+                  darkColor={palette.textMuted}
+                  type="caption"
+                >
+                  {isRecurring
+                    ? t("appointment.recurringOn")
+                    : t("onboarding.appointment.oneTime")}
+                </ThemedText>
+              </View>
+              <ToggleSwitch
+                checked={isRecurring}
+                onCheckedChange={setIsRecurring}
+              />
+            </View>
+            {isRecurring ? (
+              <View style={styles.chips}>
+                {WEEKDAY_OPTIONS.map((option) => (
+                  <ChoiceChip
+                    key={option.value}
+                    label={t(
+                      `common.weekdayShort.${getWeekdayTranslationKey(option.value)}`,
+                    )}
+                    onPress={() => toggleWeekday(option.value)}
+                    selected={recurrenceWeekdays.includes(option.value)}
+                  />
+                ))}
+              </View>
+            ) : null}
+          </View>
+
+          <View
+            style={[
+              styles.noteCard,
+              {
+                backgroundColor: palette.supportSoft,
+              },
+            ]}
+          >
+            <ThemedText
+              lightColor={palette.support}
+              darkColor={palette.support}
+              type="caption"
+              style={styles.previewNote}
+            >
+              {hasPickupTime
+                ? t("appointment.reminderPreview", {
+                    time: formatTimeInputValue(appointmentTime),
+                    count: reminderMinutesBefore,
+                  })
+                : t("onboarding.appointment.reminderDisabled")}
+            </ThemedText>
+          </View>
         </ThemedView>
       ) : null}
     </OnboardingShell>
@@ -351,28 +384,52 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: Radius.card,
     borderWidth: 1.5,
-    gap: Spacing.md,
-    padding: Spacing.md,
+    gap: Spacing.xl,
+    padding: Spacing.lg,
   },
-  pickerGroup: {
-    gap: Spacing.sm,
+  section: {
+    gap: Spacing.md,
+  },
+  sectionCard: {
+    borderRadius: Radius.controlLarge,
+    padding: Spacing.lg,
+  },
+  subsection: {
+    gap: Spacing.md,
+    paddingTop: Spacing.sm,
   },
   switchRow: {
-    alignItems: "center",
+    alignItems: "flex-start",
     flexDirection: "row",
     justifyContent: "space-between",
     flexWrap: "nowrap",
-    marginBottom: Spacing.md,
+    gap: Spacing.md,
   },
   switchCopy: {
     flex: 1,
     flexWrap: "nowrap",
-    gap: Spacing.xs,
-    paddingRight: Spacing.md,
+    gap: Spacing.sm,
+  },
+  timePicker: {
+    marginBottom: Spacing.xs,
+  },
+  reminderGroup: {
+    gap: Spacing.sm,
+  },
+  groupLabel: {
+    marginBottom: Spacing.xs,
   },
   chips: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: Spacing.sm,
+  },
+  noteCard: {
+    borderRadius: Radius.controlLarge,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+  },
+  previewNote: {
+    lineHeight: 28,
   },
 });

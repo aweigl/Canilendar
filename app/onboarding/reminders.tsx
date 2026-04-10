@@ -34,12 +34,8 @@ export default function OnboardingRemindersScreen() {
   return (
     <OnboardingShell
       step={4}
-      totalSteps={5}
-      eyebrow={t("onboarding.reminders.eyebrow")}
       title={t("onboarding.reminders.title")}
-      description="Timely nudges for pickups and the day ahead."
-      heroIcon="bell.badge.fill"
-      heroTone="accent"
+      description={t("onboarding.reminders.description")}
       illustration="reminders"
       footer={
         <>

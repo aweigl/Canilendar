@@ -794,5 +794,6 @@ const styles = StyleSheet.create({
   footerActions: {
     gap: Spacing.md,
     marginTop: Spacing.sm,
+    marginBottom: Spacing.xxl,
   },
 });

@@ -119,8 +119,8 @@ export default function OnboardingDogScreen() {
   function handleContinue() {
     if (!name.trim() || !address.trim() || !ownerPhone.trim()) {
       Alert.alert(
-        "Missing details",
-        "Add the dog name, address, and owner phone number first.",
+        t("dogs.alerts.missingDogDetailsTitle"),
+        t("dogs.alerts.missingDogDetailsBody"),
       );
       return;
     }
@@ -160,21 +160,17 @@ export default function OnboardingDogScreen() {
   return (
     <OnboardingShell
       step={2}
-      totalSteps={5}
-      eyebrow="First dog"
-      title="Add your first dog."
-      description="A reusable profile for every future walk."
-      heroIcon="dog.plus"
-      heroTone="support"
+      title={t("onboarding.dog.title")}
+      description={t("onboarding.dog.description")}
       illustration="dog"
       footer={
         <AppButton
           label={
             isFormVisible
               ? isEditing
-                ? "Save and continue"
-                : "Create dog"
-              : "Create dog"
+                ? t("onboarding.dog.saveAndContinue")
+                : t("onboarding.dog.createCta")
+              : t("onboarding.dog.createCta")
           }
           onPress={handlePrimaryAction}
           icon="pawprint.fill"
@@ -214,29 +210,29 @@ export default function OnboardingDogScreen() {
             />
           </ThemedView>
           <InputField
-            label="Dog name"
+            label={t("appointment.dogName")}
             onChangeText={setName}
-            placeholder="Eddi"
+            placeholder={t("dogs.placeholders.dogName")}
             value={name}
           />
           <InputField
-            label="Pickup address"
+            label={t("appointment.pickupAddress")}
             onChangeText={setAddress}
-            placeholder="12 Bark Street"
+            placeholder={t("dogs.placeholders.pickupAddress")}
             value={address}
           />
           <InputField
             keyboardType="phone-pad"
-            label="Owner phone"
+            label={t("appointment.ownerPhone")}
             onChangeText={setOwnerPhone}
-            placeholder="+49 123 456 789"
+            placeholder={t("dogs.placeholders.ownerPhone")}
             value={ownerPhone}
           />
           <InputField
-            label="Notes"
+            label={t("dogs.notes")}
             multiline
             onChangeText={setNotes}
-            placeholder="Gate code, leash note, feeding routine..."
+            placeholder={t("dogs.placeholders.notes")}
             value={notes}
           />
         </ThemedView>

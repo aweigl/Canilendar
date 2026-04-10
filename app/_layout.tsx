@@ -59,18 +59,41 @@ function AppStack() {
     <Stack>
       <Stack.Screen name="welcome" options={{ headerShown: false }} />
       <Stack.Screen name="onboarding/index" options={{ headerShown: false }} />
-      <Stack.Screen name="onboarding/dog" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="onboarding/dog"
+        options={{
+          title: "",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerShadowVisible: false,
+        }}
+      />
       <Stack.Screen
         name="onboarding/appointment"
-        options={{ headerShown: false }}
+        options={{
+          title: "",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerShadowVisible: false,
+        }}
       />
       <Stack.Screen
         name="onboarding/reminders"
-        options={{ headerShown: false }}
+        options={{
+          title: "",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerShadowVisible: false,
+        }}
       />
       <Stack.Screen
         name="onboarding/success"
-        options={{ headerShown: false }}
+        options={{
+          title: "",
+          headerTransparent: true,
+          headerBackButtonDisplayMode: "minimal",
+          headerShadowVisible: false,
+        }}
       />
       <Stack.Screen
         name="debug/apple-signin-preview"

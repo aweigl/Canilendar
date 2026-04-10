@@ -142,6 +142,9 @@ const resources = {
         photoLabel: "Photo",
         photoHint:
           "Add an optional photo from the camera or your photo library.",
+        addPhotoTitle: "Add dog photo",
+        changePhoto: "Change photo",
+        changePhotoHint: "Tap to change photo",
         addFromCamera: "Take photo",
         chooseFromLibrary: "Choose from library",
         removePhoto: "Remove photo",
@@ -320,13 +323,23 @@ const resources = {
           "The current native iOS build does not use a generic cookie banner because no optional analytics or marketing trackers are active.",
       },
       onboarding: {
+        welcome: {
+          title: "Build your first calm day.",
+          description: "Many dogs, many walks. One reminder flow.",
+          cta: "Start setup",
+        },
+        dog: {
+          title: "Add your first dog.",
+          description: "A reusable profile for every future walk.",
+          createCta: "Create dog",
+          saveAndContinue: "Save and continue",
+        },
         appointment: {
           eyebrow: "First appointment",
           title: "Put the first walk on the calendar",
           descriptionWithDog:
-            "{{name}} will be reused from the profile you just saved.",
-          descriptionWithoutDog:
-            "We'll attach this appointment to the dog you just added.",
+            "{{name}} is ready. Pick the day, time, and repeat pattern.",
+          descriptionWithoutDog: "Pick the day, time, and repeat pattern.",
           missingDogTitle: "Missing dog",
           missingDogBody: "Create the dog profile first.",
           pickupTimeEnabled: "A specific pickup time is enabled for this walk.",
@@ -335,6 +348,7 @@ const resources = {
           oneTime: "Keeps the first appointment as a one-time walk.",
           reminderDisabled:
             "No pickup-time reminder will be scheduled until you enable a time.",
+          createCta: "Create appointment",
           save: "Save appointment",
           pastAppointmentBody:
             "The first appointment needs to be in the future.",
@@ -352,6 +366,11 @@ const resources = {
           dailySummaryTitle: "Daily summary",
           dailySummaryBody: "See the day ahead from one morning reminder.",
           maybeLater: "Maybe later",
+        },
+        success: {
+          title: "Your first day is live.",
+          description: "Calendar unlocked. Dog saved. Ready to book more.",
+          cta: "Open my calendar",
         },
       },
       notifications: {
@@ -540,6 +559,9 @@ const resources = {
         photoLabel: "Foto",
         photoHint:
           "Füge optional ein Foto aus der Kamera oder deiner Mediathek hinzu.",
+        addPhotoTitle: "Hundefoto hinzufügen",
+        changePhoto: "Foto ändern",
+        changePhotoHint: "Tippe, um das Foto zu ändern",
         addFromCamera: "Foto aufnehmen",
         chooseFromLibrary: "Aus Mediathek wählen",
         removePhoto: "Foto entfernen",
@@ -722,22 +744,35 @@ const resources = {
           "Der aktuelle native iOS-Build zeigt kein generisches Cookie-Banner, weil keine optionalen Analyse- oder Marketing-Tracker aktiv sind.",
       },
       onboarding: {
+        welcome: {
+          title: "Plane deinen ersten ruhigen Tag.",
+          description: "Viele Hunde, viele Spaziergänge. Eine Erinnerung.",
+          cta: "Setup starten",
+        },
+        dog: {
+          title: "Lege deinen ersten Hund an.",
+          description:
+            "Ein wiederverwendbares Profil für jeden weiteren Spaziergang.",
+          createCta: "Hund anlegen",
+          saveAndContinue: "Speichern und weiter",
+        },
         appointment: {
           eyebrow: "Erster Termin",
           title: "Trage den ersten Spaziergang in den Kalender ein",
           descriptionWithDog:
-            "{{name}} wird aus dem eben gespeicherten Profil übernommen.",
+            "{{name}} ist bereit. Wähle Tag, Uhrzeit und wöchentliche Wiederholungen.",
           descriptionWithoutDog:
-            "Wir verknüpfen diesen Termin mit dem Hund, den du gerade angelegt hast.",
+            "Wähle Tag, Uhrzeit und wöchentliche Wiederholungen.",
           missingDogTitle: "Hund fehlt",
           missingDogBody: "Lege zuerst das Hundeprofil an.",
           pickupTimeEnabled:
             "Für diesen Spaziergang ist eine konkrete Abholzeit aktiviert.",
           pickupTimeDisabled:
-            "Lass das aus, wenn die Abholung irgendwann am Morgen passiert.",
+            "Lass diese Einstellung aus, wenn die Abholung irgendwann am Morgen passiert.",
           oneTime: "Der erste Termin bleibt ein einmaliger Spaziergang.",
           reminderDisabled:
             "Es wird keine Abholzeit-Erinnerung geplant, bis du eine Uhrzeit aktivierst.",
+          createCta: "Termin anlegen",
           save: "Termin speichern",
           pastAppointmentBody: "Der erste Termin muss in der Zukunft liegen.",
         },
@@ -755,6 +790,12 @@ const resources = {
           dailySummaryBody:
             "Sieh den Tag mit einer morgendlichen Erinnerung im Voraus.",
           maybeLater: "Vielleicht später",
+        },
+        success: {
+          title: "Dein erster Tag ist bereit.",
+          description:
+            "Kalender entsperrt. Hund gespeichert. Bereit für mehr Buchungen.",
+          cta: "Meinen Kalender öffnen",
         },
       },
       notifications: {
@@ -944,6 +985,9 @@ const resources = {
         photoLabel: "Photo",
         photoHint:
           "Ajoutez une photo facultative depuis l’appareil photo ou la photothèque.",
+        addPhotoTitle: "Ajouter une photo du chien",
+        changePhoto: "Modifier la photo",
+        changePhotoHint: "Touchez pour modifier la photo",
         addFromCamera: "Prendre une photo",
         chooseFromLibrary: "Choisir dans la photothèque",
         removePhoto: "Supprimer la photo",
@@ -1128,13 +1172,25 @@ const resources = {
           "La version native iOS actuelle n’affiche pas de bannière cookies générique car aucun tracker marketing ou analytique optionnel n’est actif.",
       },
       onboarding: {
+        welcome: {
+          title: "Construisez votre première journée sereine.",
+          description:
+            "Beaucoup de chiens, beaucoup de promenades. Un seul flux de rappels.",
+          cta: "Commencer la configuration",
+        },
+        dog: {
+          title: "Ajoutez votre premier chien.",
+          description: "Un profil réutilisable pour chaque future promenade.",
+          createCta: "Créer le chien",
+          saveAndContinue: "Enregistrer et continuer",
+        },
         appointment: {
           eyebrow: "Premier rendez-vous",
           title: "Ajoutez la première promenade au calendrier",
           descriptionWithDog:
-            "{{name}} sera repris depuis le profil que vous venez d’enregistrer.",
+            "{{name}} est prêt. Choisissez le jour, l’heure et la répétition.",
           descriptionWithoutDog:
-            "Nous associerons ce rendez-vous au chien que vous venez d’ajouter.",
+            "Choisissez le jour, l’heure et la répétition.",
           missingDogTitle: "Chien manquant",
           missingDogBody: "Créez d’abord le profil du chien.",
           pickupTimeEnabled:
@@ -1144,6 +1200,7 @@ const resources = {
           oneTime: "Le premier rendez-vous reste une promenade unique.",
           reminderDisabled:
             "Aucun rappel lié à l’heure ne sera planifié tant que vous n’aurez pas activé une heure.",
+          createCta: "Créer le rendez-vous",
           save: "Enregistrer le rendez-vous",
           pastAppointmentBody:
             "Le premier rendez-vous doit être prévu dans le futur.",
@@ -1163,6 +1220,12 @@ const resources = {
           dailySummaryBody:
             "Préparez la journée à venir avec un seul rappel matinal.",
           maybeLater: "Peut-être plus tard",
+        },
+        success: {
+          title: "Votre première journée est prête.",
+          description:
+            "Calendrier débloqué. Chien enregistré. Prêt à planifier davantage.",
+          cta: "Ouvrir mon calendrier",
         },
       },
       notifications: {
@@ -1353,6 +1416,9 @@ const resources = {
         photoLabel: "Foto",
         photoHint:
           "Añade una foto opcional desde la camara o desde tu fototeca.",
+        addPhotoTitle: "Añadir foto del perro",
+        changePhoto: "Cambiar foto",
+        changePhotoHint: "Toca para cambiar la foto",
         addFromCamera: "Tomar foto",
         chooseFromLibrary: "Elegir de la fototeca",
         removePhoto: "Quitar foto",
@@ -1534,13 +1600,24 @@ const resources = {
           "La build nativa actual de iOS no muestra un banner generico de cookies porque no hay rastreadores opcionales de analitica o marketing activos.",
       },
       onboarding: {
+        welcome: {
+          title: "Construye tu primer día tranquilo.",
+          description:
+            "Muchos perros, muchos paseos. Un solo flujo de recordatorios.",
+          cta: "Empezar configuración",
+        },
+        dog: {
+          title: "Añade tu primer perro.",
+          description: "Un perfil reutilizable para cada paseo futuro.",
+          createCta: "Crear perro",
+          saveAndContinue: "Guardar y continuar",
+        },
         appointment: {
           eyebrow: "Primera cita",
           title: "Pon el primer paseo en el calendario",
           descriptionWithDog:
-            "{{name}} se reutilizara del perfil que acabas de guardar.",
-          descriptionWithoutDog:
-            "Asociaremos esta cita al perro que acabas de agregar.",
+            "{{name}} está listo. Elige el día, la hora y la repetición.",
+          descriptionWithoutDog: "Elige el día, la hora y la repetición.",
           missingDogTitle: "Falta el perro",
           missingDogBody: "Crea primero el perfil del perro.",
           pickupTimeEnabled:
@@ -1550,6 +1627,7 @@ const resources = {
           oneTime: "La primera cita se mantiene como un paseo unico.",
           reminderDisabled:
             "No se programara ningun recordatorio por hora hasta que actives una hora.",
+          createCta: "Crear cita",
           save: "Guardar cita",
           pastAppointmentBody: "La primera cita tiene que estar en el futuro.",
         },
@@ -1568,6 +1646,12 @@ const resources = {
           dailySummaryBody:
             "Mira el dia por delante con un solo recordatorio matutino.",
           maybeLater: "Quizas mas tarde",
+        },
+        success: {
+          title: "Tu primer día está listo.",
+          description:
+            "Calendario desbloqueado. Perro guardado. Listo para más reservas.",
+          cta: "Abrir mi calendario",
         },
       },
       notifications: {

@@ -1,9 +1,9 @@
-import { StyleSheet } from 'react-native';
-import { Button } from 'tamagui';
+import { StyleSheet } from "react-native";
+import { Button } from "tamagui";
 
-import { ThemedText } from '@/components/themed-text';
-import { Colors, Fonts, Radius, Spacing } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ThemedText } from "@/components/themed-text";
+import { Colors, Fonts, Radius } from "@/constants/theme";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 type ChoiceChipProps = {
   label: string;
@@ -12,7 +12,7 @@ type ChoiceChipProps = {
 };
 
 export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
   const palette = Colors[colorScheme];
 
   return (
@@ -26,16 +26,20 @@ export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
       style={[
         styles.chip,
         {
-          backgroundColor: selected ? palette.accentMuted : palette.surfaceRaised,
+          backgroundColor: selected
+            ? palette.accentMuted
+            : palette.surfaceRaised,
           borderColor: selected ? palette.accent : palette.border,
           borderRadius: Radius.pill,
           borderWidth: 1,
         },
-      ]}>
+      ]}
+    >
       <ThemedText
         lightColor={selected ? palette.accentPressed : palette.text}
         darkColor={selected ? palette.onAccent : palette.text}
-        style={styles.label}>
+        style={styles.label}
+      >
         {label}
       </ThemedText>
     </Button>
@@ -44,8 +48,9 @@ export function ChoiceChip({ label, selected, onPress }: ChoiceChipProps) {
 
 const styles = StyleSheet.create({
   chip: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "100%",
     minHeight: 46,
     paddingHorizontal: 18,
   },
