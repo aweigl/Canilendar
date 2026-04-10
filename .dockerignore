@@ -1,7 +1,8 @@
 *
 !Dockerfile
 !.dockerignore
-!support.html
+!web/
+!web/support.html
 !assets/
 !assets/images/
 !assets/images/favicon.png
@@ -9,4 +10,3 @@
 !assets/images/login_screen.png
 !docker/
 !docker/nginx.conf
-

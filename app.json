@@ -46,10 +46,13 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash_screen.png",
+          "imageWidth": 1024,
           "resizeMode": "cover",
+          "enableFullScreenImage_legacy": true,
           "backgroundColor": "#F8F1E6",
           "dark": {
             "image": "./assets/images/splash_screen.png",
+            "imageWidth": 1024,
             "resizeMode": "cover",
             "backgroundColor": "#F8F1E6"
           }
