@@ -10,6 +10,19 @@ import { DogPhotoUploader } from "./dog-photo-uploader";
 import { InputField } from "./input-field";
 import { KeyboardAwareScrollView } from "./keyboard-aware-scroll-view";
 
+export type DogEditFormProps = {
+  editingDogId: string | null;
+  form: DogFormState;
+  style?: StyleProp<ViewStyle>;
+  setForm: React.Dispatch<React.SetStateAction<DogFormState>>;
+  cancelEdit?: () => void;
+  handleSave?: () => void;
+  pickFromCamera?: () => void;
+  pickFromLibrary?: () => void;
+  removePhoto?: () => void;
+  photoBusy?: boolean;
+};
+
 export const DogEditForm = ({
   editingDogId,
   form,
@@ -21,18 +34,7 @@ export const DogEditForm = ({
   pickFromLibrary,
   removePhoto,
   photoBusy = false,
-}: {
-  editingDogId: string | null;
-  form: DogFormState;
-  style?: StyleProp<ViewStyle>;
-  setForm: React.Dispatch<React.SetStateAction<DogFormState>>;
-  cancelEdit?: () => void;
-  handleSave?: () => void;
-  pickFromCamera?: () => void;
-  pickFromLibrary?: () => void;
-  removePhoto?: () => void;
-  photoBusy?: boolean;
-}) => {
+}: DogEditFormProps) => {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme ?? "light"];
 

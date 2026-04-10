@@ -1,9 +1,9 @@
 import { Colors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { DogProfile } from "@/types/domain";
+import type { DogProfile } from "@/types/domain";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, StyleProp, ViewStyle } from "react-native";
+import { StyleProp, ViewStyle } from "react-native";
 import { ScrollView, XStack, YStack } from "tamagui";
 import { ThemedText } from "../themed-text";
 import { DogAvatar } from "./dog-avatar";
@@ -11,9 +11,17 @@ import { IconButton } from "./icon-button";
 import { IconSymbol } from "./icon-symbol";
 import { InputField } from "./input-field";
 
-interface DogTableEntry extends DogProfile {
+export interface DogTableEntry extends DogProfile {
   selected?: boolean;
 }
+
+export type DogTableRowProps = {
+  dog: DogTableEntry;
+  index: number;
+  onRowClick?: (dogId: string) => void;
+  editDog?: (dogId: string) => void;
+  deleteDog?: (dogId: string) => void;
+};
 
 export const DogTableRow = ({
   dog,
@@ -21,13 +29,7 @@ export const DogTableRow = ({
   onRowClick,
   editDog,
   deleteDog,
-}: {
-  dog: DogTableEntry;
-  index: number;
-  onRowClick?: (dogId: string) => void;
-  editDog?: (dogId: string) => void;
-  deleteDog?: (dogId: string) => void;
-}) => {
+}: DogTableRowProps) => {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme ?? "light"];
 
@@ -99,36 +101,41 @@ export const DogTableRow = ({
           </ThemedText>
         ) : null}
         {editDog ? (
-          <Pressable>
-            <IconButton
-              onPress={() => editDog(dog.id)}
-              icon={
-                <IconSymbol
-                  name="square.and.pencil"
-                  size={20}
-                  color={palette.accent}
-                />
-              }
-            />
-          </Pressable>
+          <IconButton
+            onPress={() => editDog(dog.id)}
+            icon={
+              <IconSymbol
+                name="square.and.pencil"
+                size={20}
+                color={palette.accent}
+              />
+            }
+          />
         ) : null}
         {deleteDog ? (
-          <Pressable>
-            <IconButton
-              onPress={() => deleteDog(dog.id)}
-              icon={
-                <IconSymbol
-                  name="trash.fill"
-                  size={20}
-                  color={palette.danger}
-                />
-              }
-            />
-          </Pressable>
+          <IconButton
+            onPress={() => deleteDog(dog.id)}
+            icon={
+              <IconSymbol
+                name="trash.fill"
+                size={20}
+                color={palette.danger}
+              />
+            }
+          />
         ) : null}
       </YStack>
     </XStack>
   );
+};
+
+export type DogTableProps = {
+  dogs: DogTableEntry[];
+  withSearch?: boolean;
+  style?: StyleProp<ViewStyle>;
+  onRowClick?: (dogId: string) => void;
+  editDog?: (dogId: string) => void;
+  deleteDog?: (dogId: string) => void;
 };
 
 export function DogTable({
@@ -138,14 +145,7 @@ export function DogTable({
   editDog,
   deleteDog,
   onRowClick,
-}: {
-  dogs: DogTableEntry[];
-  withSearch?: boolean;
-  style?: StyleProp<ViewStyle>;
-  onRowClick?: (dogId: string) => void;
-  editDog?: (dogId: string) => void;
-  deleteDog?: (dogId: string) => void;
-}) {
+}: DogTableProps) {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme ?? "light"];
   const [query, setQuery] = useState("");
