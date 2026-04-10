@@ -158,6 +158,11 @@ const resources = {
         actions: {
           openInMaps: "Open in Maps",
           callOwner: "Call owner",
+          chooseMapAppTitle: "Open address with",
+          chooseMapAppBody: "Choose which maps app you want to use.",
+          maps: "Maps",
+          appleMaps: "Apple Maps",
+          googleMaps: "Google Maps",
         },
         emptyTitle: "No dogs saved yet",
         emptyDescription:
@@ -585,6 +590,12 @@ const resources = {
         actions: {
           openInMaps: "In Karten öffnen",
           callOwner: "Besitzer anrufen",
+          chooseMapAppTitle: "Adresse öffnen mit",
+          chooseMapAppBody:
+            "Wähle aus, welche Karten-App du verwenden möchtest.",
+          maps: "Karten",
+          appleMaps: "Apple Karten",
+          googleMaps: "Google Maps",
         },
         emptyTitle: "Noch keine Hunde gespeichert",
         emptyDescription:
@@ -1021,6 +1032,12 @@ const resources = {
         actions: {
           openInMaps: "Ouvrir dans Maps",
           callOwner: "Appeler le propriétaire",
+          chooseMapAppTitle: "Ouvrir l'adresse avec",
+          chooseMapAppBody:
+            "Choisissez l'application de cartes que vous voulez utiliser.",
+          maps: "Maps",
+          appleMaps: "Apple Plans",
+          googleMaps: "Google Maps",
         },
         emptyTitle: "Aucun chien enregistré",
         emptyDescription:
@@ -1462,6 +1479,12 @@ const resources = {
         actions: {
           openInMaps: "Abrir en Mapas",
           callOwner: "Llamar al propietario",
+          chooseMapAppTitle: "Abrir la dirección con",
+          chooseMapAppBody:
+            "Elige qué app de mapas quieres usar.",
+          maps: "Mapas",
+          appleMaps: "Apple Maps",
+          googleMaps: "Google Maps",
         },
         emptyTitle: "Todavia no hay perros guardados",
         emptyDescription:

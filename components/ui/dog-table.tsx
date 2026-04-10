@@ -38,26 +38,27 @@ export const DogTableRow = ({
 
   return (
     <Pressable
+      accessibilityRole="button"
       onPress={() => onRowClick?.(dog.id)}
       onLongPress={() => editDog?.(dog.id)}
       style={({ pressed }) => [
         {
           backgroundColor: palette.background,
-        },
-        pressed && {
-          backgroundColor: palette.surfaceAccent,
-          borderRadius: 0,
-        },
-      ]}
-    >
-      <XStack
-        key={dog.id}
-        style={{
-          backgroundColor: palette.background,
           borderRadius: 14,
           borderWidth: dog.selected ? 1 : 0.5,
           borderColor: dog.selected ? palette.success : palette.border,
           padding: Spacing.md,
+          alignItems: "center",
+          gap: Spacing.md,
+        },
+        pressed && {
+          backgroundColor: palette.surfaceAccent,
+          opacity: 0.96,
+        },
+      ]}
+    >
+      <XStack
+        style={{
           alignItems: "center",
           gap: Spacing.md,
         }}

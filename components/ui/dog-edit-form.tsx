@@ -57,6 +57,15 @@ export const DogEditForm = ({
           },
         ]}
       >
+        {cancelEdit ? (
+          <AppButton
+            variant="ghost"
+            icon="chevron.left"
+            onPress={cancelEdit}
+            label={t("dogs.cancel")}
+            style={styles.backButton}
+          />
+        ) : null}
         <ThemedText type="sectionTitle" style={styles.editorTitle}>
           {editingDogId ? t("dogs.editorEditTitle") : t("dogs.editorAddTitle")}
         </ThemedText>
@@ -111,15 +120,6 @@ export const DogEditForm = ({
             onPress={handleSave}
           />
         ) : null}
-        {cancelEdit ? (
-          <AppButton
-            variant="secondary"
-            icon="cancel.fill.circle"
-            onPress={cancelEdit}
-            label={t("dogs.cancel")}
-            style={{ marginTop: Spacing.lg }}
-          />
-        ) : null}
       </ThemedView>
     </KeyboardAwareScrollView>
   );
@@ -138,5 +138,10 @@ const styles = StyleSheet.create({
   editorTitle: {
     fontSize: 22,
     marginBottom: Spacing.lg,
+  },
+  backButton: {
+    alignSelf: "flex-start",
+    minHeight: 40,
+    paddingHorizontal: 0,
   },
 });

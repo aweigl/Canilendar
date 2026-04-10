@@ -4,7 +4,7 @@ function encodeValue(value: string) {
   return encodeURIComponent(value.trim());
 }
 
-export function getMapsUrl(address: string) {
+export function getSystemMapsUrl(address: string) {
   const encodedAddress = encodeValue(address);
 
   if (Platform.OS === "ios") {
@@ -13,6 +13,16 @@ export function getMapsUrl(address: string) {
 
   if (Platform.OS === "android") {
     return `geo:0,0?q=${encodedAddress}`;
+  }
+
+  return getMapsFallbackUrl(address);
+}
+
+export function getGoogleMapsUrl(address: string) {
+  const encodedAddress = encodeValue(address);
+
+  if (Platform.OS === "ios") {
+    return `comgooglemaps://?q=${encodedAddress}`;
   }
 
   return getMapsFallbackUrl(address);

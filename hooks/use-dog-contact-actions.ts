@@ -1,14 +1,33 @@
 import { useTranslation } from "react-i18next";
-import { Alert, Linking } from "react-native";
+import { Alert, Linking, Platform } from "react-native";
 
 import {
   getMapsFallbackUrl,
-  getMapsUrl,
+  getGoogleMapsUrl,
+  getSystemMapsUrl,
   getPhoneUrl,
 } from "@/lib/contact-actions";
 
 export function useDogContactActions() {
   const { t } = useTranslation();
+
+  async function openUrlWithFallback(primaryUrl: string, fallbackUrl?: string) {
+    try {
+      if (await Linking.canOpenURL(primaryUrl)) {
+        await Linking.openURL(primaryUrl);
+        return true;
+      }
+
+      if (fallbackUrl && (await Linking.canOpenURL(fallbackUrl))) {
+        await Linking.openURL(fallbackUrl);
+        return true;
+      }
+    } catch {
+      // Fall through to the caller-specific alert below.
+    }
+
+    return false;
+  }
 
   async function openDogAddress(address: string) {
     const trimmedAddress = address.trim();
@@ -17,26 +36,53 @@ export function useDogContactActions() {
       return;
     }
 
-    const primaryUrl = getMapsUrl(trimmedAddress);
-    const fallbackUrl = getMapsFallbackUrl(trimmedAddress);
+    const systemMapsUrl = getSystemMapsUrl(trimmedAddress);
+    const googleMapsUrl = getGoogleMapsUrl(trimmedAddress);
+    const googleMapsFallbackUrl = getMapsFallbackUrl(trimmedAddress);
 
-    try {
-      if (await Linking.canOpenURL(primaryUrl)) {
-        await Linking.openURL(primaryUrl);
-        return;
-      }
-
-      if (await Linking.canOpenURL(fallbackUrl)) {
-        await Linking.openURL(fallbackUrl);
-        return;
-      }
-    } catch {
-      // Fall through to the localized alert below.
-    }
+    const showMapsUnavailable = () => {
+      Alert.alert(
+        t("dogs.alerts.mapsUnavailableTitle"),
+        t("dogs.alerts.mapsUnavailableBody"),
+      );
+    };
 
     Alert.alert(
-      t("dogs.alerts.mapsUnavailableTitle"),
-      t("dogs.alerts.mapsUnavailableBody"),
+      t("dogs.actions.chooseMapAppTitle"),
+      t("dogs.actions.chooseMapAppBody"),
+      [
+        {
+          text: Platform.OS === "ios" ? t("dogs.actions.appleMaps") : t("dogs.actions.maps"),
+          onPress: async () => {
+            const didOpen = await openUrlWithFallback(
+              systemMapsUrl,
+              googleMapsFallbackUrl,
+            );
+
+            if (!didOpen) {
+              showMapsUnavailable();
+            }
+          },
+        },
+        {
+          text: t("dogs.actions.googleMaps"),
+          onPress: async () => {
+            const didOpen = await openUrlWithFallback(
+              googleMapsUrl,
+              googleMapsFallbackUrl,
+            );
+
+            if (!didOpen) {
+              showMapsUnavailable();
+            }
+          },
+        },
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+        },
+      ],
+      { cancelable: true },
     );
   }
 
@@ -47,21 +93,14 @@ export function useDogContactActions() {
       return;
     }
 
-    try {
-      const canOpenPhone = await Linking.canOpenURL(phoneUrl);
+    const didOpen = await openUrlWithFallback(phoneUrl);
 
-      if (canOpenPhone) {
-        await Linking.openURL(phoneUrl);
-        return;
-      }
-    } catch {
-      // Fall through to the localized alert below.
+    if (!didOpen) {
+      Alert.alert(
+        t("dogs.alerts.phoneUnavailableTitle"),
+        t("dogs.alerts.phoneUnavailableBody"),
+      );
     }
-
-    Alert.alert(
-      t("dogs.alerts.phoneUnavailableTitle"),
-      t("dogs.alerts.phoneUnavailableBody"),
-    );
   }
 
   return {

@@ -8,6 +8,7 @@ import {
   CalendarDays,
   CalendarPlus,
   Camera,
+  ChevronLeft,
   ChevronRight,
   CirclePlus,
   CircleStar,
@@ -43,6 +44,7 @@ export type IconSymbolName =
   | "calendar.circle.fill"
   | "pawprint.circle.fill"
   | "gearshape.fill"
+  | "chevron.left"
   | "chevron.right"
   | "plus.circle.fill"
   | "square.and.pencil"
@@ -82,6 +84,7 @@ const MAPPING = {
   "calendar.circle.fill": CalendarDays,
   "pawprint.circle.fill": PawPrint,
   "gearshape.fill": Settings,
+  "chevron.left": ChevronLeft,
   "chevron.right": ChevronRight,
   "plus.circle.fill": CirclePlus,
   "square.and.pencil": SquarePen,
