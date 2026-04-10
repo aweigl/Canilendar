@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { DAY_ACCENTS } from "@/constants/day-accents";
 import { Colors, Fonts, Radius, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import {
@@ -14,7 +15,6 @@ import {
   isCurrentMonthDay,
   toDateKey,
 } from "@/lib/date";
-import { DAY_ACCENTS } from "./week-table";
 
 type MonthCalendarProps = {
   selectedDate: Date;

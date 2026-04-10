@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { StyleSheet, Text, View } from "react-native";
 
-import { DAY_ACCENTS } from "@/components/week-table";
+import { DAY_ACCENTS } from "@/constants/day-accents";
 
 export function DogAvatar({
   name,

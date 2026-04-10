@@ -53,9 +53,8 @@ const resources = {
       },
       welcome: {
         eyebrow: "Canilendar",
-        title: "Dog walks, calm days, zero chaos.",
-        description:
-          "Sign in with Apple to unlock the planner that helps dog walkers stay on time, avoid overbooking, and keep client days under control.",
+        title: "Welcome to Canilendar",
+        description: "Your professional dog-walking planner",
         valuePointOne:
           "Save each client dog once, then book repeat walks in seconds.",
         valuePointTwo:
@@ -469,9 +468,8 @@ const resources = {
       },
       welcome: {
         eyebrow: "Canilendar",
-        title: "Gassi-Runden, ruhige Tage, kein Chaos.",
-        description:
-          "Melde dich mit Apple an, um den Planer freizuschalten, der professionellen Dogwalkern hilft, pünktlich zu bleiben, Überbuchungen zu vermeiden und Kundentermine zuverlässig zu organisieren.",
+        title: "Willkommen bei Canilendar",
+        description: "Deinem professionellen Dogwalking-Planner",
         valuePointOne:
           "Speichere jeden Kundenhund einmal und plane wiederkehrende Spaziergänge danach in wenigen Sekunden.",
         valuePointTwo:
@@ -894,9 +892,8 @@ const resources = {
       },
       welcome: {
         eyebrow: "Canilendar",
-        title: "Promenades calmes, journées fluides, zéro chaos.",
-        description:
-          "Connectez-vous avec Apple pour débloquer l’agenda qui aide les dogwalkers à rester à l’heure, éviter les surcharges et garder chaque journée client sous contrôle.",
+        title: "Bienvenue sur Canilendar",
+        description: "Votre planificateur professionnel de promenades canines",
         valuePointOne:
           "Enregistrez chaque chien client une seule fois, puis planifiez les promenades récurrentes en quelques secondes.",
         valuePointTwo:
@@ -1325,9 +1322,8 @@ const resources = {
       },
       welcome: {
         eyebrow: "Canilendar",
-        title: "Paseos tranquilos, dias claros, cero caos.",
-        description:
-          "Inicia sesion con Apple para desbloquear la agenda que ayuda a los paseadores a llegar a tiempo, evitar sobrecargas y controlar mejor cada dia con clientes.",
+        title: "Bienvenido a Canilendar",
+        description: "Tu planificador profesional de paseos caninos",
         valuePointOne:
           "Guarda cada perro cliente una vez y programa paseos recurrentes en segundos.",
         valuePointTwo:

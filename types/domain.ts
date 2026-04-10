@@ -122,7 +122,7 @@ export type AppointmentInput = {
 };
 
 export const REMINDER_OPTIONS = [15, 30, 60, 90];
-export const DAILY_APPOINTMENT_LIMIT_MIN = 6;
+export const DAILY_APPOINTMENT_LIMIT_MIN = 1;
 export const DAILY_APPOINTMENT_LIMIT_MAX = 15;
 export const DAILY_APPOINTMENT_LIMIT_OPTIONS = [
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,

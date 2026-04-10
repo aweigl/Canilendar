@@ -2,6 +2,7 @@ import {
   AppleButton,
   appleAuth,
 } from "@invertase/react-native-apple-authentication";
+import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,11 +22,6 @@ export default function WelcomeScreen() {
   const { isAuthenticating, signInWithApple } = useAppSession();
   const [isHandlingSignIn, setIsHandlingSignIn] = useState(false);
   const canUseAppleSignIn = Platform.OS === "ios" && appleAuth.isSupported;
-  const valuePoints = [
-    t("welcome.valuePointOne"),
-    t("welcome.valuePointTwo"),
-    t("welcome.valuePointThree"),
-  ];
 
   async function handleAppleSignIn() {
     if (isAuthenticating || isHandlingSignIn) {
@@ -43,111 +39,88 @@ export default function WelcomeScreen() {
 
   return (
     <AuthShell
-      eyebrow={t("welcome.eyebrow")}
+      illustration={
+        <Image
+          contentFit="contain"
+          source={require("../assets/images/login_screen.png")}
+          style={styles.illustration}
+        />
+      }
       title={t("welcome.title")}
       description={t("welcome.description")}
+      action={
+        canUseAppleSignIn ? (
+          <AppleButton
+            buttonStyle={
+              colorScheme === "dark"
+                ? AppleButton.Style.WHITE
+                : AppleButton.Style.BLACK
+            }
+            buttonType={AppleButton.Type.SIGN_IN}
+            cornerRadius={Radius.controlLarge}
+            onPress={() => {
+              handleAppleSignIn();
+            }}
+            style={[
+              styles.appleButton,
+              (isAuthenticating || isHandlingSignIn) && styles.disabledButton,
+            ]}
+          />
+        ) : (
+          <ThemedView
+            style={[
+              styles.unsupportedCard,
+              {
+                backgroundColor: palette.surface,
+                borderColor: palette.border,
+              },
+            ]}
+          >
+            <ThemedText
+              lightColor={palette.textMuted}
+              darkColor={palette.textMuted}
+            >
+              {t("welcome.appleUnavailable")}
+            </ThemedText>
+          </ThemedView>
+        )
+      }
       footer={
         <View style={styles.footer}>
-          <ThemedText
-            lightColor={palette.textSubtle}
-            darkColor={palette.textSubtle}
-            type="caption"
-          >
-            {t("welcome.footer")}
-          </ThemedText>
           <View style={styles.legalLinks}>
             <Pressable onPress={() => router.push("/legal/imprint")}>
-              <ThemedText type="caption">{t("legal.imprintTitle")}</ThemedText>
+              <ThemedText
+                lightColor={palette.textSubtle}
+                darkColor={palette.textSubtle}
+                type="caption"
+              >
+                {t("legal.imprintTitle")}
+              </ThemedText>
             </Pressable>
             <Pressable onPress={() => router.push("/legal/privacy")}>
-              <ThemedText type="caption">{t("legal.privacyTitle")}</ThemedText>
+              <ThemedText
+                lightColor={palette.textSubtle}
+                darkColor={palette.textSubtle}
+                type="caption"
+              >
+                {t("legal.privacyTitle")}
+              </ThemedText>
             </Pressable>
           </View>
         </View>
       }
-    >
-      <ThemedView
-        style={[
-          styles.card,
-          {
-            backgroundColor: palette.surface,
-            borderColor: palette.border,
-          },
-        ]}
-      >
-        {valuePoints.map((point) => (
-          <View key={point} style={styles.pointRow}>
-            <View
-              style={[
-                styles.dot,
-                {
-                  backgroundColor: palette.accent,
-                },
-              ]}
-            />
-            <ThemedText>{point}</ThemedText>
-          </View>
-        ))}
-      </ThemedView>
-
-      {canUseAppleSignIn ? (
-        <AppleButton
-          buttonStyle={
-            colorScheme === "dark"
-              ? AppleButton.Style.WHITE
-              : AppleButton.Style.BLACK
-          }
-          buttonType={AppleButton.Type.SIGN_IN}
-          cornerRadius={Radius.controlLarge}
-          onPress={() => {
-            handleAppleSignIn();
-          }}
-          style={[
-            styles.appleButton,
-            (isAuthenticating || isHandlingSignIn) && styles.disabledButton,
-          ]}
-        />
-      ) : (
-        <ThemedView
-          style={[
-            styles.unsupportedCard,
-            {
-              backgroundColor: palette.surface,
-              borderColor: palette.border,
-            },
-          ]}
-        >
-          <ThemedText
-            lightColor={palette.textMuted}
-            darkColor={palette.textMuted}
-          >
-            {t("welcome.appleUnavailable")}
-          </ThemedText>
-        </ThemedView>
-      )}
-    </AuthShell>
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: Radius.card,
-    borderWidth: 1.5,
-    gap: Spacing.md,
-    padding: Spacing.md,
-  },
-  pointRow: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: Spacing.sm,
-  },
-  dot: {
-    borderRadius: Radius.pill,
-    height: 10,
-    width: 10,
+  illustration: {
+    aspectRatio: 1.5,
+    width: "100%",
   },
   appleButton: {
     height: 56,
+    width: "100%",
   },
   disabledButton: {
     opacity: 0.6,
@@ -156,13 +129,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.card,
     borderWidth: 1.5,
     padding: Spacing.md,
+    width: "100%",
   },
   footer: {
-    gap: Spacing.sm,
+    alignItems: "center",
   },
   legalLinks: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: Spacing.md,
+    gap: Spacing.lg,
+    justifyContent: "center",
   },
 });
