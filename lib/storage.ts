@@ -16,7 +16,8 @@ import {
 const STORAGE_KEY = '@canilendar/app-state-v3';
 const STORAGE_KEY_PREFIX = '@canilendar/app-state-v2';
 const LEGACY_STORAGE_KEY = '@canilendar/app-state-v1';
-const AUTH_STORAGE_KEY = '@canilendar/auth-session-v1';
+const AUTH_STORAGE_KEY = 'canilendar_auth_session_v1';
+const LEGACY_AUTH_STORAGE_KEY = '@canilendar/auth-session-v1';
 
 const FALLBACK_STATE: PersistedAppState = {
   dogs: [],
@@ -293,7 +294,7 @@ export async function loadAuthSession(): Promise<AuthSession | null> {
       return normalizeAuthSession(JSON.parse(secureValue));
     }
 
-    const rawValue = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
+    const rawValue = await AsyncStorage.getItem(LEGACY_AUTH_STORAGE_KEY);
 
     if (!rawValue) {
       return null;
@@ -303,7 +304,7 @@ export async function loadAuthSession(): Promise<AuthSession | null> {
 
     if (session) {
       await SecureStore.setItemAsync(AUTH_STORAGE_KEY, JSON.stringify(session));
-      await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
+      await AsyncStorage.removeItem(LEGACY_AUTH_STORAGE_KEY);
     }
 
     return session;
@@ -314,12 +315,12 @@ export async function loadAuthSession(): Promise<AuthSession | null> {
 
 export async function persistAuthSession(session: AuthSession) {
   await SecureStore.setItemAsync(AUTH_STORAGE_KEY, JSON.stringify(session));
-  await AsyncStorage.removeItem(AUTH_STORAGE_KEY);
+  await AsyncStorage.removeItem(LEGACY_AUTH_STORAGE_KEY);
 }
 
 export async function clearAuthSession() {
   await Promise.all([
     SecureStore.deleteItemAsync(AUTH_STORAGE_KEY),
-    AsyncStorage.removeItem(AUTH_STORAGE_KEY),
+    AsyncStorage.removeItem(LEGACY_AUTH_STORAGE_KEY),
   ]);
 }
