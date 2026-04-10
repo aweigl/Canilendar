@@ -27,6 +27,18 @@ import {
 import { REMINDER_OPTIONS, WEEKDAY_OPTIONS } from "@/types/domain";
 import { set } from "date-fns/set";
 
+const ONBOARDING_MIN_START_AT_OFFSET_MS = 24 * 60 * 60 * 1000;
+
+function getMinimumOnboardingStartAt() {
+  return new Date(Date.now() + ONBOARDING_MIN_START_AT_OFFSET_MS);
+}
+
+function clampOnboardingStartAt(date: Date) {
+  const minimumStartAt = getMinimumOnboardingStartAt();
+
+  return date.getTime() < minimumStartAt.getTime() ? minimumStartAt : date;
+}
+
 export default function OnboardingAppointmentScreen() {
   const { t } = useTranslation();
   const posthog = usePostHog();
@@ -44,13 +56,15 @@ export default function OnboardingAppointmentScreen() {
   const dog = useMemo(() => dogs[0], [dogs]);
   const existingAppointment = useMemo(() => appointments[0], [appointments]);
 
-  const initialStartAt = set(new Date(), {
-    hours: 9,
-    minutes: 0,
-    seconds: 0,
-    milliseconds: 0,
-    date: new Date().getDate() + 1,
-  });
+  const initialStartAt = clampOnboardingStartAt(
+    set(new Date(), {
+      hours: 9,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+      date: new Date().getDate() + 1,
+    }),
+  );
   const [appointmentDate, setAppointmentDate] = useState(initialStartAt);
   const [hasPickupTime, setHasPickupTime] = useState(false);
   const [appointmentTime, setAppointmentTime] = useState(
@@ -70,6 +84,22 @@ export default function OnboardingAppointmentScreen() {
   useEffect(() => {
     if (existingAppointment) {
       setIsFormVisible(true);
+      const startAt = clampOnboardingStartAt(
+        new Date(existingAppointment.startAt),
+      );
+
+      setAppointmentDate(startAt);
+      setHasPickupTime(existingAppointment.hasPickupTime);
+      setAppointmentTime(
+        existingAppointment.hasPickupTime
+          ? startAt
+          : getDefaultPickupTime(startAt),
+      );
+      setIsRecurring(existingAppointment.isRecurring);
+      setRecurrenceWeekdays(
+        existingAppointment.recurrenceRule?.weekdays ?? [startAt.getDay()],
+      );
+      setReminderMinutesBefore(existingAppointment.reminderMinutesBefore);
     }
   }, [existingAppointment]);
 
@@ -101,9 +131,11 @@ export default function OnboardingAppointmentScreen() {
       return;
     }
 
-    const startAt = hasPickupTime
-      ? combineDateAndTimeParts(appointmentDate, appointmentTime)
-      : getDateOnlyStartAt(appointmentDate);
+    const startAt = clampOnboardingStartAt(
+      hasPickupTime
+        ? combineDateAndTimeParts(appointmentDate, appointmentTime)
+        : getDateOnlyStartAt(appointmentDate),
+    );
 
     if (
       hasPickupTime
@@ -118,6 +150,7 @@ export default function OnboardingAppointmentScreen() {
     }
 
     const dailyLimitValidation = validateAppointmentDailyLimit({
+      id: existingAppointment?.id,
       dog: {
         id: dog.id,
         name: dog.name,
@@ -154,6 +187,7 @@ export default function OnboardingAppointmentScreen() {
     }
 
     const savedAppointment = await saveAppointment({
+      id: existingAppointment?.id,
       dog: {
         id: dog.id,
         name: dog.name,
@@ -228,36 +262,20 @@ export default function OnboardingAppointmentScreen() {
             { backgroundColor: palette.surface, borderColor: palette.border },
           ]}
         >
-          <View
-            style={[
-              styles.section,
-              styles.sectionCard,
-              {
-                backgroundColor: palette.surfaceRaised,
-              },
-            ]}
-          >
+          <View style={[styles.section, styles.sectionCard]}>
             <ThemedText type="sectionTitle">
               {t("common.pickerDate")}
             </ThemedText>
             <DateTimePicker
               display={Platform.OS === "ios" ? "compact" : "default"}
               mode="date"
-              minimumDate={new Date(Date.now() + 24 * 60 * 60 * 1000)}
+              minimumDate={getMinimumOnboardingStartAt()}
               onChange={handleDatePickerChange}
               value={appointmentDate}
             />
           </View>
 
-          <View
-            style={[
-              styles.section,
-              styles.sectionCard,
-              {
-                backgroundColor: palette.surfaceRaised,
-              },
-            ]}
-          >
+          <View style={[styles.section, styles.sectionCard]}>
             <View style={styles.switchRow}>
               <View style={styles.switchCopy}>
                 <ThemedText type="sectionTitle">
@@ -307,15 +325,7 @@ export default function OnboardingAppointmentScreen() {
             ) : null}
           </View>
 
-          <View
-            style={[
-              styles.section,
-              styles.sectionCard,
-              {
-                backgroundColor: palette.surfaceRaised,
-              },
-            ]}
-          >
+          <View style={[styles.section, styles.sectionCard]}>
             <View style={styles.switchRow}>
               <View style={styles.switchCopy}>
                 <ThemedText type="sectionTitle">
