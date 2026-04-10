@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { CheckCircle2Icon } from "lucide-react-native";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, View } from "react-native";
 
@@ -144,10 +144,7 @@ export function SettingsAccountSection({
       <ThemedText type="sectionTitle" style={styles.cardTitle}>
         {t("settings.account.title")}
       </ThemedText>
-      <ThemedText
-        lightColor={palette.textMuted}
-        darkColor={palette.textMuted}
-      >
+      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
         {t("settings.account.description")}
       </ThemedText>
       <ThemedText lightColor={palette.support} darkColor={palette.support}>
@@ -187,18 +184,29 @@ export function SettingsSubscriptionSection({
 
   return (
     <SettingsCard palette={palette}>
-      <ThemedText
-        type="sectionTitle"
-        style={[styles.cardTitle, styles.marginBottom, styles.row]}
+      <View
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "row",
+          gap: Spacing.sm,
+        }}
       >
-        {t("settings.pro.title")}
+        <ThemedText
+          type="sectionTitle"
+          style={[styles.cardTitle, styles.marginBottom]}
+        >
+          {t("settings.pro.title")}
+        </ThemedText>
         {isPro ? (
           <CheckCircle2Icon
-            style={{ margin: 0, marginLeft: 8 }}
+            height={24}
+            width={24}
+            style={{ margin: 0 }}
             color={palette.support}
           />
         ) : null}
-      </ThemedText>
+      </View>
       <ThemedText
         style={[styles.marginBottom, styles.statusText]}
         lightColor={palette.support}
@@ -268,10 +276,7 @@ export function SettingsNotificationSection({
       <ThemedText type="sectionTitle" style={styles.cardTitle}>
         {t("settings.notifications")}
       </ThemedText>
-      <ThemedText
-        lightColor={palette.textMuted}
-        darkColor={palette.textMuted}
-      >
+      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
         {permissionCopy}
       </ThemedText>
       <View style={styles.actions}>
@@ -594,10 +599,7 @@ export function SettingsDeveloperToolsSection({
       >
         {t("settings.devTools.title")}
       </ThemedText>
-      <ThemedText
-        lightColor={palette.onDanger}
-        darkColor={palette.onDanger}
-      >
+      <ThemedText lightColor={palette.onDanger} darkColor={palette.onDanger}>
         {t("settings.devTools.description")}
       </ThemedText>
       <AppButton
