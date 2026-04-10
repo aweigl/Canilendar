@@ -1,0 +1,8 @@
+{
+  "platforms": ["apple"],
+  "apple": {
+    "modules": ["CanilendarAddressAutocompleteModule"],
+    "podspecPath": "ios/CanilendarAddressAutocomplete.podspec",
+    "swiftModuleName": "CanilendarAddressAutocomplete"
+  }
+}

@@ -22,6 +22,7 @@
     "@react-navigation/native": "^7.1.8",
     "@tamagui/babel-plugin": "^2.0.0-rc.36",
     "@tamagui/config": "^2.0.0-rc.36",
+    "canilendar-address-autocomplete": "file:modules/canilendar-address-autocomplete",
     "date-fns": "^4.1.0",
     "expo": "~54.0.33",
     "expo-application": "~7.0.8",

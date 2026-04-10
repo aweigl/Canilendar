@@ -133,23 +133,6 @@ export function SettingsAccountSection({
       <ThemedText type="sectionTitle" style={styles.cardTitle}>
         {t("settings.account.title")}
       </ThemedText>
-      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-        {t("settings.account.description")}
-      </ThemedText>
-      <ThemedText lightColor={palette.support} darkColor={palette.support}>
-        {t("settings.account.signedInAs", {
-          value: signedInLabel,
-        })}
-      </ThemedText>
-      <ThemedText
-        lightColor={palette.textMuted}
-        darkColor={palette.textMuted}
-        type="caption"
-      >
-        {t("settings.account.revenueCatReference", {
-          value: authUser.revenueCatAppUserId,
-        })}
-      </ThemedText>
       <AppButton
         label={t("settings.account.signOut")}
         onPress={onSignOut}

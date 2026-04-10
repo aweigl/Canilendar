@@ -45,6 +45,7 @@ import { useScreenTracking } from "@/hooks/use-screen-tracking";
 import "@/i18n";
 import { configureNotificationHandling } from "@/lib/notifications";
 import { posthog } from "@/lib/posthog";
+import { LOCAL_DEVICE_STORAGE_SCOPE } from "@/lib/storage";
 import tamaguiConfig from "@/tamagui.config";
 
 configureNotificationHandling();
@@ -228,16 +229,13 @@ function RootNavigation() {
 }
 
 function AppProviders() {
-  const { authUser, isAppleAuthEnabled, isPro, presentPaywall } =
-    useAppSession();
+  const { authUser, isPro, presentPaywall } = useAppSession();
 
   return (
     <CanilendarProvider
       isPro={isPro}
       onRequireUpgrade={presentPaywall}
-      storageScopeKey={
-        authUser?.appleUserId ?? (isAppleAuthEnabled ? null : "local-device")
-      }
+      storageScopeKey={authUser?.appleUserId ?? LOCAL_DEVICE_STORAGE_SCOPE}
     >
       <RootNavigation />
     </CanilendarProvider>

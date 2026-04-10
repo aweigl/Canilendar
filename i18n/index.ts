@@ -239,10 +239,6 @@ const resources = {
           "Limit each day to {{count}} dog appointments. You can choose up to 15.",
         account: {
           title: "Account",
-          description:
-            "Apple sign-in unlocks your planner and links purchases to the same identity in RevenueCat.",
-          signedInAs: "Signed in as {{value}}",
-          revenueCatReference: "RevenueCat reference: {{value}}",
           signOut: "Sign out",
           signOutTitle: "Sign out?",
           signOutBody:
@@ -676,10 +672,7 @@ const resources = {
           "Begrenze jeden Tag auf maximal {{count}} Hundetermine.",
         account: {
           title: "Konto",
-          description:
-            "Die Apple-Anmeldung schaltet deinen Planer frei und verknüpft Käufe in RevenueCat mit derselben Identität.",
-          signedInAs: "Angemeldet als {{value}}",
-          revenueCatReference: "RevenueCat-Referenz: {{value}}",
+
           signOut: "Abmelden",
           signOutTitle: "Abmelden?",
           signOutBody:
@@ -1118,10 +1111,7 @@ const resources = {
           "Limitez chaque jour à {{count}} rendez-vous chien. Vous pouvez aller jusqu’à 15.",
         account: {
           title: "Compte",
-          description:
-            "La connexion Apple débloque votre agenda et relie les achats à la même identité dans RevenueCat.",
-          signedInAs: "Connecté en tant que {{value}}",
-          revenueCatReference: "Référence RevenueCat : {{value}}",
+
           signOut: "Se deconnecter",
           signOutTitle: "Se deconnecter ?",
           signOutBody:
@@ -1480,8 +1470,7 @@ const resources = {
           openInMaps: "Abrir en Mapas",
           callOwner: "Llamar al propietario",
           chooseMapAppTitle: "Abrir la dirección con",
-          chooseMapAppBody:
-            "Elige qué app de mapas quieres usar.",
+          chooseMapAppBody: "Elige qué app de mapas quieres usar.",
           maps: "Mapas",
           appleMaps: "Apple Maps",
           googleMaps: "Google Maps",
@@ -1564,10 +1553,7 @@ const resources = {
           "Limita cada dia a {{count}} citas de perros. Puedes subir hasta 15.",
         account: {
           title: "Cuenta",
-          description:
-            "El inicio de sesion con Apple desbloquea tu agenda y vincula las compras con la misma identidad en RevenueCat.",
-          signedInAs: "Sesion iniciada como {{value}}",
-          revenueCatReference: "Referencia de RevenueCat: {{value}}",
+
           signOut: "Cerrar sesion",
           signOutTitle: "Cerrar sesion?",
           signOutBody:

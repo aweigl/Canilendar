@@ -6,6 +6,7 @@ import { Alert, StyleSheet } from "react-native";
 
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ThemedView } from "@/components/themed-view";
+import { AddressAutocompleteField } from "@/components/ui/address-autocomplete-field";
 import { AppButton } from "@/components/ui/app-button";
 import { DogPhotoUploader } from "@/components/ui/dog-photo-uploader";
 import { InputField } from "@/components/ui/input-field";
@@ -215,7 +216,7 @@ export default function OnboardingDogScreen() {
             placeholder={t("dogs.placeholders.dogName")}
             value={name}
           />
-          <InputField
+          <AddressAutocompleteField
             label={t("appointment.pickupAddress")}
             onChangeText={setAddress}
             placeholder={t("dogs.placeholders.pickupAddress")}

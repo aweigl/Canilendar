@@ -15,9 +15,9 @@ export default function OnboardingSuccessScreen() {
   const { presentPaywall } = useAppSession();
   const posthog = usePostHog();
 
-  function handleFinish() {
+  async function handleFinish() {
     posthog.capture("onboarding_completed");
-    completeOnboarding();
+    await completeOnboarding();
     presentPaywall("onboarding_complete");
     router.replace("/(tabs)" as never);
   }
@@ -32,7 +32,9 @@ export default function OnboardingSuccessScreen() {
         <AppButton
           style={styles.cta}
           label={t("onboarding.success.cta")}
-          onPress={handleFinish}
+          onPress={() => {
+            handleFinish();
+          }}
           icon="calendar.circle.fill"
         />
       }

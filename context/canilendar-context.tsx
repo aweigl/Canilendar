@@ -78,7 +78,7 @@ type CanilendarContextValue = {
   updateAppearanceMode: (mode: AppearanceMode) => void;
   markChecklistStepSeen: (target: ChecklistTarget) => void;
   dismissHomeChecklist: () => void;
-  completeOnboarding: () => void;
+  completeOnboarding: () => Promise<void>;
   restartOnboarding: () => void;
   updateReviewPrompt: (partial: Partial<ReviewPromptState>) => void;
   resetLocalData: () => void;
@@ -411,7 +411,7 @@ export function CanilendarProvider({
     }));
   }
 
-  function completeOnboarding() {
+  async function completeOnboarding() {
     const nextState = completeOnboardingState(
       onboardingChecklist,
       reviewPrompt,
@@ -419,6 +419,25 @@ export function CanilendarProvider({
 
     setOnboardingChecklist(nextState.onboardingChecklist);
     setReviewPrompt(nextState.reviewPrompt);
+
+    if (!storageScopeKey) {
+      return;
+    }
+
+    try {
+      await persistState(
+        {
+          dogs,
+          appointments,
+          settings,
+          onboarding: nextState.onboardingChecklist,
+          reviewPrompt: nextState.reviewPrompt,
+        },
+        storageScopeKey,
+      );
+    } catch (error) {
+      console.warn("Unable to persist onboarding completion", error);
+    }
   }
 
   function restartOnboarding() {

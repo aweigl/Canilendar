@@ -43,6 +43,66 @@ If the hosted URLs are not configured yet, the app still shows the in-app legal
 screens. For App Store release, you should still provide a public privacy-policy
 URL in App Store Connect.
 
+## EAS build environments
+
+Do not put production keys into [`eas.json`](./eas.json) or commit them to this
+public repo. This project uses EAS-managed environments instead:
+
+- `development` builds read the EAS `development` environment
+- `preview` builds read the EAS `preview` environment
+- `production` builds read the EAS `production` environment
+
+[`eas.json`](./eas.json) only selects the environment name for each profile. The
+actual values must be stored in EAS.
+
+### Required production vars
+
+Create these in the EAS `production` environment before running a production
+build:
+
+```bash
+eas env:create --environment production --name EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY --value YOUR_PRODUCTION_REVENUECAT_KEY
+eas env:create --environment production --name EXPO_PUBLIC_POSTHOG_PROJECT_TOKEN --value YOUR_POSTHOG_PROJECT_TOKEN
+eas env:create --environment production --name EXPO_PUBLIC_POSTHOG_HOST --value https://eu.i.posthog.com
+eas env:create --environment production --name EXPO_PUBLIC_IMPRINT_URL --value https://your-domain.example/imprint
+eas env:create --environment production --name EXPO_PUBLIC_PRIVACY_POLICY_URL --value https://your-domain.example/privacy
+eas env:create --environment production --name EXPO_PUBLIC_PRIVACY_CHOICES_URL --value https://your-domain.example/privacy-choices
+```
+
+### Required preview vars
+
+Create the same variables in the EAS `preview` environment with preview-safe
+values:
+
+```bash
+eas env:create --environment preview --name EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY --value YOUR_PREVIEW_REVENUECAT_KEY
+eas env:create --environment preview --name EXPO_PUBLIC_POSTHOG_PROJECT_TOKEN --value YOUR_POSTHOG_PROJECT_TOKEN
+eas env:create --environment preview --name EXPO_PUBLIC_POSTHOG_HOST --value https://eu.i.posthog.com
+eas env:create --environment preview --name EXPO_PUBLIC_IMPRINT_URL --value https://your-domain.example/imprint
+eas env:create --environment preview --name EXPO_PUBLIC_PRIVACY_POLICY_URL --value https://your-domain.example/privacy
+eas env:create --environment preview --name EXPO_PUBLIC_PRIVACY_CHOICES_URL --value https://your-domain.example/privacy-choices
+```
+
+If you keep a local `.env.production`, treat it as a local reference only and
+sync changes into EAS manually. Cloud builds do not read `.env.production`
+directly.
+
+### Build steps
+
+1. Store the required variables in EAS for the target environment.
+2. Optionally pull them locally before testing that profile:
+
+   ```bash
+   eas env:pull --environment production
+   ```
+
+3. Run the build:
+
+   ```bash
+   eas build --platform ios --profile production
+   eas build --platform ios --profile preview
+   ```
+
 ## Get a fresh project
 
 When you're ready, run:

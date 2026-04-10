@@ -18,6 +18,7 @@ const STORAGE_KEY_PREFIX = '@canilendar/app-state-v2';
 const LEGACY_STORAGE_KEY = '@canilendar/app-state-v1';
 const AUTH_STORAGE_KEY = 'canilendar_auth_session_v1';
 const LEGACY_AUTH_STORAGE_KEY = '@canilendar/auth-session-v1';
+export const LOCAL_DEVICE_STORAGE_SCOPE = 'local-device';
 
 const FALLBACK_STATE: PersistedAppState = {
   dogs: [],
@@ -228,6 +229,20 @@ export async function loadScopedPersistedState(
       return normalizePersistedState(JSON.parse(scopedValue) as Partial<PersistedAppState>);
     }
 
+    if (scopeKey !== LOCAL_DEVICE_STORAGE_SCOPE) {
+      const localDeviceScopedKey = getScopedStorageKey(LOCAL_DEVICE_STORAGE_SCOPE);
+      const localDeviceValue = await AsyncStorage.getItem(localDeviceScopedKey);
+
+      if (localDeviceValue) {
+        const migratedState = normalizePersistedState(
+          JSON.parse(localDeviceValue) as Partial<PersistedAppState>
+        );
+        await AsyncStorage.setItem(scopedStorageKey, JSON.stringify(migratedState));
+        await AsyncStorage.removeItem(localDeviceScopedKey);
+        return migratedState;
+      }
+    }
+
     const rawValue = await AsyncStorage.getItem(STORAGE_KEY);
 
     if (rawValue) {
@@ -277,7 +292,7 @@ export async function persistState(
 export async function clearScopedPersistedState(
   scopeKey: string | null | undefined,
 ) {
-  const keysToRemove = [STORAGE_KEY, LEGACY_STORAGE_KEY];
+  const keysToRemove = [STORAGE_KEY, LEGACY_STORAGE_KEY, getScopedStorageKey(LOCAL_DEVICE_STORAGE_SCOPE)];
 
   if (scopeKey) {
     keysToRemove.unshift(getScopedStorageKey(scopeKey));

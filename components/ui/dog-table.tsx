@@ -52,7 +52,7 @@ export const DogTableRow = ({
           gap: Spacing.md,
         },
         pressed && {
-          backgroundColor: palette.surfaceAccent,
+          backgroundColor: palette.surface,
           opacity: 0.96,
         },
       ]}

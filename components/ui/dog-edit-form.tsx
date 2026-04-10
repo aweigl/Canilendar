@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { StyleProp, StyleSheet, ViewStyle } from "react-native";
 import { ThemedText } from "../themed-text";
 import { ThemedView } from "../themed-view";
+import { AddressAutocompleteField } from "./address-autocomplete-field";
 import { AppButton } from "./app-button";
 import { DogPhotoUploader } from "./dog-photo-uploader";
 import { InputField } from "./input-field";
@@ -86,7 +87,7 @@ export const DogEditForm = ({
           placeholder={t("dogs.placeholders.dogName")}
           value={form.name}
         />
-        <InputField
+        <AddressAutocompleteField
           label={t("appointment.pickupAddress")}
           onChangeText={(value) =>
             setForm((current) => ({ ...current, address: value }))
