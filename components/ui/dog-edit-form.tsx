@@ -37,8 +37,8 @@ export const DogEditForm = ({
 }: DogEditFormProps) => {
   const colorScheme = useColorScheme();
   const palette = Colors[colorScheme ?? "light"];
-
   const { t } = useTranslation();
+
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={[

@@ -155,6 +155,10 @@ const resources = {
         createDog: "Create dog",
         saveChanges: "Save changes",
         cancel: "Cancel",
+        actions: {
+          openInMaps: "Open in Maps",
+          callOwner: "Call owner",
+        },
         emptyTitle: "No dogs saved yet",
         emptyDescription:
           "Add your first dog so future appointments can be scheduled from a saved profile.",
@@ -178,6 +182,12 @@ const resources = {
             "Allow photo-library access if you want to choose an existing dog photo.",
           photoProcessingTitle: "Could not use photo",
           photoProcessingBody: "Try another photo or try again in a moment.",
+          mapsUnavailableTitle: "Could not open Maps",
+          mapsUnavailableBody:
+            "Try again in a moment or copy the address into your maps app manually.",
+          phoneUnavailableTitle: "Could not open Phone",
+          phoneUnavailableBody:
+            "Try again in a moment or dial the owner's number manually.",
         },
         placeholders: {
           dogName: "Eddi",
@@ -572,6 +582,10 @@ const resources = {
         createDog: "Hund erstellen",
         saveChanges: "Anderungen speichern",
         cancel: "Abbrechen",
+        actions: {
+          openInMaps: "In Karten öffnen",
+          callOwner: "Besitzer anrufen",
+        },
         emptyTitle: "Noch keine Hunde gespeichert",
         emptyDescription:
           "Füge deinen ersten Hund hinzu, damit zukünftige Termine aus einem gespeicherten Profil geplant werden können.",
@@ -596,6 +610,12 @@ const resources = {
           photoProcessingTitle: "Foto konnte nicht verwendet werden",
           photoProcessingBody:
             "Versuche es mit einem anderen Foto oder probiere es gleich noch einmal.",
+          mapsUnavailableTitle: "Karten konnten nicht geöffnet werden",
+          mapsUnavailableBody:
+            "Versuche es gleich noch einmal oder kopiere die Adresse manuell in deine Karten-App.",
+          phoneUnavailableTitle: "Telefon konnte nicht geöffnet werden",
+          phoneUnavailableBody:
+            "Versuche es gleich noch einmal oder wähle die Nummer des Besitzers manuell.",
         },
         placeholders: {
           dogName: "Eddi",
@@ -998,6 +1018,10 @@ const resources = {
         createDog: "Créer le chien",
         saveChanges: "Enregistrer les modifications",
         cancel: "Annuler",
+        actions: {
+          openInMaps: "Ouvrir dans Maps",
+          callOwner: "Appeler le propriétaire",
+        },
         emptyTitle: "Aucun chien enregistré",
         emptyDescription:
           "Ajoutez votre premier chien pour planifier les prochains rendez-vous depuis un profil enregistré.",
@@ -1022,6 +1046,12 @@ const resources = {
           photoProcessingTitle: "Impossible d'utiliser la photo",
           photoProcessingBody:
             "Essayez une autre photo ou réessayez dans un instant.",
+          mapsUnavailableTitle: "Impossible d'ouvrir Maps",
+          mapsUnavailableBody:
+            "Réessayez dans un instant ou copiez l'adresse manuellement dans votre app de cartes.",
+          phoneUnavailableTitle: "Impossible d'ouvrir le téléphone",
+          phoneUnavailableBody:
+            "Réessayez dans un instant ou composez le numéro du propriétaire manuellement.",
         },
         placeholders: {
           dogName: "Eddi",
@@ -1429,6 +1459,10 @@ const resources = {
         createDog: "Crear perro",
         saveChanges: "Guardar cambios",
         cancel: "Cancelar",
+        actions: {
+          openInMaps: "Abrir en Mapas",
+          callOwner: "Llamar al propietario",
+        },
         emptyTitle: "Todavia no hay perros guardados",
         emptyDescription:
           "Agrega tu primer perro para programar futuras citas desde un perfil guardado.",
@@ -1453,6 +1487,12 @@ const resources = {
           photoProcessingTitle: "No se pudo usar la foto",
           photoProcessingBody:
             "Prueba con otra foto o vuelve a intentarlo en un momento.",
+          mapsUnavailableTitle: "No se pudo abrir Mapas",
+          mapsUnavailableBody:
+            "Vuelve a intentarlo en un momento o copia la dirección manualmente en tu app de mapas.",
+          phoneUnavailableTitle: "No se pudo abrir Teléfono",
+          phoneUnavailableBody:
+            "Vuelve a intentarlo en un momento o marca manualmente el número del propietario.",
         },
         placeholders: {
           dogName: "Eddi",

@@ -117,15 +117,15 @@ export default function PaywallScreen() {
               lightColor={palette.onDanger}
               darkColor={palette.onDanger}
             >
-              Purchases are not configured yet
+              RevenueCat setup is incomplete
             </ThemedText>
             <ThemedText
               lightColor={palette.onDanger}
               darkColor={palette.onDanger}
             >
-              Add `EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY`, create the `pro`
-              entitlement, and connect the monthly and annual products in
-              RevenueCat.
+              Add `EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY`, create the
+              `Canilendar Pro` entitlement in RevenueCat, and attach the
+              monthly and annual products to the current offering.
             </ThemedText>
           </ThemedView>
         ) : null}

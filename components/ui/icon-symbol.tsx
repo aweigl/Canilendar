@@ -17,9 +17,11 @@ import {
   Dog,
   Images,
   Lock,
+  MapPinned,
   Mail,
   PawPrint,
   PartyPopper,
+  Phone,
   Send,
   Settings,
   Sparkles,
@@ -68,7 +70,9 @@ export type IconSymbolName =
   | "bone.fill"
   | "badge.check.fill"
   | "party.popper.fill"
-  | "star.circle.fill";
+  | "star.circle.fill"
+  | "map.fill"
+  | "phone.fill";
 
 type IconWeight = "regular" | "medium" | "semibold" | "bold";
 
@@ -106,6 +110,8 @@ const MAPPING = {
   "badge.check.fill": BadgeCheck,
   "party.popper.fill": PartyPopper,
   "star.circle.fill": CircleStar,
+  "map.fill": MapPinned,
+  "phone.fill": Phone,
 } as IconMapping;
 
 const STROKE_WIDTH_BY_WEIGHT: Record<IconWeight, number> = {
