@@ -2,18 +2,17 @@ module.exports = function (api) {
   api.cache(true);
 
   return {
-    presets: ['babel-preset-expo'],
+    presets: ["babel-preset-expo"],
     plugins: [
       [
-        '@tamagui/babel-plugin',
+        "@tamagui/babel-plugin",
         {
-          components: ['tamagui'],
-          config: './tamagui.config.ts',
-          disableExtraction: process.env.NODE_ENV === 'development',
+          components: ["tamagui"],
+          config: "./tamagui.config.ts",
+          disableExtraction: process.env.NODE_ENV === "development",
         },
       ],
-      'expo-router/babel',
-      'react-native-reanimated/plugin',
+      "react-native-reanimated/plugin",
     ],
   };
 };

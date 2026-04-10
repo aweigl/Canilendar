@@ -1,4 +1,8 @@
-import { Image, Modal, Pressable, StyleSheet } from "react-native";
+import { Modal, Pressable, StyleSheet, View } from "react-native";
+import { useTranslation } from "react-i18next";
+
+import { LoadingView } from "@/components/loading-view";
+import { ThemedText } from "@/components/themed-text";
 
 type SplashPreviewModalProps = {
   onClose: () => void;
@@ -9,6 +13,8 @@ export function SplashPreviewModal({
   onClose,
   visible,
 }: SplashPreviewModalProps) {
+  const { t } = useTranslation();
+
   return (
     <Modal
       animationType="fade"
@@ -17,25 +23,33 @@ export function SplashPreviewModal({
       transparent={false}
       visible={visible}
     >
-      <Pressable onPress={onClose} style={styles.splashPreview}>
-        <Image
-          resizeMode="contain"
-          source={require("../../assets/images/splash-screen.png")}
-          style={styles.splashImage}
-        />
-      </Pressable>
+      <View style={styles.container}>
+        <Pressable onPress={onClose} style={styles.closeButton}>
+          <ThemedText type="meta">{t("common.cancel")}</ThemedText>
+        </Pressable>
+        <Pressable onPress={onClose} style={styles.preview}>
+          <LoadingView />
+        </Pressable>
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  splashPreview: {
-    alignItems: "center",
-    backgroundColor: "#F8F1E6",
+  container: {
     flex: 1,
-    justifyContent: "center",
   },
-  splashImage: {
-    height: 400,
+  closeButton: {
+    position: "absolute",
+    right: 20,
+    top: 56,
+    zIndex: 1,
+    backgroundColor: "rgba(255, 248, 241, 0.92)",
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  preview: {
+    flex: 1,
   },
 });

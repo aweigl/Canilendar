@@ -17,7 +17,6 @@ import {
   type AppearanceMode,
   type AuthSession,
   type LanguagePreference,
-  type NotificationPermissionState,
   type ReminderSettings,
   type SubscriptionStatus,
 } from "@/types/domain";
@@ -48,16 +47,6 @@ type SettingsSubscriptionSectionProps = {
   onUpgrade: () => void;
   palette: Palette;
   subscriptionStatus: SubscriptionStatus;
-};
-
-type SettingsNotificationSectionProps = {
-  isRefreshing: boolean;
-  notificationPermission: NotificationPermissionState;
-  onEnableNotifications: () => void;
-  onOpenSystemSettings: () => void;
-  onRefreshStatus: () => void;
-  palette: Palette;
-  permissionCopy: string;
 };
 
 type SettingsSchedulingSectionProps = {
@@ -190,12 +179,10 @@ export function SettingsSubscriptionSection({
           alignItems: "center",
           flexDirection: "row",
           gap: Spacing.sm,
+          marginBottom: Spacing.md,
         }}
       >
-        <ThemedText
-          type="sectionTitle"
-          style={[styles.cardTitle, styles.marginBottom]}
-        >
+        <ThemedText type="sectionTitle" style={[styles.cardTitle]}>
           {t("settings.pro.title")}
         </ThemedText>
         {isPro ? (
@@ -207,17 +194,6 @@ export function SettingsSubscriptionSection({
           />
         ) : null}
       </View>
-      <ThemedText
-        style={[styles.marginBottom, styles.statusText]}
-        lightColor={palette.support}
-        darkColor={palette.support}
-      >
-        {!isPro
-          ? subscriptionStatus === "unavailable"
-            ? t("settings.pro.unavailable")
-            : t("settings.pro.freeTier")
-          : null}
-      </ThemedText>
       <View style={styles.actions}>
         {isPro ? (
           <AppButton
@@ -239,6 +215,18 @@ export function SettingsSubscriptionSection({
           />
         )}
       </View>
+      <ThemedText
+        style={[styles.marginBottom, styles.statusText]}
+        lightColor={palette.support}
+        darkColor={palette.support}
+        type="caption"
+      >
+        {!isPro
+          ? subscriptionStatus === "unavailable"
+            ? t("settings.pro.unavailable")
+            : t("settings.pro.freeTier")
+          : null}
+      </ThemedText>
       {isRevenueCatReady && !isRevenueCatPurchaseSupported ? (
         <ThemedText
           lightColor={palette.textMuted}
@@ -256,58 +244,6 @@ export function SettingsSubscriptionSection({
           {t("settings.pro.hostedUi")}
         </ThemedText>
       ) : null}
-    </SettingsCard>
-  );
-}
-
-export function SettingsNotificationSection({
-  isRefreshing,
-  notificationPermission,
-  onEnableNotifications,
-  onOpenSystemSettings,
-  onRefreshStatus,
-  palette,
-  permissionCopy,
-}: SettingsNotificationSectionProps) {
-  const { t } = useTranslation();
-
-  return (
-    <SettingsCard palette={palette} borderColor={palette.support}>
-      <ThemedText type="sectionTitle" style={styles.cardTitle}>
-        {t("settings.notifications")}
-      </ThemedText>
-      <ThemedText lightColor={palette.textMuted} darkColor={palette.textMuted}>
-        {permissionCopy}
-      </ThemedText>
-      <View style={styles.actions}>
-        <AppButton
-          label={
-            notificationPermission === "granted"
-              ? t("common.enabled")
-              : t("settings.enableReminders")
-          }
-          onPress={onEnableNotifications}
-          variant={
-            notificationPermission === "granted" ? "secondary" : "primary"
-          }
-        />
-        <AppButton
-          label={
-            isRefreshing
-              ? t("settings.refreshingStatus")
-              : t("settings.refreshStatus")
-          }
-          onPress={onRefreshStatus}
-          variant="ghost"
-        />
-        {notificationPermission === "denied" ? (
-          <AppButton
-            label={t("settings.openSystemSettings")}
-            onPress={onOpenSystemSettings}
-            variant="secondary"
-          />
-        ) : null}
-      </View>
     </SettingsCard>
   );
 }

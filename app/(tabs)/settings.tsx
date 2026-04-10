@@ -9,7 +9,6 @@ import {
   SettingsDeveloperToolsSection,
   SettingsLanguageSection,
   SettingsLegalSection,
-  SettingsNotificationSection,
   SettingsSchedulingSection,
   SettingsSubscriptionSection,
 } from "@/components/settings/settings-sections";
@@ -47,21 +46,14 @@ export default function SettingsScreen() {
         <SettingsSubscriptionSection
           hostedUiReady={controller.hostedUiReady}
           isPro={controller.isPro}
-          isRevenueCatPurchaseSupported={controller.isRevenueCatPurchaseSupported}
+          isRevenueCatPurchaseSupported={
+            controller.isRevenueCatPurchaseSupported
+          }
           isRevenueCatReady={controller.isRevenueCatReady}
           onOpenCustomerCenter={controller.handleCustomerCenter}
           onUpgrade={controller.upgradeToPro}
           palette={palette}
           subscriptionStatus={controller.subscriptionStatus}
-        />
-        <SettingsNotificationSection
-          isRefreshing={controller.isRefreshing}
-          notificationPermission={controller.notificationPermission}
-          onEnableNotifications={controller.handlePermissionAction}
-          onOpenSystemSettings={controller.openSystemSettings}
-          onRefreshStatus={controller.handleRefreshPermission}
-          palette={palette}
-          permissionCopy={controller.permissionCopy}
         />
         <SettingsSchedulingSection
           onUpdateSettings={controller.updateSettings}

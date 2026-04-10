@@ -4,7 +4,7 @@
     "slug": "canilendar",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/favicon.png",
+    "icon": "./assets/images/favicon_2.png",
     "scheme": "canilendar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -18,14 +18,14 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/favicon.png"
+        "foregroundImage": "./assets/images/favicon_2.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon_2.png"
     },
     "plugins": [
       "expo-router",
@@ -40,11 +40,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-screen.png",
-          "imageWidth": 400,
-          "resizeMode": "contain",
+          "image": "./assets/images/splash_screen.png",
+          "resizeMode": "cover",
           "backgroundColor": "#F8F1E6",
           "dark": {
+            "image": "./assets/images/splash_screen.png",
+            "resizeMode": "cover",
             "backgroundColor": "#F8F1E6"
           }
         }
